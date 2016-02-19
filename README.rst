@@ -6,9 +6,9 @@ Glitter is a front-end content management framework for Django.
 Installation
 ~~~~~~~~~~~~
 
-.. code-block:: pyhton
+.. code-block:: sh
 
-  pip install glitter
+  pip install django-glitter
 
 Contributing
 ~~~~~~~~~~~~
