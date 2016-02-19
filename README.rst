@@ -1,6 +1,30 @@
-=======
-Glitter
-=======
+Django Glitter
+==============
 
-A powerful replacement for Django flatpages, with support for multiple columns
-of content, versioning, tree structured site navigation, and more!
+Glitter is a front-end content management framework for Django.
+
+Installation
+~~~~~~~~~~~~
+
+.. code-block:: pyhton
+
+  pip install glitter
+
+Contributing
+~~~~~~~~~~~~
+
+1. Fork it!
+2. Create your feature branch: ``git checkout -b my-new-feature``
+3. Commit your changes: ``git commit -am 'Add some feature'``
+4. Push to the branch: ``git push origin my-new-feature``
+5. Submit a pull request :D
+
+Credits
+~~~~~~~
+
+Concept and project launch by Team Blanc
+
+License
+~~~~~~~
+
+Glitter is licensed under BSD-3
