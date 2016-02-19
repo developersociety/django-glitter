@@ -35,7 +35,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     fields = page_admin_fields()
     mptt_level_indent = 25
     glitter_render = True
-    change_list_template = 'admin/pages/page/change_list.html'
+    change_list_template = 'admin/glitter/page/change_list.html'
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
