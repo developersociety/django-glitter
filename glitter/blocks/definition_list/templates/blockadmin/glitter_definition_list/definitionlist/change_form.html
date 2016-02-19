@@ -1,0 +1,37 @@
+{% extends "blockadmin/change_form.html" %}
+{% load static from staticfiles %}
+
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'glitter/libs/redactorjs/redactor.css' %}" />
+<style type="text/css">
+#content-main .field-content label {
+    display: none;
+}
+</style>
+{% endblock extrastyle %}
+
+
+{% block content %}
+{{ block.super }}
+
+<script src="{% static 'admin/js/jquery.min.js' %}"></script>
+<script src="{% static 'glitter/libs/redactorjs/redactor.min.js' %}"></script>
+<script type="text/javascript">
+/* global $ */
+$().ready(function() {
+    "use strict";
+
+    $("#definitionlist_form textarea").each(function(){
+        $(this).redactor({
+            focus: true,
+            iframe: true,
+            minHeight: 300,
+            css: "{% static 'glitter/libs/redactorjs/redactor-iframe.css' %}"
+        });
+    });
+
+});
+</script>
+{% endblock content %}

@@ -1,0 +1,30 @@
+{% load latest_tweets_tags %}
+
+{% if object.user %}
+    {% get_latest_tweets object.user limit=4 as latest_tweets %}
+{% else %}
+    {% get_latest_tweets limit=4 as latest_tweets %}
+{% endif %}
+
+{% if latest_tweets %}
+    <div class="{{ css_classes }}">
+        <ul>
+            {% for tweet in latest_tweets %}
+                <li>
+                    {{ tweet.html|safe|linebreaks }}
+
+                    <p class="meta">
+                        {% if tweet.retweeted_tweet_id %}
+                            <span class="retweet">{{ tweet.name }} retweeted</span>
+                            <a href="{{ tweet.retweeted_user_url }}" class="retweet" target="_blank">{{ tweet.retweeted_name }}</a>
+                        {% else %}
+                            <a href="{{ tweet.user_url }}" target="_blank">{{ tweet.name }}</a>
+                        {% endif %}
+
+                        @{{ tweet.user }} - {{ tweet.created|timesince }} ago
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

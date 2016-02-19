@@ -1,0 +1,13 @@
+*.pyc
+MANIFEST
+dist
+build
+*.egg-info
+
+# Tox
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+docs/build/
+docs/locale/

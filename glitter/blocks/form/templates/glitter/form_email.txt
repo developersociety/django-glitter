@@ -1,0 +1,7 @@
+{% autoescape off %}
+{% for field in form %}{{ field.label }}: {{ field.value }}
+{% endfor %}
+
+Sent from: {{ obj }}
+URL: {{ page_url }}
+{% endautoescape %}

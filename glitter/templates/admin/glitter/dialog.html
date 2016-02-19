@@ -1,0 +1,35 @@
+{% load admin_static %}<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Glitter Pages</title>
+    <link rel="stylesheet" type="text/css" href="{% static "glitter/css/djangoadmin.min.css" %}">
+    {% block endhead %}{% endblock %}
+</head>
+<body>
+<div id="container">
+    <div class="glitter-form">
+        <h1>
+            {% block title %}
+            {% endblock %}
+            
+            {% block endtitle %}
+                <a href="javascript:;" class="close" onclick="window.parent.GlitterEditor.close_popup();return false;">
+                    Close
+                </a>
+            {% endblock %}
+        </h1>
+        {% block dialog_content %}
+        <form method="POST" action="">
+            <fieldset>
+                {% block form %}{% endblock %}
+            </fieldset>
+            <div class="glitter-form-button-row">
+                {% block buttons %}<input type="submit" value="Add" class="default" name="_save">{% endblock %}
+            </div>
+        </form>
+        {% endblock dialog_content %}
+    </div>
+</div>
+</body>
+</html>

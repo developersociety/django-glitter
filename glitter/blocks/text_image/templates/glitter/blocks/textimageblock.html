@@ -1,0 +1,8 @@
+{% if object.image %}
+    <div class="{{ css_classes }} {{ object.position }}">
+        <img src="{{ object.image.file.url }}" width="{{ object.image.image_width }}" height="{{ object.image.image_height }}" alt="">
+        <div class="text-image-content">
+            {{ object.content|safe }}
+        </div>
+    </div>
+{% endif %}

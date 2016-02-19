@@ -1,0 +1,12 @@
+{% load admin_urls %}<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Glitter</title>
+</head>
+<body>
+<script type="text/javascript">
+window.parent.GlitterEditor.redirect_page("{% url opts|admin_urlname:'redirect' object_id=obj.id %}");
+</script>
+</body>
+</html>

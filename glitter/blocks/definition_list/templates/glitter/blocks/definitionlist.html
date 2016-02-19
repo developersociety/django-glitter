@@ -1,0 +1,8 @@
+<div class="{{ css_classes }}">
+    <dl>
+        {% for inline in object.definitionlistinline_set.all %}
+            <dt>{{ inline.key }}</dt>
+            <dd>{{ inline.value|safe }}</dd>
+        {% endfor %}
+    </dl>
+</div>

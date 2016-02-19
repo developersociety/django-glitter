@@ -1,0 +1,27 @@
+{% extends 'admin/glitter/dialog.html' %}
+
+{% block endhead %}
+<style type="text/css">
+    body { background: #1a1a1a; }
+</style>
+{% endblock %}
+
+{% block title %}{{ verbose_name|capfirst }} not published{% endblock %}
+{% block endtitle %}{% endblock %}
+
+{% block form %}
+    {% if version %}
+        <p>The {{ verbose_name }} you are trying to view is currently unpublished and not accessible to public users.</p>
+    {% else %}
+        <p>The {{ verbose_name }} you are trying to view has no saved versions.</p>
+    {% endif %}
+{% endblock form %}
+
+{% block buttons %}
+    {% if version %}
+        <a class="glitter-form-button" href="{{ next_url }}">View latest version</a>
+    {% else %}
+        <a class="glitter-form-button" href="{{ next_url }}">Choose a template</a>
+    {% endif %}
+</div>
+{% endblock buttons %}

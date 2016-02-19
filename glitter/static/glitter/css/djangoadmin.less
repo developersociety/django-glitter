@@ -1,0 +1,394 @@
+@import (less) 'glitter-base';
+@import 'themes';
+
+.reset() {
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p, ol, ul, dl, img {
+    .reset();
+    margin-bottom: 26px;
+    &.tight { margin-bottom: 0; }
+}
+
+h2, h3 { font-weight: 300; }
+
+h1, h4, h5, h6 { font-weight: 600; }
+
+h1, .f1 { font-size: 40/@em; line-height: 44/40; }
+h2, .f2 { font-size: 30/@em; line-height: 40/30; }
+h3, .f3 { font-size: 24/@em; line-height: 30/24; }
+h4, .f4 { font-size: 20/@em; line-height: 26/20; }
+h5, .f5 { font-size: 18/@em; line-height: 26/18; }
+h6, .f6 { font-size: 14/@em; line-height: 19/18; }
+
+
+body {
+    color: @text;
+    .glitter-font;
+    -webkit-font-smoothing: antialiased;
+    padding: 3em 0.625em; // gutter
+}
+
+a {
+    color: @book;
+    text-decoration: none;
+}
+
+button, input, textarea, select {
+    .glitter-font();
+    -webkit-font-smoothing: antialiased;
+}
+
+.help {
+    color: @grey;
+    font-size: 14/@em;
+}
+
+.form-row div {
+    margin-bottom: 14/@em;
+
+    label {
+        display: block;
+        font-size: 16/@em;
+        margin-bottom: 6/@em;
+        font-weight: 600;
+        abbr {
+            border-bottom: none;
+        }
+    }
+
+    label.required {
+        &:after {
+            content: " *";
+        }
+    }
+
+    p.help {
+        padding: 9.5/@em;
+        font-size: 14/@em;
+        font-weight: 400;
+        background-color: @c-line-dark;
+        color: @c-line;
+        margin-bottom: 10/@em;
+    }
+
+    ul.errorlist {
+        background-color: #ed1c24;
+        color: #fff;
+        li {
+            padding: 9.5/@em;
+            font-size: 14/@em;
+            font-weight: 400;
+            color: #fff;
+        }
+    }
+
+    input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="search"], input[type="number"], input[type="newsletter"] {
+        box-sizing: border-box;
+        width: 100%;
+        border: 3px solid transparent;
+    }
+    &.error {
+        input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="search"], input[type="number"], input[type="newsletter"], select {
+            border-color: #ed1c24;
+        }
+        p.error-help {
+            display: block;
+        }
+    }
+    &.required {
+        label {
+            font-weight: 600;
+            &:after {
+                content: "*";
+            }
+        }
+    }
+
+}
+
+
+#container {
+    .glitter-main.glitter-wrap;
+    .errornote, .info {
+        color: #fff;
+        padding: 10/@em;
+        font-size: 14/@em;
+        margin-bottom: 0
+    }
+    .errornote {
+        background-color: #ed1c24;
+    }
+    .info {
+        background-color: #acd373;
+    }
+    form {
+        margin: 0;
+        padding: 0;
+
+        p, .form-row{
+            margin: 0;
+        }
+
+        .checkbox-row {
+            label {
+                display: inline-block;
+            }
+        }
+
+    }
+
+    fieldset {
+        border: none;
+        padding: 0;
+        margin: 2em 0 0 0;
+
+        legend {
+            display: block;
+            width: 100%;
+            .glitter-h2;
+            font-weight: 300;
+            line-height: 1;
+            margin: 0 0 0.65em 0;
+            padding: 0 0 0.65em 0;
+            border-bottom: 0.2em solid @line;
+        }
+    }
+
+    h1 {
+        hr {
+            height: 6px;
+            background-color: @c-line-dark;
+        }
+    }
+
+    .glitter-dialog {
+        max-width: 48.75em + 2em; // 2em for padding below
+        margin: 0 auto;
+        padding: 3em 1em;
+    }
+
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    input[type="text"], input[type="number"], input[type="email"],
+    input[type="url"], input[type="password"], textarea, select {
+        display: block;
+        width: 100%;
+        border: none;
+        outline: none;
+        height: 2.5em;
+        line-height: 2.5;
+        border-radius: 0;
+    }
+
+    input[type="text"], input[type="number"], input[type="email"],
+    input[type="url"], input[type="password"], textarea, select {
+        font-size: 1em;
+        padding: 0;
+        text-indent: 1em;
+    }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        border-radius: 0;
+        background: @text;
+        color: @back;
+        height: auto;
+        padding: 0;
+        width: 100%;
+        text-indent: 0.875em;
+        text-overflow: '';
+    }
+
+    textarea {
+        min-height: 7em;
+        line-height: 1.3;
+        padding: 0.5em 0;
+        border-radius: 0;
+    }
+
+    .glitter-checkbox {
+        padding: 0.6em 0 0.3em 0;
+        input {
+            position: relative;
+            float: left;
+            margin: -1.1em 0 0 0;
+            -webkit-appearance: none;
+            appearance: none;
+            display: block;
+            width: 1em;
+            height: 1em;
+            overflow: hidden;
+            border: none;
+            border-radius: 0;
+            background-color: @text;
+            outline: none;
+            cursor: pointer;
+            &:checked {
+                &:before {
+                    display: block;
+                    .glitter-icon;
+                    content: 'k';
+                    font-size: 1.5em;
+                    left: -0.15em;
+                    top: -0.225em;
+                    position: absolute;
+                }
+            }
+        }
+        label {
+            display: block;
+            margin-left: 1.5em;
+            padding-top: 0.3em;
+            font-size: 16/14em;
+            line-height: 1;
+            cursor: pointer;
+        }
+    }
+
+    .glitter-split-date-time {
+        overflow: hidden;
+        input {
+            float: left;
+            width: 30%;
+            &:first-of-type { margin-right: 1em; }
+        }
+    }
+
+    .glitter-select {
+        position: relative;
+        input {
+            text-indent: 0.875em;
+        }
+        &:before {
+            content: 'g';
+            position: absolute;
+            right: 0.5em;
+            top: 2.1em;
+            .glitter-icon;
+            font-size: 1.1em;
+            display: block;
+            color: @line;
+        }
+    }
+
+    .glitter-form-close {
+        display: block;
+        background: none;
+        border: none;
+        color: @text;
+        margin: 0.4em 0 0 0;
+        .glitter-h4;
+        float: right;
+        &:hover {
+            color: @book;
+        }
+    }
+
+    .glitter-form-button-row {
+        margin: 1.875em 0;
+        border-top: 0.0625em solid @line;
+        border-bottom: 0.375em solid @line;
+        padding: 0;
+        text-align: right;
+        .glitter-form-button, .glitter-form-delete {
+            .glitter-h4;
+            background: none;
+            border: none;
+            color: @text;
+            padding: 0;
+            height: 2.625em;
+            line-height: 2.625em;
+            margin: 0 0 0 1.1em;
+            &:hover {
+                color: @book;
+            }
+        }
+        .glitter-form-delete {
+            float: left;
+            margin: 0 1.1em 0 0;
+            &:hover { color: red; }
+        }
+    }
+}
+
+h1 {
+    .glitter-h1;
+    font-weight: 300;
+    overflow: hidden;
+}
+
+.close {
+    display: block;
+    background: none;
+    border: none;
+    color: @text;
+    margin: 0.72em 0 0 0;
+    font-size: 18px;
+    float: right;
+    text-decoration: none;
+    &:hover {
+        color: @book;
+    }
+}
+
+.submit-row {
+    .glitter-form.glitter-form-button-row;
+    overflow: hidden;
+    p { display: inline; margin: 0; padding: 0; }
+    input, a {
+        .glitter-form.glitter-form-button-row.glitter-form-button;
+        float: right;
+    }
+    .deletelink {
+        float: left;
+        margin-left: 0;
+    }
+}
+
+.control-area {
+    position: absolute;
+    a {
+        background-color: transparent;
+        border: none;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 400;
+        margin-left: 10/@em;
+        margin-top: 0;
+    }
+    p {
+        display: inline-block;
+        color: #fff;
+        font-size: 16/@em;
+        border-right: 1px solid @c-line-dark;
+        padding-right: 10/@em;
+    }
+}
+
+.block-content {
+    position: relative;
+
+    hr {
+        position: relative;
+        border: none;
+        margin: 0;
+        height: 1px;
+        background-color: @c-line-dark;
+        margin-top: -16/@em;
+        margin-bottom: 0px;
+        height: 6px;
+    }
+    .control-area {
+        right: 0.5vw;
+        top: 0.3vw;
+    }
+}
+

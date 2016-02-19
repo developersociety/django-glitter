@@ -1,0 +1,19 @@
+{% if object.image %}
+    <div class="{{ css_classes }}">
+        <figure>
+            {% if object.link %}
+                <a href="{{ object.link }}"{% if object.new_window %} target="_blank"{% endif %}>
+                    <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
+                </a>
+            {% else %}
+                <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
+            {% endif %}
+
+            {% if object.caption %}
+                <figcaption>
+                    {{ object.caption }}
+                </figcaption>
+            {% endif %}
+        </figure>
+    </div>
+{% endif %}

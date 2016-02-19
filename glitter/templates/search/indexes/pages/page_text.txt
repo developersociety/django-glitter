@@ -1,0 +1,5 @@
+{{ glitter.obj.title }}
+
+{% for column in columns.values %}
+    {{ column|striptags }}
+{% endfor %}

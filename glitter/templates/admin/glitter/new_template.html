@@ -1,0 +1,19 @@
+{% extends 'admin/glitter/dialog.html' %}
+
+{% block endhead %}
+<style type="text/css">
+    body { background: #1a1a1a; }
+</style>
+{% endblock %}
+
+{% block title %}Choose a template{% endblock %}
+{% block endtitle %}{% endblock %}
+
+{% block form %}
+    {% csrf_token %}
+    {{ form.as_p }}
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" value="Create page" class="glitter-form-button" name="_save">
+{% endblock %}

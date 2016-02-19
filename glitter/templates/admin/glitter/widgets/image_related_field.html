@@ -1,0 +1,70 @@
+{% load i18n admin_static %}
+{% load static %}
+
+<div class="related-widget-wrapper btn-holder">
+    <select class="image-related-field" id="id_image" name="image">
+        {{ options|safe }}
+    </select>
+        <a href="#" class="browse-images">Browse</a>
+
+        {% if can_change_related_url %}
+            <a class="related-widget-wrapper-link change-related" id="change_id_image"
+                data-href-template="{{ can_change_related_url }}">
+                Edit
+            </a>
+        {% endif %}
+
+        <a href="#" class="clear-image">Clear</a>
+
+        {% if can_add_related_url %}
+            <a href="{{ can_add_related_url }}" id="add_id_{{ name }}"
+                onclick="return showAddAnotherPopup(this)">Upload new
+            </a>
+        {% endif %}
+</div>
+
+
+
+<div class="block-image-selector">
+    <h2>Choose an Image</h2>
+    <hr />
+
+    <div class="control-area">
+        <a href="javascript:;" class="close">
+            Close
+        </a>
+    </div>
+
+    <fieldset>
+        <div class="inline-container">
+            <div class="field-container">
+                <label for="category">category</label>
+                <div class="select-wrapper">
+                    <select id="category">
+                        <optgroup label="Select Category">
+                            <option value="0">All images</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.title }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+
+    </fieldset>
+
+    <div class="image-grid" id="image_grid">
+        {% for image in images %}
+            <div class="grid-item" id="{{ forloop.counter }}" visible='true'>
+                <div class="image spinner">
+                    <img src="" data-src="{{ image.file.url }}" obj-id="{{ image.id }}"
+                    data-category-id="{{ image.category_id }}">
+                </div>
+                <h5>{{ image.title }}</h5>
+                <p>{{ image.image_width }}x{{ image.image_height }} {{ image.file_size|filesizeformat }} </p>
+            </div>
+        {% endfor %}
+    </div>
+</div>

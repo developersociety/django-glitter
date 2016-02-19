@@ -1,0 +1,17 @@
+{% if related_pages %}
+    <div class="{{ css_classes }}">
+        <h3>{{ object.title|default:"Related pages" }}</h3>
+
+        <ul>
+            {% for related_page, link_url in related_pages_links %}
+                <li>
+                    {% if related_page.page %}
+                        <a href="{{ related_page.page.get_absolute_url }}">{{ related_page.title|default:related_page.page.title }} <span>{{ link_url }}</span></a>
+                    {% else %}
+                        <a href="{{ related_page.link }}">{{ related_page.title }} <span>{{ link_url }}</span></a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}

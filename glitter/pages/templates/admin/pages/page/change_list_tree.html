@@ -1,0 +1,15 @@
+{% extends "django_mptt_admin/change_list.html" %}
+
+{% load i18n admin_urls admin_static admin_list %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'admin:glitter_pages_page_changelist' %}">{% trans "List pages" %}</a>
+    </li>
+    <li>
+      {% url cl.opts|admin_urlname:'add' as add_url %}
+      <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+        {% blocktrans with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktrans %}
+      </a>
+    </li>
+{% endblock %}

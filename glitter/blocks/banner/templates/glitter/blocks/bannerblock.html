@@ -1,0 +1,22 @@
+
+{% if banner_inlines %}
+    <div class="{{ css_classes }}">
+        {% for banner_inline in banner_inlines %}
+            {% with banner=banner_inline.banner %}
+                <a href="{{ banner.link }}"{% if banner.new_window %} target="_blank"{% endif %}>
+                    {% if banner.image %}
+                        <img src="{{ banner.image.file.url }}" width="{{ banner.image.image_width }}" height="{{ banner.image.image_height }}" alt="{{ banner.image.title }}">
+                    {% endif %}
+
+                    <h3>{{ banner.title }}</h3>
+
+                    {% if banner.description %}
+                        {{ banner.description|linebreaks }}
+                    {% endif %}
+
+                    <p>{{ banner.link_text|default:"Read more" }}</p>
+                </a>
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,12 @@
+{% extends 'admin/glitter/dialog.html' %}
+
+{% block title %}Edit a block{% endblock %}
+
+{% block form %}
+    {% csrf_token %}
+    {{ form.as_p }}
+{% endblock %}
+
+{% block buttons %}
+    <input type="submit" value="Save" class="default" name="_save">
+{% endblock %}

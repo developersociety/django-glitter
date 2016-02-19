@@ -1,0 +1,47 @@
+{% load admin_urls %}
+
+<!--[if !IE]><!--><div id="glitter_column_{{ column_slug }}" class="glitter-column" data-column-name="{{ column_name|escape }}"><!--<![endif]-->
+<!--[if IE]><div id="glitter_column_{{ column_slug }}" class="glitter-column glitter-column-ie" data-column-name="{{ column_name|escape }}"><![endif]-->
+    <div class="glitter-toolbar glitter-column-header">
+        <div class="glitter-button-row" data-block-top="true">
+            <span class="glitter-title">{{ verbose_name }}</span>
+            {% for block_model, block_title in default_blocks %}
+                <button class="glitter-button glitter-add-block glitter-{{ block_title|slugify }}" data-block-type="{{ block_model }}">Add {{ block_title }} Block</button>
+            {% endfor %}
+            <span class="glitter-button glitter-add-block glitter-add">
+                {{ add_block_widget }}
+            </span>
+        </div>
+    </div>
+
+    {% for block in blocks %}
+        <div class="glitter-toolbar block-header">
+            <div class="glitter-button-row">
+                <button class="glitter-button glitter-primary-action glitter-delete-block" data-popup-url="{% url glitter.opts|admin_urlname:'block_delete' contentblock_id=block.content_block.id %}">Delete Block</button>
+                <button class="glitter-button glitter-primary-action glitter-edit-block" data-popup-url="{{ block.edit_url }}">Edit Block</button>
+                <span class="glitter-button glitter-primary-action glitter-move-block" data-move-url="{% url glitter.opts|admin_urlname:'block_move' contentblock_id=block.content_block.id %}">
+                    {{ block.move_block_widget }}
+                </span>
+                <span class="glitter-button glitter-primary-action glitter-move-column" data-move-url="{% url glitter.opts|admin_urlname:'block_column' contentblock_id=block.content_block.id %}">
+                    {{ block.choose_column_widget }}
+                </span>
+                <span class="glitter-title">{{ block.block_type }}</span>
+            </div>
+        </div>
+        {{ block.html }}
+    {% endfor %}
+
+    {% if blocks %}
+        <div class="glitter-toolbar glitter-column-footer">
+            <div class="glitter-button-row">
+                <span class="glitter-title">{{ verbose_name }}</span>
+                {% for block_model, block_title in default_blocks %}
+                    <button class="glitter-button glitter-add-block glitter-{{ block_title|slugify }}" data-block-type="{{ block_model }}">Add {{ block_title }} Block</button>
+                {% endfor %}
+                <span class="glitter-button glitter-add-block glitter-add">
+                    {{ add_block_widget }}
+                </span>
+            </div>
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% load glitter %}
+
+
+{% block title %}
+    {{ glitter.obj.title }} - {{ block.super }}
+{% endblock %}
+
+
+{% block starthead %}
+    {% glitter_head %}
+{% endblock starthead %}
+
+
+{% block startbody %}
+    {% glitter_startbody %}
+{% endblock startbody %}

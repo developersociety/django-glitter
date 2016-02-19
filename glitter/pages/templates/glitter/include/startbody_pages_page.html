@@ -1,0 +1,21 @@
+{% extends "glitter/include/startbody.html" %}
+{% load admin_urls %}
+
+
+{% block breadcrumbs %}
+    {% for ancestor_page in glitter.obj.get_ancestors %}
+        <li><a href="{{ ancestor_page.get_absolute_url }}">{{ ancestor_page.title }}</a></li>
+    {% endfor %}
+
+    <li class="glitter-active">
+        <a href="{{ glitter.obj.get_absolute_url }}">
+            {{ glitter.obj.title }}
+        </a>
+    </li>
+    <form action="{% url glitter.opts|admin_urlname:'add' %}">
+        {% if glitter.obj.is_root_node and glitter.obj.get_absolute_url != "/" %}
+            <input type="hidden" name="parent" value="{{ glitter.obj.id }}" />
+        {% endif %}
+        <button type="submit" class="glitter-add-new-page">Add</button>
+    </form>
+{% endblock %}

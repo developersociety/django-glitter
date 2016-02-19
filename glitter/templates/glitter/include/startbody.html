@@ -1,0 +1,193 @@
+{% load admin_urls %}
+
+
+<section id="glitter-menu" class="glitter-menu">
+    <ul class="glitter-breadcrumbs">
+        {% block breadcrumbs %}
+            {% if glitter %}
+                <li class="glitter-active">
+                    <a href="{{ glitter.obj.get_absolute_url }}">
+                        {{ glitter.obj }}
+                    </a>
+                </li>
+                {% if has_add_permission %}
+                    <form action="{% url glitter.opts|admin_urlname:'add' %}">
+                        <button type="submit" class="glitter-add-new-page">Add</button>
+                    </form>
+                {% endif %}
+            {% else %}
+                <li class="glitter-active home">
+                    <a href="/">Home</a>
+                </li>
+            {% endif %}
+        {% endblock %}
+    </ul>
+
+    <div id="glitter-page-actions" class="glitter-page-actions">
+        {% if glitter %}
+            <button id="glitter-tab-edit"
+                class="glitter-edit-toggle glitter-tab" type="submit"
+                data-target="#glitter-edit-menu"
+                data-state-on="#glitter-tab-edit">
+                    Edit
+            </button>
+            <a class="glitter-properties-toggle"
+                href="{% url glitter.opts|admin_urlname:'change' glitter.obj.id %}">
+                Properties
+            </a>
+        {% endif %}
+
+        <a class="glitter-admin-url" href="{% url 'admin:index' %}">Admin</a>
+    </div>
+</section>
+
+<div id="glitter-primary-panes" class="glitter-primary-panes">
+    <div id="glitter-edit-menu" class="glitter-edit-menu">
+        <div class="glitter-version-controls">
+            {% if glitter.previous_version %}
+                <a href="{% url glitter.opts|admin_urlname:'version' version_id=glitter.previous_version.id %}" class="glitter-version-previous">View Previous Version</a>
+            {% else %}
+                <button class="glitter-version-previous" disabled="disabled">View Previous Version</button>
+            {% endif %}
+
+            <button id="glitter-tab-versions" class="glitter-version-manager glitter-tab" data-target="#glitter-versions" data-state-on="#glitter-tab-versions" data-state-off="#glitter-tab-edit">
+                {% if glitter.version.version_number %}
+                    Version: <span>{{ glitter.version.version_number }}</span>
+                {% else %}
+                    Versions
+                {% endif %}
+            </button>
+
+            {% if glitter.next_version %}
+                <a href="{% url glitter.opts|admin_urlname:'version' version_id=glitter.next_version.id %}" class="glitter-version-next">View Next Version</a>
+            {% else %}
+                <button class="glitter-version-next" disabled="disabled">View Next Version</button>
+            {% endif %}
+
+            {% if edit_mode %}
+                <a id="glitter-version-edit-toggle-off" href="{% url glitter.opts|admin_urlname:'version' version_id=glitter.version.id %}" class="glitter-version-edit-toggle glitter-edit-on">Edit <span></span></a>
+            {% else %}
+                {% if glitter %}
+                    <form method="POST" action="{% url glitter.opts|admin_urlname:'edit' version_id=glitter.version.id %}">
+                        {% csrf_token %}
+                        <button class="glitter-version-edit-toggle" type="submit">
+                            Edit <span></span>
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="glitter-publishing-controls {% if edit_mode %} glitter-active{% endif %}">
+            {% if edit_mode %}
+                <button id="glitter-tab-template" class="glitter-publishing-template glitter-tab" data-target="#glitter-templates" data-state-on="#glitter-tab-template" data-state-off="#glitter-tab-edit">Template</button>
+            {% endif %}
+            {% if not glitter.version.version_number and glitter %}
+                <form method="POST" action="{% url glitter.opts|admin_urlname:'save' version_id=glitter.version.id %}">
+                    {% csrf_token %}
+                    <button class="glitter-publishing-save {% if edit_mode %}glitter-edit-on{% endif %}" type="submit">Save</button>
+                </form>
+            {% endif %}
+            {% if perms.glitter.publish_page %}
+                {% if glitter.version.is_published and glitter %}
+                    <form method="POST" action="{% url glitter.opts|admin_urlname:'unpublish' version_id=glitter.version.id %}">
+                        {% csrf_token %}
+                        <button class="glitter-publishing-toggle" type="submit">Unpublish</button>
+                    </form>
+                {% else %}
+                    {% if glitter %}
+                    <form method="POST" action="{% url glitter.opts|admin_urlname:'publish' version_id=glitter.version.id %}">
+                        {% csrf_token %}
+                        <button class="glitter-publishing-toggle" type="submit">Publish</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="glitter-edit-panes" class="glitter-edit-panes">
+        <div class="glitter-context-menu" id="glitter-versions">
+            <div class="glitter-form">
+                <form>
+                    <fieldset class="glitter-left glitter-thin">
+                        <table class="glitter-large">
+                            <tbody>
+                                <tr>
+                                    <td>Published version:</td>
+                                    <td>
+                                        {% if glitter.obj.published and glitter.obj.current_version %}
+                                            <em><a href="{{ glitter.obj.get_absolute_url }}">{{ glitter.obj.current_version.version_number }}</a></em>
+                                        {% else %}
+                                            &mdash;
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Viewing version:</td>
+                                    <td class="glitter-version-placeholder">
+                                        <em>
+                                            {% if glitter.version.version_number %}
+                                                {{ glitter.version.version_number }}
+                                            {% else %}
+                                                {% if glitter %}
+                                                    Unsaved
+                                                    <button type="button" id="glitter-discard-version" class="glitter-discard-version" data-popup-url="{% url glitter.opts|admin_urlname:'discard' version_id=glitter.version.id %}">
+                                                        <span>Discard this version</span>
+                                                    </button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </em>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </fieldset>
+                    <fieldset class="glitter-right glitter-wide">
+                        <table id="glitter-versionlist" class="glitter-small">
+                            <tbody>
+                                {% for i in glitter.all_versions %}
+                                    {% if i.version_number %}
+                                        <tr class="{% if i == glitter.version %}glitter-current{% endif %} {% if i == glitter.obj.current_version %}glitter-live{% endif %}">
+                                            <td class="glitter-viewing"><a href="{% url glitter.opts|admin_urlname:'version' version_id=i.id %}">&bull;</a></td>
+                                            <td class="glitter-ver">{{ i.version_number }}</td>
+                                            <td class="glitter-author">
+                                                {% if i.owner %}
+                                                    {{ i.owner.get_full_name|default:i.owner }}
+                                                {% endif %}
+                                            </td>
+                                            <td class="glitter-when">{{ i.modified|date:"H:i d M Y" }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr class="glitter-editing {% if i == glitter.version %}glitter-current{% endif %}">
+                                            <td class="glitter-viewing"><a href="{% url glitter.opts|admin_urlname:'version' version_id=i.id %}">&bull;</a></td>
+                                            <td colspan="2" class="glitter-unsaved">Unsaved version</td>
+                                            <td class="glitter-when">{{ i.modified|date:"H:i d M Y" }}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div id="glitter-version-pagination" class="glitter-form-button-row glitter-pagination"></div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="glitter-context-menu" id="glitter-templates">
+            {% if glitter %}
+                <div class="glitter-form">
+                    <h1>Change template</h1>
+                    <form method="POST" action="{% url glitter.opts|admin_urlname:'changetemplate' version_id=glitter.version.id %}">
+                        {% csrf_token %}
+                        <p class="glitter-select">
+                            <label for="id_template_name">Template</label>
+                            {{ glitter.change_template_widget }}
+                        </p>
+                        <div class="glitter-form-button-row">
+                            <button class="glitter-form-button">Save</button>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

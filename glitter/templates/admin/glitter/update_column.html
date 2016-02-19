@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Glitter</title>
+    </head>
+<body>
+<script type="text/javascript">
+    var content_json = {{ rendered_json|safe }};
+    window.parent.GlitterEditor.update_column("{{ column }}", content_json.content, true);
+</script>
+</body>
+</html>
