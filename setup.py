@@ -12,7 +12,7 @@ install_requires = [
 
 setup(
     name='django-glitter',
-    version='0.1.2',
+    version='0.1.3',
     description='Glitter for Django',
     long_description=open('README.rst').read(),
     url='https://github.com/blancltd/django-glitter',
