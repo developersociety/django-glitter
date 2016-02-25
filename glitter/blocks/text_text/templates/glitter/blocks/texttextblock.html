@@ -1,0 +1,10 @@
+{% if object.left_column or object.right_column %}
+    <div class="{{ css_classes }} {{ object.block_class }}">
+        <div class="left-column">
+            {{ object.left_column|safe }}
+        </div>
+        <div class="right-column">
+            {{ object.right_column|safe }}
+        </div>
+    </div>
+{% endif %}
