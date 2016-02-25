@@ -33,6 +33,6 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
-    license='Proprietary',
+    license='BSD',
     install_requires=install_requires,
 )
