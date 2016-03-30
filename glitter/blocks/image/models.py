@@ -13,8 +13,6 @@ class BaseImageBlock(BaseBlock):
     link = models.URLField(blank=True)
     new_window = models.BooleanField('Open link in new window', default=False)
 
-    render_function = 'glitter.blocks.image.views.imageblock'
-
     class Meta:
         abstract = True
 
