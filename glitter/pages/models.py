@@ -13,7 +13,10 @@ from .validators import validate_page_url
 
 class PageManager(TreeManager):
     def published(self):
-        return self.get_query_set().filter(published=True)
+        return self.filter(published=True).exclude(current_version=None)
+
+    def unpublished(self):
+        return self.filter(published=True, current_version__isnull=True)
 
 
 @python_2_unicode_compatible
