@@ -1,6 +1,14 @@
+{% load thumbnail %}
+
+
 {% if object.image %}
     <div class="{{ css_classes }} {{ object.position }}">
-        <img src="{{ object.image.file.url }}" width="{{ object.image.image_width }}" height="{{ object.image.image_height }}" alt="">
+        {% with thumb_width=column.width|stringformat:"d" %}
+            {% thumbnail object.image.file thumb_width as thumb %}
+                <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="">
+            {% endthumbnail %}
+        {% endwith %}
+
         <div class="text-image-content">
             {{ object.content|safe }}
         </div>
