@@ -85,7 +85,14 @@ class TestModelsPage(TestCase):
         self.assertRaises(ValidationError, validate_page_url, value='//')
 
     def test_manager_published(self):
-        self.assertEqual(1, len(Page.objects.published()))
+        self.page_version.generate_version()
+        self.page_version.save()
+
+        self.page.published = True
+        self.page.current_version = self.page_version
+        self.page.save()
+
+        self.assertEqual(1, Page.objects.published().count())
 
     def test_page_version_str(self):
         self.page_version.__str__()
