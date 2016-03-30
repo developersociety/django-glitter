@@ -1,0 +1,24 @@
+{% load thumbnail %}
+
+
+{% if banner_inlines %}
+    <div class="{{ css_classes }}">
+        {% for banner_inline in banner_inlines %}
+            {% with banner=banner_inline.banner %}
+                <a href="{{ banner.link }}"{% if banner.new_window %} target="_blank"{% endif %}>
+                    {% thumbnail banner.image.file thumb_dimensions as thumb %}
+                        <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ banner.image.title }}">
+                    {% endthumbnail %}
+
+                    <h3>{{ banner.title }}</h3>
+
+                    {% if banner.description %}
+                        {{ banner.description|linebreaks }}
+                    {% endif %}
+
+                    <p>{{ banner.link_text|default:"Read more" }}</p>
+                </a>
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% endif %}
