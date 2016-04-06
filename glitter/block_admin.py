@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import copy
 from functools import update_wrapper
 
 from django.conf import settings
@@ -326,7 +325,8 @@ class BlockModelAdmin(ModelAdmin):
                 kwargs['queryset'] = queryset
 
         form_field = db_field.formfield(**kwargs)
-        if isinstance(form_field.widget, SelectMultiple) and not isinstance(form_field.widget, CheckboxSelectMultiple):
+        if (isinstance(form_field.widget, SelectMultiple) and
+                not isinstance(form_field.widget, CheckboxSelectMultiple)):
             msg = _('Hold down "Control", or "Command" on a Mac, to select more than one.')
             help_text = form_field.help_text
             form_field.help_text = string_concat(help_text, ' ', msg) if help_text else msg
