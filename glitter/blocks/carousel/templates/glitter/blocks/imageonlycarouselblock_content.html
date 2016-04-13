@@ -16,7 +16,7 @@
             <div class="carousel-inner" role="listbox">
                 {% for image in carousel_images %}
                     <div class="item {% if forloop.first %}active{% endif %}">
-                        {% thumbnail image.image.file thumb_dimensions as thumb %}
+                        {% thumbnail image.image.file thumb_dimensions crop="center" as thumb %}
                             <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="">
                         {% endthumbnail %}
                     </div>
