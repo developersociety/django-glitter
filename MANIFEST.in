@@ -1,6 +1,4 @@
 include README.rst
-recursive-include glitter/templates *
+recursive-include glitter *.html *.txt
 recursive-include glitter/static *
-recursive-include glitter/blocks *.html *.txt
-recursive-include glitter/pages *.html
 global-exclude .DS_Store
