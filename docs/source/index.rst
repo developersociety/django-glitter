@@ -3,14 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Glitter's documentation!
-===================================
+=======
+Glitter
+=======
 
-Contents:
+The front-end content management framework for Django.
+
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
 
+   installation
+   layouts
 
 
 Indices and tables
