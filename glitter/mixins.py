@@ -18,6 +18,16 @@ class GlitterMixin(models.Model):
         default_permissions = ('add', 'change', 'delete', 'edit', 'publish')
         abstract = True
 
+    @property
+    def is_published(self):
+        """
+        Return a boolean if the object is fully published and visible.
+
+        Glitter objects need to be published and have a current version to be
+        visible to end users.
+        """
+        return self.published and self.current_version_id
+
 
 class GlitterDetailMixin(object):
     def post(self, request, *args, **kwargs):
