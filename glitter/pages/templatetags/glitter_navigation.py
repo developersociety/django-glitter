@@ -32,7 +32,10 @@ def get_root_pages(current_page=None):
     else:
         root_page = None
 
-    for i in Page.objects.root_nodes().filter(show_in_navigation=True):
+    page_qs = Page.objects.root_nodes().filter(
+        show_in_navigation=True, published=True).exclude(current_version=None)
+
+    for i in page_qs:
         page_list.append((i, i == root_page))
 
     return page_list
@@ -58,7 +61,10 @@ def get_pages_at_level(current_page, level=1):
     parent_page = page_and_ancestors[level - 1]
     page_list = []
 
-    for i in parent_page.get_children().filter(show_in_navigation=True):
+    page_qs = parent_page.get_children().filter(
+        show_in_navigation=True, published=True).exclude(current_version=None)
+
+    for i in page_qs:
         page_list.append((i, i in page_and_ancestors))
 
     return page_list
