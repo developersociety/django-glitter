@@ -103,3 +103,46 @@ def get_page_ancestor_ids(current_page=None):
         ancestors = current_page.get_ancestors(include_self=True).values_list('id', flat=True)
 
     return ancestors
+
+
+@register.inclusion_tag('glitter/navigation/level.html')
+def primary_navigation(current_page=None, css_class='primary'):
+    """ Render a list of primary level pages. """
+    return {
+        'page_list': get_root_pages(current_page=current_page),
+        'css_class': css_class,
+    }
+
+
+@register.inclusion_tag('glitter/navigation/level.html')
+def navigation_at_level(current_page=None, level=1, css_class=None):
+    """
+    Render a list of pages at a specific navigation level.
+
+    This is an inclusion tag mostly used by secondary_navigation and
+    tertiary_navigation - however it exists here incase additional levels of
+    navigation are needed.
+
+    At this point it's recommended that you might want to use a page tree for
+    navigation instead.
+    """
+    # Use the level number if this isn't a named navigation level
+    if css_class is None:
+        css_class = 'level-{}'.format(level)
+
+    return {
+        'page_list': get_pages_at_level(current_page=current_page, level=level),
+        'css_class': css_class,
+    }
+
+
+@register.inclusion_tag('glitter/navigation/level.html')
+def secondary_navigation(current_page=None, css_class='secondary'):
+    """ Render a list of secondary level pages. """
+    return navigation_at_level(current_page=current_page, css_class='secondary')
+
+
+@register.inclusion_tag('glitter/navigation/level.html')
+def tertiary_navigation(current_page=None, css_class='tertiary'):
+    """ Render a list of tertiary level pages. """
+    return navigation_at_level(current_page=current_page, level=2, css_class='tertiary')

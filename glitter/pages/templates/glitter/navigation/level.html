@@ -1,0 +1,9 @@
+{% if page_list %}
+    <nav class="{{ css_class }}">
+        <ul>
+            {% for page, page_active in page_list %}
+                <li{% if page_active %} class="active"{% endif %}><a href="{{ page.get_absolute_url }}">{{ page.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}
