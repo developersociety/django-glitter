@@ -80,16 +80,16 @@ def get_page_ancestor_ids(current_page=None):
 
 
 @register.inclusion_tag('glitter/navigation/level.html')
-def primary_navigation(current_page=None, css_class='primary'):
+def primary_navigation(page=None, css_class='primary'):
     """ Render a list of primary level pages. """
     return {
-        'page_list': get_root_pages(current_page=current_page),
+        'page_list': get_root_pages(current_page=page),
         'css_class': css_class,
     }
 
 
 @register.inclusion_tag('glitter/navigation/level.html')
-def navigation_at_level(current_page=None, level=1, css_class=None):
+def navigation_at_level(page=None, level=1, css_class=None):
     """
     Render a list of pages at a specific navigation level.
 
@@ -105,18 +105,18 @@ def navigation_at_level(current_page=None, level=1, css_class=None):
         css_class = 'level-{}'.format(level)
 
     return {
-        'page_list': get_pages_at_level(current_page=current_page, level=level),
+        'page_list': get_pages_at_level(current_page=page, level=level),
         'css_class': css_class,
     }
 
 
 @register.inclusion_tag('glitter/navigation/level.html')
-def secondary_navigation(current_page=None, css_class='secondary'):
+def secondary_navigation(page=None, css_class='secondary'):
     """ Render a list of secondary level pages. """
-    return navigation_at_level(current_page=current_page, css_class='secondary')
+    return navigation_at_level(page=page, css_class='secondary')
 
 
 @register.inclusion_tag('glitter/navigation/level.html')
-def tertiary_navigation(current_page=None, css_class='tertiary'):
+def tertiary_navigation(page=None, css_class='tertiary'):
     """ Render a list of tertiary level pages. """
-    return navigation_at_level(current_page=current_page, level=2, css_class='tertiary')
+    return navigation_at_level(page=page, level=2, css_class='tertiary')
