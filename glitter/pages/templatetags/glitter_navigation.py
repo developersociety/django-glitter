@@ -1,29 +1,19 @@
 from django import template
-from django.shortcuts import resolve_url
 
 from glitter.pages.models import Page
+from glitter.pages.utils import resolve_page
 
 register = template.Library()
 
 
 @register.assignment_tag
 def get_active_page(current_url):
-    try:
-        return Page.objects.get(url=resolve_url(current_url))
-    except Page.DoesNotExist:
-        pass
-
-    return None
+    return resolve_page(current_url)
 
 
 @register.assignment_tag
 def get_root_pages(current_page=None):
-    if current_page and not isinstance(current_page, Page):
-        try:
-            current_page = Page.objects.get(url=resolve_url(current_page))
-        except Page.DoesNotExist:
-            current_page = None
-
+    current_page = resolve_page(current_page)
     page_list = []
 
     # Find the root page so the template can highlight it
@@ -43,11 +33,7 @@ def get_root_pages(current_page=None):
 
 @register.assignment_tag
 def get_pages_at_level(current_page, level=1):
-    if current_page and not isinstance(current_page, Page):
-        try:
-            current_page = Page.objects.get(url=resolve_url(current_page))
-        except Page.DoesNotExist:
-            current_page = None
+    current_page = resolve_page(current_page)
 
     if not current_page:
         return []
@@ -72,14 +58,8 @@ def get_pages_at_level(current_page, level=1):
 
 @register.assignment_tag
 def tree_from_root(current_page=None):
-    page_model = Page
+    current_page = resolve_page(current_page)
     tree = None
-
-    if current_page and not isinstance(current_page, Page):
-        try:
-            current_page = page_model.objects.get(url=resolve_url(current_page))
-        except page_model.DoesNotExist:
-            current_page = None
 
     if current_page:
         root_page = current_page.get_root()
@@ -90,14 +70,8 @@ def tree_from_root(current_page=None):
 
 @register.assignment_tag
 def get_page_ancestor_ids(current_page=None):
-    page_model = Page
+    current_page = resolve_page(current_page)
     ancestors = []
-
-    if current_page and not isinstance(current_page, Page):
-        try:
-            current_page = page_model.objects.get(url=resolve_url(current_page))
-        except page_model.DoesNotExist:
-            current_page = None
 
     if current_page:
         ancestors = current_page.get_ancestors(include_self=True).values_list('id', flat=True)
