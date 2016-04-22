@@ -56,3 +56,13 @@ class Page(MPTTModel, GlitterMixin):
         self.unpublished_count = unpublished_pages.count()
 
         super(Page, self).save(*args, **kwargs)
+
+    @property
+    def is_visible(self):
+        """
+        Return a boolean if the page is published and visible in navigation.
+
+        Pages must be published (published and have a current version - checked
+        with `is_published`) and be set to show in navigation.
+        """
+        return self.show_in_navigation and self.is_published
