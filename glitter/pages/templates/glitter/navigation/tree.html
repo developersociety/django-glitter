@@ -1,0 +1,23 @@
+{% load mptt_tags %}
+
+{% if page_tree %}
+    <nav class="{{ css_class }}">
+        <ul class="level-{{ root_level }}">
+            {% recursetree page_tree %}
+                {% if node.show_in_navigation and node.is_published %}
+                    {% if node in ancestors %}
+                        <li class="active"><a href="{{ node.get_absolute_url }}">{{ node.title }}</a></li>
+
+                        {% if not node.is_left_node and children %}
+                            <ul class="level-{{ node.level|add:'1' }}">
+                                {{ children }}
+                            </ul>
+                        {% endif %}
+                    {% else %}
+                        <li><a href="{{ node.get_absolute_url }}">{{ node.title }}</a></li>
+                    {% endif %}
+                {% endif %}
+            {% endrecursetree %}
+        </ul>
+    </nav>
+{% endif %}

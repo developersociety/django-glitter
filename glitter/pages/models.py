@@ -3,6 +3,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.functional import cached_property
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -66,3 +67,7 @@ class Page(MPTTModel, GlitterMixin):
         with `is_published`) and be set to show in navigation.
         """
         return self.show_in_navigation and self.is_published
+
+    @cached_property
+    def page_ancestors(self):
+        return list(self.get_ancestors(include_self=True))

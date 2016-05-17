@@ -28,6 +28,10 @@ def resolve_page(to, *args, **kwargs):
     if not to:
         return None
 
+    # No need for a lookup if this is a page anyway
+    if isinstance(to, Page):
+        return to
+
     try:
         return Page.objects.get(url=resolve_url(to, *args, **kwargs))
     except Page.DoesNotExist:
