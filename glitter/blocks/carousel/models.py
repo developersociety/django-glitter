@@ -5,6 +5,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
 from glitter.assets.fields import AssetForeignKey
+from glitter.fields import LinkField
 from glitter.models import BaseBlock
 
 
@@ -30,7 +31,7 @@ class BaseCarouselImage(models.Model):
     title = models.CharField(max_length=100)
     subtitle = models.CharField(max_length=100, blank=True)
     image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
-    link = models.URLField()
+    link = LinkField()
 
     class Meta:
         ordering = ('id',)

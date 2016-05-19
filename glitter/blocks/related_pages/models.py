@@ -3,6 +3,7 @@ from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from mptt.fields import TreeForeignKey
 
+from glitter.fields import LinkField
 from glitter.pages.models import Page
 from glitter.models import BaseBlock
 
@@ -22,7 +23,7 @@ class RelatedPage(models.Model):
     title = models.CharField(
         max_length=100, blank=True, help_text='Optional for pages, required for links')
     page = TreeForeignKey(Page, blank=True, null=True)
-    link = models.URLField(blank=True, null=True)
+    link = LinkField(blank=True)
     position = models.PositiveIntegerField(default=0, db_index=True)
 
     class Meta:

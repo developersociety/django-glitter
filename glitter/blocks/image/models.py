@@ -3,6 +3,7 @@
 from django.db import models
 
 from glitter.assets.fields import AssetForeignKey
+from glitter.fields import LinkField
 from glitter.models import BaseBlock
 
 
@@ -10,7 +11,7 @@ class BaseImageBlock(BaseBlock):
     image = AssetForeignKey('glitter_assets.Image', null=True, on_delete=models.PROTECT)
     description = models.CharField(max_length=200, blank=True, help_text='Used as ALT text')
     caption = models.CharField(max_length=200, blank=True, help_text='Shown below the image')
-    link = models.URLField(blank=True)
+    link = LinkField(blank=True)
     new_window = models.BooleanField('Open link in new window', default=False)
 
     class Meta:
