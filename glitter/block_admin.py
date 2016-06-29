@@ -4,19 +4,21 @@ from functools import update_wrapper
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin import ModelAdmin
-from django.contrib.admin.options import InlineModelAdmin
+from django.contrib.admin import ModelAdmin, site as admin_site, widgets
+from django.contrib.admin.options import get_ul_class, InlineModelAdmin
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.forms.widgets import CheckboxSelectMultiple, SelectMultiple
 from django.http import Http404, HttpResponseRedirect
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import escape
-from django.utils.translation import ugettext as _
+from django.utils.translation import string_concat, ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
@@ -228,6 +230,107 @@ class BlockModelAdmin(ModelAdmin):
 
         # Update column and close popup - don't bother with a message as they won't see it
         return self.response_rerender(request, obj, 'admin/glitter/update_column.html')
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        """
+        Hook for specifying the form Field instance for a given database Field
+        instance.
+        If kwargs are given, they're passed to the form Field's constructor.
+        """
+        request = kwargs.pop("request", None)
+
+        # If the field specifies choices, we don't need to look for special
+        # admin widgets - we just need to use a select widget of some kind.
+        if db_field.choices:
+            return self.formfield_for_choice_field(db_field, request, **kwargs)
+
+        # ForeignKey or ManyToManyFields
+        if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)):
+            # Combine the field kwargs with any options for formfield_overrides.
+            # Make sure the passed in **kwargs override anything in
+            # formfield_overrides because **kwargs is more specific, and should
+            # always win.
+            if db_field.__class__ in self.formfield_overrides:
+                kwargs = dict(self.formfield_overrides[db_field.__class__], **kwargs)
+
+            # Get the correct formfield.
+            if isinstance(db_field, models.ForeignKey):
+                formfield = self.formfield_for_foreignkey(db_field, request, **kwargs)
+            elif isinstance(db_field, models.ManyToManyField):
+                formfield = self.formfield_for_manytomany(db_field, request, **kwargs)
+
+            # For non-raw_id fields, wrap the widget with a wrapper that adds
+            # extra HTML -- the "add other" interface -- to the end of the
+            # rendered output. formfield can be None if it came from a
+            # OneToOneField with parent_link=True or a M2M intermediary.
+            if formfield and db_field.name not in self.raw_id_fields:
+                related_modeladmin = admin_site._registry.get(db_field.rel.to)
+                wrapper_kwargs = {}
+                if related_modeladmin:
+                    wrapper_kwargs.update(
+                        can_add_related=related_modeladmin.has_add_permission(request),
+                        can_change_related=related_modeladmin.has_change_permission(request),
+                        can_delete_related=related_modeladmin.has_delete_permission(request),
+                    )
+                formfield.widget = widgets.RelatedFieldWidgetWrapper(
+                    formfield.widget, db_field.rel, admin_site, **wrapper_kwargs
+                )
+
+            return formfield
+
+        return super(BlockModelAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        """
+        Get a form Field for a ForeignKey.
+        """
+        db = kwargs.get('using')
+        if db_field.name in self.raw_id_fields:
+            kwargs['widget'] = widgets.ForeignKeyRawIdWidget(db_field.rel, admin_site, using=db)
+        elif db_field.name in self.radio_fields:
+            kwargs['widget'] = widgets.AdminRadioSelect(attrs={
+                'class': get_ul_class(self.radio_fields[db_field.name]),
+            })
+            kwargs['empty_label'] = _('None') if db_field.blank else None
+
+        if 'queryset' not in kwargs:
+            queryset = self.get_field_queryset(db, db_field, request)
+            if queryset is not None:
+                kwargs['queryset'] = queryset
+
+        return db_field.formfield(**kwargs)
+
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
+        """
+        Get a form Field for a ManyToManyField.
+        """
+        # If it uses an intermediary model that isn't auto created, don't show
+        # a field in admin.
+        if not db_field.rel.through._meta.auto_created:
+            return None
+        db = kwargs.get('using')
+
+        if db_field.name in self.raw_id_fields:
+            kwargs['widget'] = widgets.ManyToManyRawIdWidget(db_field.rel, admin_site, using=db)
+            kwargs['help_text'] = ''
+        elif db_field.name in (list(self.filter_vertical) + list(self.filter_horizontal)):
+            kwargs['widget'] = widgets.FilteredSelectMultiple(
+                db_field.verbose_name,
+                db_field.name in self.filter_vertical
+            )
+
+        if 'queryset' not in kwargs:
+            queryset = self.get_field_queryset(db, db_field, request)
+            if queryset is not None:
+                kwargs['queryset'] = queryset
+
+        form_field = db_field.formfield(**kwargs)
+        if (isinstance(form_field.widget, SelectMultiple) and
+                not isinstance(form_field.widget, CheckboxSelectMultiple)):
+            msg = _('Hold down "Control", or "Command" on a Mac, to select more than one.')
+            help_text = form_field.help_text
+            form_field.help_text = string_concat(help_text, ' ', msg) if help_text else msg
+        return form_field
 
 
 class InlineBlockModelAdmin(InlineModelAdmin):
