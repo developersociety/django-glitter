@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.forms.widgets import Select
@@ -30,7 +31,7 @@ class BannerInlineAdmin(block_admin.StackedInline):
         return formfield
 
 
-class BannerBlockAdmin(block_admin.BlockModelAdmin):
+class BannerBlockAdmin(block_admin.BlockAdmin):
     inlines = [
         BannerInlineAdmin,
     ]

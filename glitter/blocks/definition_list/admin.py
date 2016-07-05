@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from glitter import block_admin
 
@@ -9,7 +10,7 @@ class DefinitionListInlineAdmin(block_admin.TabularInline):
     model = DefinitionListInline
 
 
-class DefinitionListAdmin(block_admin.BlockModelAdmin):
+class DefinitionListAdmin(block_admin.BlockAdmin):
     inlines = [DefinitionListInlineAdmin]
 
 

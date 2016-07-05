@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib.admin.sites import AdminSite
 
@@ -10,7 +11,7 @@ from .forms import BaseTextImageForm
 from .models import TextImageBlock
 
 
-class TextImageBlockAdmin(block_admin.BlockModelAdmin):
+class TextImageBlockAdmin(block_admin.BlockAdmin):
     form = BaseTextImageForm
 
     formfield_overrides = {

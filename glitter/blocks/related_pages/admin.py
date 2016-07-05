@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from glitter import block_admin
 
 from .models import RelatedPage, RelatedPagesBlock
@@ -8,7 +10,7 @@ class RelatedPageInline(block_admin.StackedInline):
     extra = 1
 
 
-class RelatedPagesBlockAdmin(block_admin.BlockModelAdmin):
+class RelatedPagesBlockAdmin(block_admin.BlockAdmin):
     inlines = [RelatedPageInline]
 
 

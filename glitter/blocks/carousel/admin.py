@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.forms.widgets import Select
@@ -20,7 +21,7 @@ class CarouselAdmin(admin.ModelAdmin):
     inlines = [CarouselImageInline]
 
 
-class CarouselBlockAdmin(block_admin.BlockModelAdmin):
+class CarouselBlockAdmin(block_admin.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         formfield = super(CarouselBlockAdmin, self).formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'carousel':
@@ -43,7 +44,7 @@ class ImageOnlyCarouselAdmin(admin.ModelAdmin):
     inlines = [ImageOnlyCarouselImageInline]
 
 
-class ImageOnlyCarouselBlockAdmin(block_admin.BlockModelAdmin):
+class ImageOnlyCarouselBlockAdmin(block_admin.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         formfield = super(ImageOnlyCarouselBlockAdmin, self).formfield_for_dbfield(
             db_field, **kwargs)

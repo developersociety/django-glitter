@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from glitter import block_admin
 
@@ -7,7 +8,7 @@ from .forms import ImageBlockForm
 from .models import ImageBlock
 
 
-class ImageBlockAdmin(block_admin.BlockModelAdmin):
+class ImageBlockAdmin(block_admin.BlockAdmin):
     form = ImageBlockForm
 
     def formfield_for_dbfield(self, db_field, **kwargs):

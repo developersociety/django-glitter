@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from functools import update_wrapper
 
@@ -36,7 +37,7 @@ class BlockAdminSite(AdminSite):
     # Use the block admin class by default
     def register(self, model_or_iterable, admin_class=None, **options):
         if not admin_class:
-            admin_class = BlockModelAdmin
+            admin_class = BlockAdmin
 
         super(BlockAdminSite, self).register(model_or_iterable, admin_class, **options)
 
@@ -93,7 +94,7 @@ class BlockAdminSite(AdminSite):
         return update_wrapper(inner, view)
 
 
-class BlockModelAdmin(ModelAdmin):
+class BlockAdmin(ModelAdmin):
     # Keep block admin change forms in the blockadmin template directory
     @property
     def change_form_template(self):
@@ -205,7 +206,7 @@ class BlockModelAdmin(ModelAdmin):
         if version.version_number or version.owner != request.user:
             raise PermissionDenied
 
-        return super(BlockModelAdmin, self).change_view(request, object_id, form_url, extra_context)
+        return super(BlockAdmin, self).change_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
         """Determine the HttpResponse for the change_view stage."""
@@ -230,7 +231,7 @@ class BlockModelAdmin(ModelAdmin):
         return self.response_rerender(request, obj, 'admin/glitter/update_column.html')
 
 
-class InlineBlockModelAdmin(InlineModelAdmin):
+class InlineBlockAdmin(InlineModelAdmin):
     # For inline objects we always allow adding/editing/deleting. This is an additional check done
     # after the permissions for the object has been checked - everyone needs to be able to edit the
     # same content on the same page, so just allow all inlines.
@@ -245,11 +246,11 @@ class InlineBlockModelAdmin(InlineModelAdmin):
         return True
 
 
-class StackedInline(InlineBlockModelAdmin):
+class StackedInline(InlineBlockAdmin):
     template = 'admin/edit_inline/stacked.html'
 
 
-class TabularInline(InlineBlockModelAdmin):
+class TabularInline(InlineBlockAdmin):
     template = 'admin/edit_inline/tabular.html'
 
 

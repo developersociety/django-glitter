@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
@@ -34,7 +35,7 @@ def redactor_block_form():
     return RedactorForm
 
 
-class RedactorAdmin(block_admin.BlockModelAdmin):
+class RedactorAdmin(block_admin.BlockAdmin):
     form = redactor_block_form()
 
 
