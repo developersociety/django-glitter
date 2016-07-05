@@ -39,6 +39,10 @@ class BlockAdminSite(AdminSite):
         if not admin_class:
             admin_class = BlockAdmin
 
+        category = options.pop('category', None)
+        if category:
+            self.register_block(model_or_iterable, category)
+
         super(BlockAdminSite, self).register(model_or_iterable, admin_class, **options)
 
     # Blocks from the site or other apps can be registered
@@ -253,5 +257,17 @@ class StackedInline(InlineBlockAdmin):
 class TabularInline(InlineBlockAdmin):
     template = 'admin/edit_inline/tabular.html'
 
-
 site = BlockAdminSite(name='block_admin')
+
+
+def register(model, admin=None, category=None):
+    """ Decorator to registering you Admin class. """
+    def _model_admin_wrapper(admin_class):
+
+        site.register(model, admin_class=admin_class)
+
+        if category:
+            site.register_block(model, category)
+
+        return admin_class
+    return _model_admin_wrapper
