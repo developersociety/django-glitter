@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from glitter import block_admin
-
+from .block_admin import blocks
 from .models import ContactFormBlock
 
 
-block_admin.site.register(ContactFormBlock)
-block_admin.site.register_block(ContactFormBlock, 'Forms')
+blocks.site.register(ContactFormBlock)
+blocks.site.register_block(ContactFormBlock, 'Forms')

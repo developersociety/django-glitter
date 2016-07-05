@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.conf.urls import include, url
 from django.contrib import admin
-from glitter import block_admin
+
+from .block_admin import blocks
 
 
 urlpatterns = [
@@ -10,6 +12,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
 
     # Glitter block admin
-    url(r'^blockadmin/', include(block_admin.site.urls)),
+    url(r'^blockadmin/', include(blocks.site.urls)),
 
 ]

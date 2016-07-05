@@ -1,7 +1,10 @@
-from glitter import block_admin
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from glitter.blockadmin import blocks
 
 from .models import HTML
 
 
-block_admin.site.register(HTML)
-block_admin.site.register_block(HTML, 'Common')
+blocks.site.register(HTML)
+blocks.site.register_block(HTML, 'Common')

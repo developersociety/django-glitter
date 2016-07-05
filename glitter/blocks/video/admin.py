@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from glitter import block_admin
-
+from .block_admin import blocks
 from .models import Video
 
 
-block_admin.site.register(Video)
-block_admin.site.register_block(Video, 'Media')
+blocks.site.register(Video)
+blocks.site.register_block(Video, 'Media')

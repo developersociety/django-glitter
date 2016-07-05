@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from glitter import block_admin
-
+from .block_admin import blocks
 from .forms import LatestTweetsBlockForm
 from .models import LatestTweetsBlock
 
 
-class LatestTweetsBlockAdmin(block_admin.BlockAdmin):
+class LatestTweetsBlockAdmin(blocks.BlockAdmin):
     form = LatestTweetsBlockForm
 
 
-block_admin.site.register(LatestTweetsBlock, LatestTweetsBlockAdmin)
-block_admin.site.register_block(LatestTweetsBlock, 'App Blocks')
+blocks.site.register(LatestTweetsBlock, LatestTweetsBlockAdmin)
+blocks.site.register_block(LatestTweetsBlock, 'App Blocks')

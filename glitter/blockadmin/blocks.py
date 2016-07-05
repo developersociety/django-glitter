@@ -21,8 +21,8 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
-from .page import Glitter
-from .utils import JSONEncoderForHTML
+from glitter.page import Glitter
+from glitter.utils import JSONEncoderForHTML
 
 
 class BlockAdminSite(AdminSite):

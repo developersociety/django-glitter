@@ -11,11 +11,11 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
 
-from glitter.block_admin import BlockAdminSite, BlockAdmin
+from glitter.blockadmin.blocks import BlockAdminSite, BlockAdmin
 from glitter.blocks.html.models import HTML
+from glitter.models import ContentBlock, Version
 from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
-from glitter.models import ContentBlock, Version
 
 
 SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_APPS
