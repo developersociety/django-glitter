@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django.conf.urls import include, url
 from django.contrib import admin
 
-from .block_admin import blocks
+from glitter.blockadmin import blocks
 
 
 urlpatterns = [

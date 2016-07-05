@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from .blockadmin import blocks
+from glitter.blockadmin import blocks
 
 from .models import SampleModelWithInlinesBlock, SampleInline
 
