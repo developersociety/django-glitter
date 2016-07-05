@@ -70,7 +70,7 @@ Attributes
 
 
 Verbose column names
-====================
+--------------------
 
 Columns take an optional first argument - a verbose name. If a verbose name
 isn't given, Glitter will automatically create it from the attribute name,
