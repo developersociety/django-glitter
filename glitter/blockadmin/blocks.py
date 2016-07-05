@@ -11,6 +11,7 @@ from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.utils import unquote
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponseRedirect
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
@@ -46,11 +47,15 @@ class BlockAdminSite(AdminSite):
         super(BlockAdminSite, self).register(model_or_iterable, admin_class, **options)
 
     # Blocks from the site or other apps can be registered
-    def register_block(self, block, category):
+    def register_block(self, block_or_iterable, category):
         if category not in self.block_list:
             self.block_list[category] = []
 
-        self.block_list[category].append(block)
+        if issubclass(block_or_iterable.__class__, ModelBase):
+            self.block_list[category].append(block_or_iterable)
+        else:
+            for block in block_or_iterable:
+                self.block_list[category].append(block)
 
     def unregister_block(self, block, category):
         try:
