@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
@@ -55,6 +56,7 @@ INSTALLED_APPS = (
     'glitter',
     'glitter.pages',
     'glitter.blocks.html',
+    'glitter.blocks.redactor',
     'glitter.tests.sampleblocks',
 )
 

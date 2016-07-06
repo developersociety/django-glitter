@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from glitter import block_admin
+from glitter.blockadmin import blocks
 
 from .models import SampleModelWithInlinesBlock, SampleInline
 
 
-class SampleInlineAdmin(block_admin.StackedInline):
+class SampleInlineAdmin(blocks.StackedInline):
     model = SampleInline
 
 
-class SampleModelWithInlinesBlockAdmin(block_admin.BlockModelAdmin):
+class SampleModelWithInlinesBlockAdmin(blocks.BlockAdmin):
     inlines = [SampleInlineAdmin]
 
 
-block_admin.site.register(SampleModelWithInlinesBlock, SampleModelWithInlinesBlockAdmin)
-block_admin.site.register_block(SampleModelWithInlinesBlock, 'Sample Blocks')
+blocks.site.register(SampleModelWithInlinesBlock, SampleModelWithInlinesBlockAdmin)
+blocks.site.register_block(SampleModelWithInlinesBlock, 'Sample Blocks')

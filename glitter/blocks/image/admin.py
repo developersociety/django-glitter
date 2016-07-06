@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from glitter import block_admin
-
+from glitter.blockadmin import blocks
 from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
+
 from .forms import ImageBlockForm
 from .models import ImageBlock
 
 
-class ImageBlockAdmin(block_admin.BlockModelAdmin):
+class ImageBlockAdmin(blocks.BlockAdmin):
     form = ImageBlockForm
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -26,5 +27,5 @@ class ImageBlockAdmin(block_admin.BlockModelAdmin):
         return formfield
 
 
-block_admin.site.register(ImageBlock, ImageBlockAdmin)
-block_admin.site.register_block(ImageBlock, 'Common')
+blocks.site.register(ImageBlock, ImageBlockAdmin)
+blocks.site.register_block(ImageBlock, 'Common')

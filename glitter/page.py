@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from collections import defaultdict, OrderedDict
 from importlib import import_module
@@ -148,13 +149,13 @@ class GlitterColumn(object):
         return widget.render(name='', value=None)
 
     def add_block_options(self):
-        from glitter import block_admin
+        from .blockadmin import blocks
 
         block_choices = []
 
         # Group all block by category
-        for category in sorted(block_admin.site.block_list):
-            category_blocks = block_admin.site.block_list[category]
+        for category in sorted(blocks.site.block_list):
+            category_blocks = blocks.site.block_list[category]
             category_choices = (('%s.%s' % (x._meta.app_label, x._meta.object_name),
                                  capfirst(force_text(x._meta.verbose_name))) for x in
                                 category_blocks)

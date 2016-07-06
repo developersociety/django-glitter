@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib.admin.sites import AdminSite
 
-from glitter import block_admin
 from glitter.assets.fields import AssetForeignKey
 from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
 
+from .blockadmin import blocks
 from .forms import BaseTextImageForm
 from .models import TextImageBlock
 
 
-class TextImageBlockAdmin(block_admin.BlockModelAdmin):
+class TextImageBlockAdmin(blocks.BlockAdmin):
     form = BaseTextImageForm
 
     formfield_overrides = {
@@ -25,5 +26,5 @@ class TextImageBlockAdmin(block_admin.BlockModelAdmin):
     }
 
 
-block_admin.site.register(TextImageBlock, TextImageBlockAdmin)
-block_admin.site.register_block(TextImageBlock, 'Common')
+blocks.site.register(TextImageBlock, TextImageBlockAdmin)
+blocks.site.register_block(TextImageBlock, 'Common')

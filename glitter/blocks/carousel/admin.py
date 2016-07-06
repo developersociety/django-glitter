@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.forms.widgets import Select
 
-from glitter import block_admin
+from glitter.blockadmin import blocks
+
 from .models import (
     Carousel, CarouselImage, ImageOnlyCarousel, CarouselBlock, ImageOnlyCarouselBlock,
     ImageOnlyCarouselImage
@@ -20,7 +22,7 @@ class CarouselAdmin(admin.ModelAdmin):
     inlines = [CarouselImageInline]
 
 
-class CarouselBlockAdmin(block_admin.BlockModelAdmin):
+class CarouselBlockAdmin(blocks.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         formfield = super(CarouselBlockAdmin, self).formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'carousel':
@@ -43,7 +45,7 @@ class ImageOnlyCarouselAdmin(admin.ModelAdmin):
     inlines = [ImageOnlyCarouselImageInline]
 
 
-class ImageOnlyCarouselBlockAdmin(block_admin.BlockModelAdmin):
+class ImageOnlyCarouselBlockAdmin(blocks.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
         formfield = super(ImageOnlyCarouselBlockAdmin, self).formfield_for_dbfield(
             db_field, **kwargs)
@@ -61,8 +63,8 @@ class ImageOnlyCarouselBlockAdmin(block_admin.BlockModelAdmin):
 admin.site.register(Carousel, CarouselAdmin)
 admin.site.register(ImageOnlyCarousel, ImageOnlyCarouselAdmin)
 
-block_admin.site.register(CarouselBlock, CarouselBlockAdmin)
-block_admin.site.register(ImageOnlyCarouselBlock, ImageOnlyCarouselBlockAdmin)
+blocks.site.register(CarouselBlock, CarouselBlockAdmin)
+blocks.site.register(ImageOnlyCarouselBlock, ImageOnlyCarouselBlockAdmin)
 
-block_admin.site.register_block(CarouselBlock, 'Media')
-block_admin.site.register_block(ImageOnlyCarouselBlock, 'Media')
+blocks.site.register_block(CarouselBlock, 'Media')
+blocks.site.register_block(ImageOnlyCarouselBlock, 'Media')

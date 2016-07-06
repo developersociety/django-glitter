@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from unittest import skipIf
 
@@ -10,11 +11,11 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
 
-from glitter.block_admin import BlockAdminSite, BlockModelAdmin
+from glitter.blockadmin.blocks import BlockAdminSite, BlockAdmin
 from glitter.blocks.html.models import HTML
+from glitter.models import ContentBlock, Version
 from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
-from glitter.models import ContentBlock, Version
 
 
 SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_APPS
@@ -63,7 +64,7 @@ class TestBlockAdminSite(TestCase):
 
     def test_register_with_admin_class(self):
         self.site.unregister(HTML)
-        self.site.register(HTML, BlockModelAdmin)
+        self.site.register(HTML, BlockAdmin)
 
     def test_register_block(self):
         self.site.register_block(HTML, 'Common')
@@ -97,7 +98,7 @@ class TestBlockAdminSite(TestCase):
     },
 )
 @override_settings(ROOT_URLCONF='glitter.tests.urls')
-class TestBlockModelAdmin(TestCase):
+class TestBlockAdmin(TestCase):
     def setUp(self):
 
         User = get_user_model()
@@ -133,7 +134,7 @@ class TestBlockModelAdmin(TestCase):
         self.html_block.save()
 
         self.site = AdminSite()
-        self.model_admin = BlockModelAdmin(HTML, self.site)
+        self.model_admin = BlockAdmin(HTML, self.site)
 
         # Information about model
         self.info = self.model_admin.model._meta.app_label, self.model_admin.model._meta.model_name
@@ -206,7 +207,7 @@ class TestBlockModelAdmin(TestCase):
 
 
 @skipIf(SAMPLE_BLOCK_MISSING, 'glitter.tests.sampleblocks is not installed')
-class TestInlineBlockModelAdmin(TestCase):
+class TestInlineBlockAdmin(TestCase):
     def setUp(self):
         # Superuser
         User = get_user_model()

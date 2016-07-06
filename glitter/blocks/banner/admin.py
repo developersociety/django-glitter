@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib import admin
 from django.forms.widgets import Select
 
-from glitter import block_admin
+from glitter.blockadmin import blocks
 from glitter.widgets import CustomRelatedFieldWidgetWrapper
 from .models import Banner, BannerBlock, BannerInline
 
@@ -13,7 +14,7 @@ class BannerAdmin(admin.ModelAdmin):
     pass
 
 
-class BannerInlineAdmin(block_admin.StackedInline):
+class BannerInlineAdmin(blocks.StackedInline):
     model = BannerInline
     extra = 1
 
@@ -30,11 +31,11 @@ class BannerInlineAdmin(block_admin.StackedInline):
         return formfield
 
 
-class BannerBlockAdmin(block_admin.BlockModelAdmin):
+class BannerBlockAdmin(blocks.BlockAdmin):
     inlines = [
         BannerInlineAdmin,
     ]
 
 
-block_admin.site.register(BannerBlock, BannerBlockAdmin)
-block_admin.site.register_block(BannerBlock, 'App Blocks')
+blocks.site.register(BannerBlock, BannerBlockAdmin)
+blocks.site.register_block(BannerBlock, 'App Blocks')
