@@ -2,16 +2,16 @@
 Adding Glitter to an app
 ========================
 
-Most Django models can use Glitter, which should be as easy as adding a mixin to
-the model you want to use, and a mixin to the ``DetailView`` used to render any
-objects for the model.
+Most Django models can use Glitter, which should be as easy as adding a mixin
+to the model you want to use, and a mixin to the ``DetailView`` used to render
+any objects for the model.
 
 
 Glitter models
 ==============
 
-Adding glitter to a model involves changing the class the model extends from, as
-well as the ``Meta`` class if you need one.
+Adding glitter to a model involves changing the class the model extends from,
+as well as the ``Meta`` class if you need one.
 
 Here's an example of an existing model::
 
@@ -40,8 +40,8 @@ We change the parent class to ``GlitterMixin``, and extend the Meta class from
         class Meta(GlitterMixin.Meta):
             ordering = ('-date',)
 
-After adding the mixin, we need to make migrations for the model and migrate the
-database.
+After adding the mixin, we need to make migrations for the model and migrate
+the database.
 
 .. code:: console
 
@@ -53,8 +53,8 @@ The Glitter Mixin
 -----------------
 
 The mixin currently adds 2 fields to the model, ``published`` and
-``current_version`` - both of which aren't editable in the Django admin, but are
-needed to store data.
+``current_version`` - both of which aren't editable in the Django admin, but
+are needed to store data.
 
 Additional permissions are also added with the mixin, *edit* allows a user to
 edit new Glitter pages for an object - but not edit the object itself,
@@ -110,8 +110,8 @@ List views
 ==========
 
 Glitter objects which don't have any page versions saved or published shouldn't
-be visible to frontend viewers, so we'll need to change any list views to filter
-these out.
+be visible to frontend viewers, so we'll need to change any list views to
+filter these out.
 
 Using our Post example from earlier, here's an existing list view::
 

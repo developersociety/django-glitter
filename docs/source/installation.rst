@@ -9,7 +9,7 @@ Getting the code
 
 
 The recommended way to install the Debug Toolbar is via pip_::
-    
+
     $ pip install django-glitter
 
 If you aren't familiar with pip, you may also obtain a copy of the
@@ -40,7 +40,7 @@ setting of your Django project ``settings.py`` file.::
     `INSTALLED_APPS`.
 
 .. note::
-    
+
     Explain diffences between ``glitter`` and ``glitter.pages``
 
 
@@ -65,7 +65,7 @@ Each time any Django application raises a 404 error, this
 ``glitter.pages.middleware.PageFallbackMiddleware`` middleware checks the
 glitter pages database for the requested URL as a last resort
 
-The middleware ``glitter.middleware.ExceptionMiddleware`` is handles              
+The middleware ``glitter.middleware.ExceptionMiddleware`` is handles
 exceptions if the object doesn't have the current version or hasn't been
 published it prompts the user to create a new page it also deals with blocks
 which raise exception ``GlitterRedirectException``::

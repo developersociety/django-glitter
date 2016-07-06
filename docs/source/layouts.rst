@@ -91,8 +91,8 @@ Registering a layout
 To use a layout with a Glitter model, it needs to be registered. The
 ``templates.attach`` decorator registers a layout to be used with that model.
 
-The attach decorator can either be passed a ``'app_label.model_name'`` string, or
-the model class.
+The attach decorator can either be passed a ``'app_label.model_name'`` string,
+or the model class.
 
 This example registers 2 layouts, a ``Default`` layout which can be used with
 Glitter Pages, and a ``NewsPost`` layout which is registered with a news
@@ -140,6 +140,6 @@ for the layout::
 Discovery of layouts
 ====================
 
-Glitter will automatically look for a ``layouts`` module in each application and
-imports it. This allows you to keep your layouts in your project in a well known
-and consistent location - ``layouts.py``.
+Glitter will automatically look for a ``layouts`` module in each application
+and imports it. This allows you to keep your layouts in your project in a well
+known and consistent location - ``layouts.py``.
