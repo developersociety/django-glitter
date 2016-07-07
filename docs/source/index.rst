@@ -18,6 +18,7 @@ Contents
    installation
    adding
    layouts
+   blocks
 
 
 Indices and tables
