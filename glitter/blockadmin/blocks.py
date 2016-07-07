@@ -8,11 +8,14 @@ from django.contrib import messages
 from django.contrib.admin import ModelAdmin
 from django.contrib.admin.options import InlineModelAdmin
 from django.contrib.admin.sites import AdminSite
-from django.contrib.admin.utils import unquote
+from django.contrib.admin.utils import unquote, quote
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
 from django.utils import six
@@ -22,6 +25,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 
+from glitter.models import ContentBlock
 from glitter.page import Glitter
 from glitter.utils import JSONEncoderForHTML
 
@@ -128,12 +132,8 @@ class BlockAdmin(ModelAdmin):
         info = self.model._meta.app_label, self.model._meta.model_name
 
         urlpatterns = [
-            url(r'^(.+)/continue/$',
-                wrap(self.continue_view),
-                name='%s_%s_continue' % info),
-            url(r'^(.+)/$',
-                wrap(self.change_view),
-                name='%s_%s_change' % info),
+            url(r'^(.+)/continue/$', wrap(self.continue_view), name='%s_%s_continue' % info),
+            url(r'^(.+)/$', wrap(self.edit_view), name='%s_%s_change' % info),
         ]
         return urlpatterns
 
@@ -161,7 +161,9 @@ class BlockAdmin(ModelAdmin):
 
     # A redirect back to the edit view
     def continue_view(self, request, object_id):
-        obj = self.get_object(request, unquote(object_id))
+
+        content_block = ContentBlock.objects.get(id=object_id)
+        obj = content_block.content_object
 
         if obj is None:
             raise Http404(_('%(name)s object with primary key %(key)r does not exist.') % {
@@ -195,8 +197,21 @@ class BlockAdmin(ModelAdmin):
         opts = glitter_obj._meta.app_label, glitter_obj._meta.model_name
         return request.user.has_perm('%s.edit_%s' % opts)
 
+    def edit_view(self, request, object_id, form_url='', extra_context=None):
+        """ This view determines if it's add view or change view for the object. """
+
+        content_type = ContentType.objects.get_for_model(self.model)
+        self.content_block = get_object_or_404(ContentBlock, id=object_id, content_type=content_type)
+
+        if self.content_block.object_id:
+            # Obj id needs to be passed as string
+            return self.change_view(request, str(self.content_block.object_id))
+        else:
+            return self.changeform_view(request, None)
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         """The 'change' admin view for this model."""
+
         obj = self.get_object(request, unquote(object_id))
 
         if obj is None:
@@ -220,7 +235,6 @@ class BlockAdmin(ModelAdmin):
     def response_change(self, request, obj):
         """Determine the HttpResponse for the change_view stage."""
         opts = self.opts.app_label, self.opts.model_name
-        pk_value = obj._get_pk_val()
 
         if "_continue" in request.POST:
             msg = _('The %(name)s block was changed successfully. You may edit it again below.') % {
@@ -232,11 +246,42 @@ class BlockAdmin(ModelAdmin):
             # parent window in javascript and redirects back to the edit page
             # in javascript.
             return HttpResponseRedirect(reverse(
-                'admin:%s_%s_continue' % opts,
-                args=(pk_value,),
-                current_app=self.admin_site.name))
+                'admin:%s_%s_continue' % opts, args=(
+                    obj.content_block.id,
+                ), current_app=self.admin_site.name
+            ))
 
         # Update column and close popup - don't bother with a message as they won't see it
+        return self.response_rerender(request, obj, 'admin/glitter/update_column.html')
+
+    def response_add(self, request, obj, post_url_continue=None):
+
+        opts = obj._meta
+        msg_dict = {'name': force_text(opts.verbose_name), 'obj': force_text(obj)}
+
+        if obj.content_block is None:
+
+            # Assign object id to content block.
+            self.content_block.object_id = obj.id
+            self.content_block.save()
+
+            # Assign content block to block.
+            obj.content_block = self.content_block
+            obj.save()
+
+        if "_continue" in request.POST:
+            msg = _(
+                'The %(name)s "%(obj)s" was added successfully. You may edit it again below.'
+            ) % msg_dict
+            self.message_user(request, msg, messages.SUCCESS)
+            post_url_continue = reverse(
+                'admin:%s_%s_continue' %
+                (opts.app_label, opts.model_name),
+                args=(quote(obj.content_block.id),),
+                current_app=self.admin_site.name
+            )
+            return HttpResponseRedirect(post_url_continue)
+
         return self.response_rerender(request, obj, 'admin/glitter/update_column.html')
 
 

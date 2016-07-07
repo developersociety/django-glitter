@@ -17,7 +17,13 @@
     {% for block in blocks %}
         <div class="glitter-toolbar block-header">
             <div class="glitter-button-row">
+
+              {% if block.content_block.object_id %}
                 <button class="glitter-button glitter-primary-action glitter-delete-block" data-popup-url="{% url glitter.opts|admin_urlname:'block_delete' contentblock_id=block.content_block.id %}">Delete Block</button>
+              {% else %}
+                <a class="glitter-button glitter-primary-action glitter-delete-block glitter-delete-block-ajax" data-ajax-url="{% url glitter.opts|admin_urlname:'block_delete' contentblock_id=block.content_block.id %}">Delete Block</a>
+              {% endif %}
+
                 <button class="glitter-button glitter-primary-action glitter-edit-block" data-popup-url="{{ block.edit_url }}">Edit Block</button>
                 <span class="glitter-button glitter-primary-action glitter-move-block" data-move-url="{% url glitter.opts|admin_urlname:'block_move' contentblock_id=block.content_block.id %}">
                     {{ block.move_block_widget }}
