@@ -565,6 +565,7 @@ class GlitterAdminMixin(object):
         if not self.has_edit_permission(request, obj, version=version):
             raise PermissionDenied
 
+        # If block doesn't exist we don't need to display iframe.
         if request.POST or not block:
             # Save variables for use after deletion
             column = content_block.column
