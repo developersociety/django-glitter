@@ -42,6 +42,14 @@ Which works with the following template ``glitter/default.html``.
     </footer>
 
 
+Discovery of layouts
+====================
+
+Glitter will automatically look for a ``layouts`` module in each application
+and imports it. This allows you to keep your layouts in your project in a well
+known and consistent location - ``layouts.py``.
+
+
 Columns
 =======
 
@@ -135,11 +143,3 @@ for the layout::
 
         class Meta:
             template = 'documents/document_detail.html'
-
-
-Discovery of layouts
-====================
-
-Glitter will automatically look for a ``layouts`` module in each application
-and imports it. This allows you to keep your layouts in your project in a well
-known and consistent location - ``layouts.py``.
