@@ -12,7 +12,6 @@ from django.contrib.admin.utils import unquote, quote
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.db import transaction
 from django.db.models.base import ModelBase
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -162,7 +161,7 @@ class BlockAdmin(ModelAdmin):
     # A redirect back to the edit view
     def continue_view(self, request, object_id):
 
-        content_block = ContentBlock.objects.get(id=object_id)
+        content_block = get_object_or_404(ContentBlock, id=object_id)
         obj = content_block.content_object
 
         if obj is None:
@@ -201,7 +200,9 @@ class BlockAdmin(ModelAdmin):
         """ This view determines if it's add view or change view for the object. """
 
         content_type = ContentType.objects.get_for_model(self.model)
-        self.content_block = get_object_or_404(ContentBlock, id=object_id, content_type=content_type)
+        self.content_block = get_object_or_404(
+            ContentBlock, id=object_id, content_type=content_type
+        )
 
         if self.content_block.object_id:
             # Obj id needs to be passed as string
