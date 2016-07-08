@@ -269,23 +269,31 @@ class GlitterAdminMixin(object):
                 content_type=self.content_type,
                 object_id=obj.id,
                 template_name=version.template_name,
-                owner=request.user)
+                owner=request.user
+            )
 
             for content_block in version.contentblock_set.all():
-                # Copy the block
-                new_block = duplicate(content_block.content_object)
-                new_block.save()
+
+                new_block = None
+                if content_block.content_object:
+                    # Copy the block
+                    new_block = duplicate(content_block.content_object)
+                    new_block.save()
 
                 # Copy the content block
                 new_content_block = content_block
                 new_content_block.id = None
-                new_content_block.content_object = new_block
                 new_content_block.obj_version = new_version
-                new_content_block.save()
 
-                # Point the block back to the ContentBlock
-                new_block.content_block = new_content_block
-                new_block.save()
+                # Block not always exists.
+                if new_block is None:
+                    new_content_block.save()
+                else:
+                    new_content_block.content_object = new_block
+                    new_content_block.save()
+
+                    new_block.content_block = new_content_block
+                    new_block.save()
 
             return HttpResponseRedirect(reverse('admin:%s_%s_edit' % opts, kwargs={
                 'version_id': new_version.id,
