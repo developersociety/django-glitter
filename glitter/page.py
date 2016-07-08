@@ -39,18 +39,14 @@ class GlitterBlock(object):
         # Add some classes to the block to help style it
         block_classes = self.css_classes()
 
-        if self.block:
-            # Render the block
-            mod_name, func_name = get_mod_func(self.block.render_function)
-            block_view = getattr(import_module(mod_name), func_name)
-            self.html = block_view(
-                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
-            )
-        else:
-            from glitter.block_views import baseblock
-            self.html = baseblock(
-                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
-            )
+        block_class = self.content_block.content_type.model_class()
+        render_function = block_class.render_function
+        mod_name, func_name = get_mod_func(render_function)
+        block_view = getattr(import_module(mod_name), func_name)
+
+        self.html = block_view(
+            self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+        )
 
     def css_classes(self):
         # Add some classes to the block to help style it
