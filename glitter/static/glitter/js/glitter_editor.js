@@ -279,7 +279,9 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
           var ajax_url = $(this).attr('data-ajax-url');
 
           // Delete element.
-          $(this).closest('.block-header').remove();
+          var block_header = $(this).closest('.block-header');
+          block_header.next('.glitter_page_block').remove();
+          block_header.remove();
 
           $.ajax(ajax_url, {
               type: "POST",
