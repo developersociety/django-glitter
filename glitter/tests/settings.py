@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
@@ -50,11 +51,15 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+    'sorl.thumbnail',
     'glitter.tests.sample',
     'mptt',
     'glitter',
+    'glitter.assets',
     'glitter.pages',
     'glitter.blocks.html',
+    'glitter.blocks.banner',
+    'glitter.blocks.form',
     'glitter.tests.sampleblocks',
 )
 
