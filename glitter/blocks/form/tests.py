@@ -11,7 +11,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_callable
 from django.test import TestCase
-from django.test import modify_settings
 from django.test.client import RequestFactory
 
 from glitter.models import Version, ContentBlock
