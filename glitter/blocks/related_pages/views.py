@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
 import re
 
 from django.contrib.syndication.views import add_domain
@@ -25,12 +28,14 @@ def related_pages_generator(request, related_pages):
 
 def relatedpages_view(block, request, rerender, content_block, block_classes):
     css_classes = ' '.join(block_classes)
+    related_pages = None
 
-    related_pages = block.relatedpage_set.select_related('page').all()
+    if block:
+        related_pages = block.relatedpage_set.select_related('page').all()
     related_pages_links = related_pages_generator(request, related_pages)
 
     return render_to_string((
-        'glitter/blocks/%s.html' % (block._meta.model_name,),
+        'glitter/blocks/%s.html' % (content_block.content_type.model,),
     ), {
         'content_block': content_block,
         'css_classes': css_classes,

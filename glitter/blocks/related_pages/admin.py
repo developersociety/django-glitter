@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from .block_admin import blocks
+from glitter.blockadmin import blocks
+
 from .models import RelatedPage, RelatedPagesBlock
 
 
