@@ -12,7 +12,7 @@ from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
 
 
-from .models import RelatedPage, RelatedPagesBlock
+from .models import RelatedPagesBlock
 
 
 @modify_settings(
