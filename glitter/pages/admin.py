@@ -9,11 +9,16 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.options import csrf_protect_m
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 
 from django_mptt_admin.admin import DjangoMpttAdmin
 from mptt.admin import MPTTModelAdmin
 
 from glitter.admin import GlitterAdminMixin
+from glitter.models import Version
+
+from .forms import DuplicatePageForm
 from .models import Page
 
 
@@ -36,6 +41,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     mptt_level_indent = 25
     glitter_render = True
     change_list_template = 'admin/pages/page/change_list.html'
+    change_form_template = 'admin/pages/page/change_form.html'
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -71,5 +77,64 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         urlpatterns = [
             url(r'^$', wrap(self.grid_view)),
             url(r'^tree/$', wrap(self.changelist_view), name='%s_%s_tree' % info),
+            url(r'^(\d+)/duplicate/$', wrap(self.duplicate_page), name='%s_%s_duplicate' % info),
         ] + urlpatterns
         return urlpatterns
+
+    def duplicate_page(self, request, obj_id):
+        obj = get_object_or_404(Page, id=obj_id)
+
+        if request.method == "POST":
+            form = DuplicatePageForm(request.POST or None)
+            if form.is_valid():
+                new_page = form.save()
+
+                # Use current version if exists if not get the latest
+                if obj.current_version:
+                    current_version = obj.current_version
+                else:
+                    current_version = obj.get_latest_version()
+
+                # Create a new version
+                new_version = Version(content_object=new_page)
+                new_version.template_name = current_version.template_name
+                new_version.version_number = 1
+                new_version.owner = request.user
+                new_version.save()
+
+                #  Copy all blocks.
+                for block in current_version.contentblock_set.all():
+                    block.id = None
+                    block.obj_version = new_version
+                    block.save()
+
+                return HttpResponseRedirect(
+                    reverse('admin:glitter_pages_page_change', args=(new_page.id,))
+                )
+        else:
+            form = DuplicatePageForm(initial={
+                'url': obj.url,
+                'title': obj.title,
+            })
+        adminForm = admin.helpers.AdminForm(
+            form=form,
+            fieldsets=[('Duplicate Page: {}'.format(obj), {
+                'fields': DuplicatePageForm.Meta.fields
+            })],
+            prepopulated_fields=self.get_prepopulated_fields(request, obj),
+            readonly_fields=self.get_readonly_fields(request, obj),
+            model_admin=self
+        )
+        context = {
+            'form': adminForm,
+            'opts': obj._meta,
+            'change': False,
+            'is_popup': False,
+            'save_as': False,
+            'has_delete_permission': self.has_delete_permission(request, obj),
+            'has_add_permission': self.has_add_permission(request),
+            'has_change_permission': self.has_change_permission(request, obj),
+        }
+        return render(
+            request, 'admin/pages/page/duplicate_page.html', context
+        )
