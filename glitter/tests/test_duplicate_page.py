@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.admin.sites import AdminSite
+import os
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
+from django.test import override_settings
 
 from glitter.blocks.html.models import HTML
 from glitter.models import ContentBlock, Version
 from glitter.pages.models import Page
-from glitter.pages.admin import PageAdmin
 
 
+@override_settings(
+    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
+    TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
+    ROOT_URLCONF='glitter.tests.urls',
+    GLITTER_SHOW_LOGIN_REQUIRED=True,
+)
 class DuplicatePageTestCase(TestCase):
     def setUp(self):
 
