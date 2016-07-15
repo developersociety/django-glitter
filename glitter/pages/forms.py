@@ -9,7 +9,7 @@ from .models import Page
 class DuplicatePageForm(forms.ModelForm):
     class Meta:
         model = Page
-        fields = ['url', 'title', 'login_required', 'show_in_navigation']
+        fields = ['url', 'title', 'parent', 'language', 'login_required', 'show_in_navigation']
         labels = {
             'url': 'New URL',
             'title': 'New title',

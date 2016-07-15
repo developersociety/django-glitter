@@ -37,11 +37,37 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     list_display = (
         'title', 'url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
     )
-    fields = page_admin_fields()
     mptt_level_indent = 25
     glitter_render = True
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = [
+            (
+                '', {
+                    'fields': (
+                        'url', 'title', 'parent'
+                    )
+                }
+            ),
+            (
+                'Options', {
+                    'fields': (
+                        'login_required', 'show_in_navigation',
+                    )
+                }
+            ),
+            (
+                'Language', {
+                    'classes': ('collapse',),
+                    'fields': (
+                        'language',
+                    )
+                }
+            ),
+        ]
+        return fieldsets
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -115,12 +141,35 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             form = DuplicatePageForm(initial={
                 'url': obj.url,
                 'title': obj.title,
+                'parent': obj.parent,
+                'language': obj.language,
             })
         adminForm = admin.helpers.AdminForm(
             form=form,
-            fieldsets=[('Duplicate Page: {}'.format(obj), {
-                'fields': DuplicatePageForm.Meta.fields
-            })],
+            fieldsets=[
+                (
+                    'Duplicate Page: {}'.format(obj), {
+                        'fields': (
+                            'url', 'title', 'parent'
+                        )
+                    }
+                ),
+                (
+                    'Options', {
+                        'fields': (
+                            'login_required', 'show_in_navigation',
+                        )
+                    }
+                ),
+                (
+                    'Language', {
+                        'fields': (
+                            'language',
+                        )
+                    }
+                ),
+
+            ],
             prepopulated_fields=self.get_prepopulated_fields(request, obj),
             readonly_fields=self.get_readonly_fields(request, obj),
             model_admin=self
