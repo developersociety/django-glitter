@@ -9,6 +9,7 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.options import csrf_protect_m
 from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -81,6 +82,8 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         ] + urlpatterns
         return urlpatterns
 
+    @csrf_protect_m
+    @transaction.atomic
     def duplicate_page(self, request, obj_id):
         obj = get_object_or_404(Page, id=obj_id)
 
