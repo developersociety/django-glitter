@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
@@ -47,8 +48,8 @@ class TestAdmin(TestCase):
         # Information about model
         self.info = self.page._meta.app_label, self.page._meta.model_name
 
-        User = get_user_model()
         # Superuser
+        User = get_user_model()
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
         self.super_user_client.login(username='test', password='test')
@@ -163,6 +164,14 @@ class BaseViewsCase(TestAdmin):
         )
         self.html3_block.content_block = self.html3_content_block
         self.html3_block.save()
+
+        # Create content block without object.
+        self.html4_content_block = ContentBlock.objects.create(
+            obj_version=self.page_version,
+            column='main_content',
+            position=5,
+            content_type=ContentType.objects.get_for_model(self.html1_block),
+        )
 
     def change_page_version(self):
         self.page_version.version_number = 1

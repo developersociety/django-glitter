@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from importlib import import_module
 
 from django.conf import settings
@@ -53,7 +54,8 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
 
             # Fire a signal if more functionality is needed
             form_valid.send(
-                sender=form_class, request=request, form=form, obj=obj, version=version)
+                sender=form_class, request=request, form=form, obj=obj, version=version
+            )
 
             # Save any model forms
             if isinstance(form, ModelForm):
@@ -98,7 +100,7 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
             raise GlitterRedirectException(block.success_page.url)
 
     return render_to_string((
-        'glitter/blocks/%s.html' % (block._meta.model_name,),
+        'glitter/blocks/%s.html' % (content_block.content_type.model,),
         'glitter/blocks/formblock.html',
     ), {
         'content_block': content_block,

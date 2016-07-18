@@ -61,7 +61,7 @@ class ContentBlock(models.Model):
     column = models.CharField(max_length=100, db_index=True)
     position = models.IntegerField(null=True, db_index=True)
     content_type = models.ForeignKey(ContentType, related_name='+')
-    object_id = models.PositiveIntegerField()
+    object_id = models.PositiveIntegerField(blank=True, null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
