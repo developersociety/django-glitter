@@ -152,27 +152,28 @@ class GlitterAdminMixin(object):
         else:
             return super(GlitterAdminMixin, self).response_change(request, obj, *args, **kwargs)
 
-    def duplicate_content(self, content_block, new_version):
-        content_object = None
-        if content_block.content_object:
-            content_object = duplicate(content_block.content_object)
-            content_object.save()
+    def duplicate_content(self, current_version, new_version):
+        for content_block in current_version.contentblock_set.all():
 
-        # Copy the content block
-        new_content_block = content_block
-        new_content_block.id = None
-        new_content_block.content_object = content_object
-        new_content_block.obj_version = new_version
-        new_content_block.save()
+            content_object = None
+            if content_block.content_object:
+                content_object = duplicate(content_block.content_object)
+                content_object.save()
 
-        if content_object is None:
+            # Copy the content block
+            new_content_block = content_block
+            new_content_block.id = None
+            new_content_block.obj_version = new_version
+
+            if content_object:
+                new_content_block.content_object = content_object
+
             new_content_block.save()
-        else:
-            # Point the block back to the ContentBlock
-            content_object.content_block = new_content_block
-            content_object.save()
 
-        return content_object
+            if content_object:
+                # Point the block back to the ContentBlock
+                content_object.content_block = new_content_block
+                content_object.save()
 
     @csrf_protect_m
     @transaction.atomic
@@ -294,9 +295,7 @@ class GlitterAdminMixin(object):
                 owner=request.user
             )
 
-            for content_block in version.contentblock_set.all():
-
-                self.duplicate_content(content_block, new_version)
+            self.duplicate_content(version, new_version)
 
             return HttpResponseRedirect(reverse('admin:%s_%s_edit' % opts, kwargs={
                 'version_id': new_version.id,

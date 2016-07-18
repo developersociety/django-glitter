@@ -18,21 +18,10 @@ from django_mptt_admin.admin import DjangoMpttAdmin
 from mptt.admin import MPTTModelAdmin
 
 from glitter.admin import GlitterAdminMixin
-from glitter.utils import duplicate
 from glitter.models import Version
 
 from .forms import DuplicatePageForm
 from .models import Page
-
-
-def page_admin_fields():
-    fields = ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
-
-    # Don't show login_required unless needed
-    if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
-        fields.remove('login_required')
-
-    return fields
 
 
 @admin.register(Page)
@@ -40,7 +29,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     list_display = (
         'title', 'url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
     )
-    fields = page_admin_fields()
     mptt_level_indent = 25
     glitter_render = True
     change_list_template = 'admin/pages/page/change_list.html'
@@ -61,6 +49,15 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return obj.unpublished_count or ''
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
+
+    def get_fields(self, request, obj=None):
+        fields = ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
+
+        # Don't show login_required unless needed
+        if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
+            fields.remove('login_required')
+
+        return fields
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
@@ -112,10 +109,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     new_version.owner = request.user
                     new_version.save()
 
-                    if current_version.contentblock_set.exists():
-
-                        for content_block in current_version.contentblock_set.all():
-                            self.duplicate_content(content_block, new_version)
+                    self.duplicate_content(current_version, new_version)
 
                 return HttpResponseRedirect(
                     reverse('admin:glitter_pages_page_change', args=(new_page.id,))
@@ -124,6 +118,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             form = DuplicatePageForm(initial={
                 'url': obj.url,
                 'title': obj.title,
+                'parent': obj.parent,
             })
         adminForm = admin.helpers.AdminForm(
             form=form,

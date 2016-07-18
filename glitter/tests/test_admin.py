@@ -3,19 +3,20 @@ from __future__ import unicode_literals
 
 import os
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
-from django.conf import settings
+from django.test.client import RequestFactory
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
 from glitter.models import Version, ContentBlock
-from glitter.pages.admin import PageAdmin, page_admin_fields
+from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
 
 
@@ -121,8 +122,11 @@ class TestAdmin(TestCase):
         self.super_user_client.get(self.page_redirect_url)
 
     def test_show_login(self):
+        self.factory = RequestFactory()
+        request = self.factory.get('/')
+
         self.assertEqual(
-            page_admin_fields(),
+            self.page_admin.get_fields(request),
             ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
         )
 
