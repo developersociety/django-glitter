@@ -18,6 +18,7 @@ from django_mptt_admin.admin import DjangoMpttAdmin
 from mptt.admin import MPTTModelAdmin
 
 from glitter.admin import GlitterAdminMixin
+from glitter.utils import duplicate
 from glitter.models import Version
 
 from .forms import DuplicatePageForm
@@ -103,6 +104,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     current_version = obj.get_latest_version()
 
                 if current_version:
+
                     # Create a new version
                     new_version = Version(content_object=new_page)
                     new_version.template_name = current_version.template_name
@@ -111,11 +113,9 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     new_version.save()
 
                     if current_version.contentblock_set.exists():
-                        for block in current_version.contentblock_set.all():
-                            # Copy all blocks.
-                            block.id = None
-                            block.obj_version = new_version
-                            block.save()
+
+                        for content_block in current_version.contentblock_set.all():
+                            self.duplicate_content(content_block, new_version)
 
                 return HttpResponseRedirect(
                     reverse('admin:glitter_pages_page_change', args=(new_page.id,))

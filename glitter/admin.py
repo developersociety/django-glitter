@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from functools import update_wrapper
 
 from django.apps import apps
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.admin.options import csrf_protect_m
@@ -60,7 +61,6 @@ class GlitterAdminMixin(object):
     is_published.short_description = 'Published'
 
     def get_urls(self):
-        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -151,6 +151,28 @@ class GlitterAdminMixin(object):
             return self.page_redirect(request, obj)
         else:
             return super(GlitterAdminMixin, self).response_change(request, obj, *args, **kwargs)
+
+    def duplicate_content(self, content_block, new_version):
+        content_object = None
+        if content_block.content_object:
+            content_object = duplicate(content_block.content_object)
+            content_object.save()
+
+        # Copy the content block
+        new_content_block = content_block
+        new_content_block.id = None
+        new_content_block.content_object = content_object
+        new_content_block.obj_version = new_version
+        new_content_block.save()
+
+        if content_object is None:
+            new_content_block.save()
+        else:
+            # Point the block back to the ContentBlock
+            content_object.content_block = new_content_block
+            content_object.save()
+
+        return content_object
 
     @csrf_protect_m
     @transaction.atomic
@@ -274,26 +296,7 @@ class GlitterAdminMixin(object):
 
             for content_block in version.contentblock_set.all():
 
-                new_block = None
-                if content_block.content_object:
-                    # Copy the block
-                    new_block = duplicate(content_block.content_object)
-                    new_block.save()
-
-                # Copy the content block
-                new_content_block = content_block
-                new_content_block.id = None
-                new_content_block.obj_version = new_version
-
-                # Block not always exists.
-                if new_block is None:
-                    new_content_block.save()
-                else:
-                    new_content_block.content_object = new_block
-                    new_content_block.save()
-
-                    new_block.content_block = new_content_block
-                    new_block.save()
+                self.duplicate_content(content_block, new_version)
 
             return HttpResponseRedirect(reverse('admin:%s_%s_edit' % opts, kwargs={
                 'version_id': new_version.id,
