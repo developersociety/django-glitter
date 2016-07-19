@@ -39,6 +39,7 @@ def glitter(request, url):
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url += '/'
+            query['url__exact'] = url
             page = get_object_or_404(Page, **query)
             return HttpResponsePermanentRedirect('%s/' % request.path)
         else:

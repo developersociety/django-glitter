@@ -92,7 +92,7 @@ class TestAdmin(TestCase):
             'url': '/testing223/', 'title': 'Testing2', '_saveandedit': True
         }
         response_save_and_continue_edit = {
-            'url': '/testing223/', 'title': 'Testing2', '_continue': True
+            'url': '/testing2234/', 'title': 'Testing2', '_continue': True
         }
         return response_data, response_save_and_edit_data, response_save_and_continue_edit
 
@@ -127,7 +127,7 @@ class TestAdmin(TestCase):
 
         self.assertEqual(
             self.page_admin.get_fields(request),
-            ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
+            ['url', 'title', 'parent', 'language', 'login_required', 'show_in_navigation']
         )
 
 
