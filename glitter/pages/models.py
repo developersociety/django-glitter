@@ -45,14 +45,6 @@ class Page(MPTTModel, GlitterMixin):
     def get_absolute_url(self):
         return self.url
 
-    def get_latest_version(self):
-        """ Get the latest version for the page. """
-        content_type = ContentType.objects.get_for_model(self)
-        latest_version = Version.objects.filter(
-            content_type=content_type, object_id=self.id
-        ).first()
-        return latest_version
-
     def save(self, *args, **kwargs):
         # Find the number of unpublished pages
         content_type = ContentType.objects.get_for_model(self)
