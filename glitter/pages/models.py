@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+
 from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -23,7 +25,7 @@ class PageManager(TreeManager):
 
 @python_2_unicode_compatible
 class Page(MPTTModel, GlitterMixin):
-    url = models.CharField('URL', max_length=100, unique=True, validators=[validate_page_url])
+    url = models.CharField('URL', max_length=100, validators=[validate_page_url])
     title = models.CharField(max_length=100)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children')
     login_required = models.BooleanField(default=False)
@@ -39,12 +41,16 @@ class Page(MPTTModel, GlitterMixin):
     class Meta(GlitterMixin.Meta):
         verbose_name = 'page'
         ordering = ('url',)
+        unique_together = ('url', 'language')
         permissions = (
             ('view_protected_page', 'Can view protected page'),
         )
 
     def get_absolute_url(self):
-        return self.url
+        url = self.url
+        if hasattr(settings, 'PAGE_LANGUAGES'):
+            url = '/{}{}'.format(self.language, self.url)
+        return url
 
     def save(self, *args, **kwargs):
         # Find the number of unpublished pages
@@ -59,5 +65,4 @@ class Page(MPTTModel, GlitterMixin):
             )
 
         self.unpublished_count = unpublished_pages.count()
-
         super(Page, self).save(*args, **kwargs)

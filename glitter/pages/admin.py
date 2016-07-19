@@ -20,7 +20,7 @@ from mptt.admin import MPTTModelAdmin
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
 
-from .forms import DuplicatePageForm
+from .forms import DuplicatePageForm, PageAdminForm
 from .models import Page
 
 
@@ -31,34 +31,46 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     )
     mptt_level_indent = 25
     glitter_render = True
+    form = PageAdminForm
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
 
     def get_fieldsets(self, request, obj=None):
+        """ Get the fieldsets for admin. """
+
+        # Check if login required.
+        options = ['login_required', 'show_in_navigation']
+        if not self.is_login_required():
+            options.remove('login_required')
         fieldsets = [
-            (
+            [
                 '', {
                     'fields': (
                         'url', 'title', 'parent'
                     )
                 }
-            ),
-            (
+            ],
+            [
                 'Options', {
-                    'fields': (
-                        'login_required', 'show_in_navigation',
-                    )
+                    'fields': options
                 }
-            ),
-            (
+            ],
+        ]
+
+        # Check if langues required
+        languages = ['language']
+        if not self.is_languages_required():
+            languages.remove('language')
+
+        if languages:
+            fieldsets.append([
                 'Language', {
                     'classes': ('collapse',),
                     'fields': (
                         'language',
                     )
                 }
-            ),
-        ]
+            ])
         return fieldsets
 
     def view_url(self, obj):
@@ -77,14 +89,15 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
 
-    def get_fields(self, request, obj=None):
-        fields = ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
+    def is_login_required(self):
+        if hasattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED'):
+            return getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED')
+        return False
 
-        # Don't show login_required unless needed
-        if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
-            fields.remove('login_required')
-
-        return fields
+    def is_languages_required(self):
+        if hasattr(settings, 'PAGE_LANGUAGES'):
+            return True
+        return False
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
@@ -148,32 +161,10 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                 'parent': obj.parent,
                 'language': obj.language,
             })
+        fieldsets = self.get_fieldsets(request)
         adminForm = admin.helpers.AdminForm(
             form=form,
-            fieldsets=[
-                (
-                    'Duplicate Page: {}'.format(obj), {
-                        'fields': (
-                            'url', 'title', 'parent'
-                        )
-                    }
-                ),
-                (
-                    'Options', {
-                        'fields': (
-                            'login_required', 'show_in_navigation',
-                        )
-                    }
-                ),
-                (
-                    'Language', {
-                        'fields': (
-                            'language',
-                        )
-                    }
-                ),
-
-            ],
+            fieldsets=fieldsets,
             prepopulated_fields=self.get_prepopulated_fields(request, obj),
             readonly_fields=self.get_readonly_fields(request, obj),
             model_admin=self
