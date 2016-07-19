@@ -10,7 +10,6 @@ from mptt.models import MPTTModel, TreeForeignKey
 from glitter.mixins import GlitterMixin
 from glitter.models import Version
 
-from . import ENGLISH_LANGUAGE_ID
 from .validators import validate_page_url
 
 
@@ -23,20 +22,6 @@ class PageManager(TreeManager):
 
 
 @python_2_unicode_compatible
-class Language(models.Model):
-    name = models.CharField(max_length=124)
-    iso_1_code = models.CharField(max_length=2)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ('name',)
-
-    def __str__(self):
-        return self.name
-
-
-@python_2_unicode_compatible
 class Page(MPTTModel, GlitterMixin):
     url = models.CharField('URL', max_length=100, unique=True, validators=[validate_page_url])
     title = models.CharField(max_length=100)
@@ -44,7 +29,7 @@ class Page(MPTTModel, GlitterMixin):
     login_required = models.BooleanField(default=False)
     show_in_navigation = models.BooleanField(default=True, db_index=True)
     unpublished_count = models.PositiveIntegerField(default=0, editable=False)
-    language = models.ForeignKey(Language, null=True, blank=True, default=ENGLISH_LANGUAGE_ID)
+    language = models.CharField(max_length=10, blank=True)
 
     objects = PageManager()
 
