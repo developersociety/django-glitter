@@ -59,10 +59,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
 
         # Check if langues required
         languages = ['language']
-        if not self.is_languages_required():
-            languages.remove('language')
-
-        if languages:
+        if self.is_languages_required():
             fieldsets.append([
                 'Language', {
                     'classes': ('collapse',),
@@ -71,6 +68,8 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     )
                 }
             ])
+        else:
+            languages.remove('language')
         return fieldsets
 
     def view_url(self, obj):
