@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 from glitter.exceptions import GlitterUnpublishedException
+from glitter.models import Version
 from glitter.page import Glitter
 
 from .managers import GlitterManager
@@ -17,6 +20,14 @@ class GlitterMixin(models.Model):
     class Meta:
         default_permissions = ('add', 'change', 'delete', 'edit', 'publish')
         abstract = True
+
+    def get_latest_version(self):
+        """ Get the latest version for the page. """
+        content_type = ContentType.objects.get_for_model(self)
+        latest_version = Version.objects.filter(
+            content_type=content_type, object_id=self.id
+        ).first()
+        return latest_version
 
 
 class GlitterDetailMixin(object):

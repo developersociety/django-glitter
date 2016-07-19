@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from functools import update_wrapper
 
 from django.apps import apps
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.admin.options import csrf_protect_m
@@ -59,7 +61,6 @@ class GlitterAdminMixin(object):
     is_published.short_description = 'Published'
 
     def get_urls(self):
-        from django.conf.urls import url
 
         def wrap(view):
             def wrapper(*args, **kwargs):
@@ -150,6 +151,29 @@ class GlitterAdminMixin(object):
             return self.page_redirect(request, obj)
         else:
             return super(GlitterAdminMixin, self).response_change(request, obj, *args, **kwargs)
+
+    def duplicate_content(self, current_version, new_version):
+        for content_block in current_version.contentblock_set.all():
+
+            content_object = None
+            if content_block.content_object:
+                content_object = duplicate(content_block.content_object)
+                content_object.save()
+
+            # Copy the content block
+            new_content_block = content_block
+            new_content_block.id = None
+            new_content_block.obj_version = new_version
+
+            if content_object:
+                new_content_block.content_object = content_object
+
+            new_content_block.save()
+
+            if content_object:
+                # Point the block back to the ContentBlock
+                content_object.content_block = new_content_block
+                content_object.save()
 
     @csrf_protect_m
     @transaction.atomic
@@ -268,23 +292,10 @@ class GlitterAdminMixin(object):
                 content_type=self.content_type,
                 object_id=obj.id,
                 template_name=version.template_name,
-                owner=request.user)
+                owner=request.user
+            )
 
-            for content_block in version.contentblock_set.all():
-                # Copy the block
-                new_block = duplicate(content_block.content_object)
-                new_block.save()
-
-                # Copy the content block
-                new_content_block = content_block
-                new_content_block.id = None
-                new_content_block.content_object = new_block
-                new_content_block.obj_version = new_version
-                new_content_block.save()
-
-                # Point the block back to the ContentBlock
-                new_block.content_block = new_content_block
-                new_block.save()
+            self.duplicate_content(version, new_version)
 
             return HttpResponseRedirect(reverse('admin:%s_%s_edit' % opts, kwargs={
                 'version_id': new_version.id,
@@ -508,6 +519,7 @@ class GlitterAdminMixin(object):
     @csrf_protect_m
     @transaction.atomic
     def page_block_add_view(self, request, version_id):
+
         version = get_object_or_404(self.version_queryset().select_related(), id=version_id)
         obj = version.content_object
 
@@ -525,12 +537,8 @@ class GlitterAdminMixin(object):
             app_name, model_name = new_obj_class.split('.', 1)
             new_obj_class = apps.get_model(app_name, model_name)
 
-            # Create the block
-            block = new_obj_class.objects.create()
-
             # Create a ContentBlock pointing to it
             content_block = form.save(commit=False)
-            content_block.content_object = block
 
             if form.cleaned_data['top']:
                 # User wants block at the top of the column, so set the position or it'll end up
@@ -541,11 +549,8 @@ class GlitterAdminMixin(object):
                 if first_block is not None:
                     content_block.position = first_block.position - 1
 
+            content_block.content_type = ContentType.objects.get_for_model(new_obj_class)
             content_block.save()
-
-            # Point the block back to the ContentBlock
-            block.content_block = content_block
-            block.save()
 
             # Updated the modified timestamp
             version.save()
@@ -561,6 +566,7 @@ class GlitterAdminMixin(object):
     @csrf_protect_m
     @transaction.atomic
     def page_block_delete_view(self, request, contentblock_id):
+
         content_block = get_object_or_404(self.contentblock_queryset(), id=contentblock_id)
         block = content_block.content_object
         version = content_block.obj_version
@@ -569,13 +575,17 @@ class GlitterAdminMixin(object):
         if not self.has_edit_permission(request, obj, version=version):
             raise PermissionDenied
 
-        if request.POST:
+        # If block doesn't exist we don't need to display iframe.
+        if request.POST or not block:
             # Save variables for use after deletion
             column = content_block.column
 
             # Delete the block
             content_block.delete()
-            block.delete()
+
+            # Block not always exists.
+            if block:
+                block.delete()
 
             # Render the updated column as a JSON object
             glitter = Glitter(version, request=request)

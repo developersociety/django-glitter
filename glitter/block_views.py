@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.template.loader import render_to_string
 from glitter.templates import get_layout
@@ -12,7 +13,7 @@ def baseblock(block, request, rerender, content_block, block_classes):
     column = layout._meta.columns[content_block.column]
 
     return render_to_string((
-        'glitter/blocks/%s.html' % (block._meta.model_name,),
+        'glitter/blocks/%s.html' % (content_block.content_type.model),
         'glitter/blocks/baseblock.html',
     ), {
         'content_block': content_block,

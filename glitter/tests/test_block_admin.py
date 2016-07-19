@@ -140,7 +140,7 @@ class TestBlockAdmin(TestCase):
         self.info = self.model_admin.model._meta.app_label, self.model_admin.model._meta.model_name
 
         self.continue_view_url = reverse(
-            'block_admin:%s_%s_continue' % self.info, args=(self.html_block.id,)
+            'block_admin:%s_%s_continue' % self.info, args=(self.html_block.content_block.id,)
         )
 
         self.change_view_url = reverse(
