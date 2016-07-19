@@ -20,7 +20,7 @@ from mptt.admin import MPTTModelAdmin
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
 
-from .forms import DuplicatePageForm, PageAdminForm
+from .forms import PageAdminForm
 from .models import Page
 
 
@@ -129,7 +129,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             raise PermissionDenied
 
         if request.method == "POST":
-            form = DuplicatePageForm(request.POST or None)
+            form = PageAdminForm(request.POST or None)
             if form.is_valid():
                 new_page = form.save()
 
@@ -154,7 +154,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     reverse('admin:glitter_pages_page_change', args=(new_page.id,))
                 )
         else:
-            form = DuplicatePageForm(initial={
+            form = PageAdminForm(initial={
                 'url': obj.url,
                 'title': obj.title,
                 'parent': obj.parent,
