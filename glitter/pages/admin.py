@@ -130,7 +130,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             model_admin=self
         )
         context = {
-            'form': adminForm,
+            'adminform': adminForm,
             'opts': obj._meta,
             'change': False,
             'is_popup': False,
