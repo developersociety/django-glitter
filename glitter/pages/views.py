@@ -24,7 +24,7 @@ def glitter(request, url):
         'url__exact': url
     }
 
-    if hasattr(settings, 'PAGE_LANGUAGES'):
+    if Page.is_languages_required():
         PAGE_LANGUAGES = dict(settings.PAGE_LANGUAGES)
         split_url = list(filter(None, url.split('/')))
         language_code = split_url.pop(0)

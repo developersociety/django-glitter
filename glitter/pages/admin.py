@@ -70,6 +70,8 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return fieldsets
 
     def get_list_display(self, request):
+        """ Add languages to the list_display if it's enabled. """
+
         if self.model.is_languages_required():
             if 'get_language' not in self.list_display:
                 self.list_display.append('get_language')
@@ -83,6 +85,8 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     get_url.short_description = 'Full URL'
 
     def get_list_filter(self, request):
+        """ Add languages filter if languages is enable. """
+
         if self.model.is_languages_required():
             if GlitterPageLanguageFilter not in self.list_filter:
                 self.list_filter.append(GlitterPageLanguageFilter)
