@@ -59,7 +59,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         ]
 
         # Check if langues required
-        languages = ['language']
         if self.model.is_languages_required():
             fieldsets.append([
                 'Language', {
@@ -68,8 +67,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     )
                 }
             ])
-        else:
-            languages.remove('language')
         return fieldsets
 
     def get_list_display(self, request):
