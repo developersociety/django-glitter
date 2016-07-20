@@ -5,8 +5,8 @@ from django.contrib.admin.sites import AdminSite
 
 from glitter.assets.fields import AssetForeignKey
 from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
+from glitter.blockadmin import blocks
 
-from .blockadmin import blocks
 from .forms import BaseTextImageForm
 from .models import TextImageBlock
 

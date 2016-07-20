@@ -26,7 +26,7 @@ class GlitterMixin(models.Model):
         content_type = ContentType.objects.get_for_model(self)
         latest_version = Version.objects.filter(
             content_type=content_type, object_id=self.id
-        ).first()
+        ).exclude(version_number=None).first()
         return latest_version
 
 
