@@ -20,15 +20,16 @@ from mptt.admin import MPTTModelAdmin
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
 
+from .filters import GlitterPageLanguageFilter
 from .forms import PageAdminForm
 from .models import Page
 
 
 @admin.register(Page)
 class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
-    list_display = (
-        'title', 'url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
-    )
+    list_display = [
+        'title', 'get_url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
+    ]
     mptt_level_indent = 25
     glitter_render = True
     form = PageAdminForm
@@ -40,7 +41,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
 
         # Check if login required.
         options = ['login_required', 'show_in_navigation']
-        if not self.is_login_required():
+        if not self.model.is_login_required():
             options.remove('login_required')
         fieldsets = [
             [
@@ -59,10 +60,9 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
 
         # Check if langues required
         languages = ['language']
-        if self.is_languages_required():
+        if self.model.is_languages_required():
             fieldsets.append([
                 'Language', {
-                    'classes': ('collapse',),
                     'fields': (
                         'language',
                     )
@@ -72,12 +72,34 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             languages.remove('language')
         return fieldsets
 
+    def get_list_display(self, request):
+        if self.model.is_languages_required():
+            if 'get_language' not in self.list_display:
+                self.list_display.append('get_language')
+        return self.list_display
+
+    def get_url(self, obj):
+        url = obj.url
+        if self.model.is_languages_required():
+            url = '/{}{}'.format(obj.language, obj.url)
+        return url
+
+    def get_list_filter(self, request):
+        if self.model.is_languages_required():
+            if GlitterPageLanguageFilter not in self.list_filter:
+                self.list_filter.append(GlitterPageLanguageFilter)
+        return self.list_filter
+
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
         redirect_url = reverse('admin:%s_%s_redirect' % info, kwargs={'object_id': obj.id})
         return '<a href="%s">View page</a>' % (redirect_url)
     view_url.short_description = 'View page'
     view_url.allow_tags = True
+
+    def get_language(self, obj):
+        return dict(settings.PAGE_LANGUAGES)[obj.language].title()
+    get_language.short_description = 'Language'
 
     def in_nav(self, obj):
         return obj.show_in_navigation
@@ -87,16 +109,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return obj.unpublished_count or ''
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
-
-    def is_login_required(self):
-        if hasattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED'):
-            return getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED')
-        return False
-
-    def is_languages_required(self):
-        if hasattr(settings, 'PAGE_LANGUAGES'):
-            return True
-        return False
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):

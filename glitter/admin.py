@@ -5,7 +5,6 @@ from functools import update_wrapper
 
 from django.apps import apps
 from django.conf.urls import url
-from django.contrib import admin
 from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.admin.options import csrf_protect_m
 from django.contrib.contenttypes.models import ContentType
@@ -21,6 +20,8 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.views.decorators.http import require_POST
 
+from glitter.pages.filters import GlitterPagePublishedFilter
+
 from .forms import get_addblock_form, get_movecolumn_form, get_newpagetemplateform, MoveBlockForm
 from .models import ContentBlock, Version
 from .page import Glitter
@@ -33,26 +34,8 @@ from .views import render_page
 require_post_m = method_decorator(require_POST)
 
 
-class GlitterPagePublishedFilter(admin.SimpleListFilter):
-    title = 'published'
-    parameter_name = 'published'
-
-    def lookups(self, request, model_admin):
-        return (
-            ('1', 'Yes'),
-            ('0', 'No'),
-        )
-
-    def queryset(self, request, queryset):
-        if self.value() == '1':
-            return queryset.filter(published=True).exclude(current_version=None)
-
-        if self.value() == '0':
-            return queryset.filter(published=True, current_version__isnull=True)
-
-
 class GlitterAdminMixin(object):
-    list_filter = (GlitterPagePublishedFilter,)
+    list_filter = [GlitterPagePublishedFilter]
     glitter_render = None
 
     def is_published(self, obj):

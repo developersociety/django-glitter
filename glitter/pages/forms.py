@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
+from django.db.models.fields import BLANK_CHOICE_DASH
 
 from .models import Page
 
@@ -18,5 +19,5 @@ class PageAdminForm(forms.ModelForm):
         super(PageAdminForm, self).__init__(*args, **kwargs)
         if hasattr(settings, 'PAGE_LANGUAGES'):
             self.fields['language'].widget = forms.widgets.Select(
-                choices=settings.PAGE_LANGUAGES
+                choices=BLANK_CHOICE_DASH + list(settings.PAGE_LANGUAGES)
             )
