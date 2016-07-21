@@ -4,13 +4,13 @@ from __future__ import unicode_literals
 from django.http import Http404, HttpResponseRedirect
 
 from glitter.exceptions import GlitterRedirectException, GlitterUnpublishedException
-from glitter.pages.views import glitter, render_object_unpublished
 
 
 class PageFallbackMiddleware(object):
     def process_response(self, request, response):
 
         # Import here as it causes migrations for pages if app is not installed apps.
+        from glitter.pages.views import glitter, render_object_unpublished
 
         if response.status_code != 404:
             return response  # No need to check for a page for non-404 responses.
