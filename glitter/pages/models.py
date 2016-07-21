@@ -81,7 +81,7 @@ class Page(MPTTModel, GlitterMixin):
 
     def get_absolute_url(self):
         url = self.url
-        if hasattr(settings, 'PAGE_LANGUAGES'):
+        if self.language:
             url = '/{}{}'.format(self.language, self.url)
         return url
 
