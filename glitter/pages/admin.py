@@ -97,7 +97,11 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     view_url.allow_tags = True
 
     def get_language(self, obj):
-        return dict(settings.PAGE_LANGUAGES)[obj.language].title()
+        lang = ''
+        languages = dict(settings.PAGE_LANGUAGES)
+        if languages.get(obj.language):
+            lang = languages[obj.language].title()
+        return lang
     get_language.short_description = 'Language'
 
     def in_nav(self, obj):
