@@ -78,10 +78,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return self.list_display
 
     def get_url(self, obj):
-        url = obj.url
-        if self.model.is_languages_required():
-            url = '/{}{}'.format(obj.language, obj.url)
-        return url
+        return obj.get_absolute_url()
     get_url.short_description = 'Full URL'
 
     def get_list_filter(self, request):
