@@ -11,3 +11,9 @@ build
 htmlcov/
 docs/build/
 docs/locale/
+
+# Eclipse/PyDev Ignores
+/.project
+/.pydevproject
+/.settings/
+/ln-django-admin.py
