@@ -105,6 +105,9 @@ class BlockAdminSite(AdminSite):
         inner = csrf_protect(inner)
         return update_wrapper(inner, view)
 
+    def get_app_list(self, request):
+        return dict()
+
 
 class BlockAdmin(ModelAdmin):
     # Keep block admin change forms in the blockadmin template directory
