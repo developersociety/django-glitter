@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+if __name__ == '__main__':
+    import django
+    django.setup()
+from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_callable
@@ -12,7 +16,8 @@ from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
 
 
-from .models import Banner, BannerBlock
+from glitter.blocks.banner.models import Banner, BannerBlock, BannerInline
+from glitter.blocks.banner.admin import BannerInlineAdmin
 
 
 @modify_settings(
@@ -62,6 +67,9 @@ class BannerTestCase(TestCase):
 
         self.request = self.factory.get('/')
         self.view = get_callable(BannerBlock.render_function)
+        
+        self.inline = BannerInline.objects.create(
+            banner_block=self.banner_block, banner=self.banner)
 
     def test_view_without_block(self):
         self.view(
@@ -72,3 +80,19 @@ class BannerTestCase(TestCase):
         self.view(
             self.banner_block, self.request, False, self.content_block, 'test-class'
         )
+        
+    def test_model_string(self):
+        self.assertEqual(str(self.banner), 'Banner')
+        self.assertEqual(str(self.inline), 'Banner')
+        
+    def test_view_inline(self):
+        site = AdminSite()
+        view = BannerInlineAdmin(self.request, site)
+        field = self.inline._meta.get_field('banner')
+        form_field = view.formfield_for_dbfield(field)
+        self.assertTrue(len(list(form_field.choices)) > 1)
+
+
+if __name__ == '__main__':
+    from django.core.management import call_command
+    call_command('test', 'glitter.blocks.banner.tests.BannerTestCase')
