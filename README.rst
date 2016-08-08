@@ -9,6 +9,8 @@ Installation
 .. code-block:: sh
 
   pip install django-glitter
+  
+You can then 'sprinkle glitter' on models to add front-end content workflow to that model, or you can use glitter pages if you need 404 handler middleware based page tree.
 
 Contributing
 ~~~~~~~~~~~~
