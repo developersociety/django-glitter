@@ -37,7 +37,7 @@ class GroupedModelChoiceIterator(ModelChoiceIterator):
         if self.field.empty_label is not None:
             yield ('', self.field.empty_label)
 
-        if self.field.cache_choices:
+        if hasattr(self.field, 'cache_choices') and self.field.cache_choices:
             if self.field.choice_cache is None:
                 self.field.choice_cache = [
                     (self.field.group_label(group), [self.choice(ch) for ch in choices])
