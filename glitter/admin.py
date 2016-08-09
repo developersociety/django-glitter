@@ -500,6 +500,10 @@ class GlitterAdminMixin(object):
         if not self.has_edit_permission(request, obj, version=version):
             raise PermissionDenied
 
+        request.current_app = self.admin_site.name
+        template = 'admin/glitter/version_discard.html'
+        context = None
+    
         # POST request to initiate
         if request.method == 'POST':
             # Remove all blocks
@@ -507,14 +511,11 @@ class GlitterAdminMixin(object):
                 i.delete()
 
             version.delete()
+            template = 'admin/glitter/version_discarded.html'
+            context = {'obj': obj,
+                       'opts': self.model._meta}
 
-            return TemplateResponse(request, 'admin/glitter/version_discarded.html', {
-                'obj': obj,
-                'opts': self.model._meta,
-            }, current_app=self.admin_site.name)
-
-        return TemplateResponse(
-            request, 'admin/glitter/version_discard.html', current_app=self.admin_site.name)
+        return TemplateResponse(request, template, context)
 
     @csrf_protect_m
     @transaction.atomic
@@ -575,6 +576,8 @@ class GlitterAdminMixin(object):
         if not self.has_edit_permission(request, obj, version=version):
             raise PermissionDenied
 
+        request.current_app = self.admin_site.name
+        
         # If block doesn't exist we don't need to display iframe.
         if request.POST or not block:
             # Save variables for use after deletion
@@ -593,15 +596,15 @@ class GlitterAdminMixin(object):
             rendered_json = JSONEncoderForHTML().encode({
                 'content': columns[column],
             })
-
-            return TemplateResponse(request, 'admin/glitter/update_column.html', {
-                'column': slugify(column),
-                'rendered_json': rendered_json,
-            }, current_app=self.admin_site.name)
-
-        return TemplateResponse(request, 'admin/glitter/block_delete.html', {
-            'content_block': block,
-        }, current_app=self.admin_site.name)
+            template = 'admin/glitter/update_column.html'
+            context = {'column': slugify(column),
+                       'rendered_json': rendered_json}
+            
+            return TemplateResponse(request, template, context)
+         
+        template = 'admin/glitter/block_delete.html'
+        context = {'content_block': block}
+        return TemplateResponse(request, template, context)
 
     @csrf_protect_m
     @transaction.atomic
