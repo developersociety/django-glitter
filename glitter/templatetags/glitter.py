@@ -6,6 +6,19 @@ from django.template.loader import get_template, select_template
 register = template.Library()
 
 
+def _get_context_request(context):
+    """
+    A function to help with the removal of RequestContext rendering in 1.10
+    """
+    request = context.request
+    render_context = dict()
+    for _ in context.dicts:
+        for key, value in _.items():
+            render_context[key] = value
+
+    return render_context, request
+
+
 @register.simple_tag(takes_context=True)
 def glitter_head(context):
     """
@@ -14,12 +27,14 @@ def glitter_head(context):
     with permission to edit the page.
     """
     user = context.get('user')
-    #context = context.dicts[0]
+    render_context, request = _get_context_request(context)
+    rendered = ''
 
     if user is not None and user.is_staff:
         template = get_template('glitter/include/head.html')
-        return template.render(context)
-    return ''
+        rendered = template.render(render_context, request)
+
+    return rendered
 
 
 @register.simple_tag(takes_context=True)
@@ -29,8 +44,9 @@ def glitter_startbody(context):
     shown to users with permission to edit the page.
     """
     user = context.get('user')
-    #context = context.dicts[0]
+    render_context, request = _get_context_request(context)
 
+    rendered = ''
     if user is not None and user.is_staff:
         template_list = ['glitter/include/startbody.html']
 
@@ -42,9 +58,9 @@ def glitter_startbody(context):
             opts = glitter.obj._meta.app_label, glitter.obj._meta.model_name
             template_list = [
                 'glitter/include/startbody_%s_%s.html' % opts] + template_list
-
-            context['has_add_permission'] = user.has_perm('%s.%s' % opts)
+            render_context['has_add_permission'] = user.has_perm('%s.%s' % opts)
 
         template = select_template(template_list)
-        return template.render(context)
-    return ''
+        rendered = template.render(render_context, request)
+
+    return rendered
