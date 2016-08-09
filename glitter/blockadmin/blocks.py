@@ -106,7 +106,7 @@ class BlockAdminSite(AdminSite):
         return update_wrapper(inner, view)
 
     def get_app_list(self, request):
-        return dict()
+        return {}
 
 
 class BlockAdmin(ModelAdmin):
