@@ -7,6 +7,7 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from ..utils import django_version_gt_18
 register = template.Library()
 
+
 @register.simple_tag
 def jquery_min():
     "Return the path to jquery.min.js"
@@ -16,5 +17,3 @@ def jquery_min():
         url = static('admin/js/jquery.min.js')
 
     return url
-        
-

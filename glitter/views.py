@@ -5,7 +5,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_protect
 
@@ -17,7 +16,7 @@ from glitter.page import Glitter
 def render_page(request, page, page_version, edit=False):
     glitter = Glitter(page_version, request=request)
     columns = glitter.render(edit_mode=edit)
-    
+
     template_name = page_version.template_name
     context = {
         'glitter': glitter,

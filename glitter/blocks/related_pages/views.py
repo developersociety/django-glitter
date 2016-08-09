@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import re
 
 from django.contrib.syndication.views import add_domain
-from django.template import RequestContext
 from django.template.loader import render_to_string
 
 
@@ -40,6 +39,6 @@ def relatedpages_view(block, request, rerender, content_block, block_classes):
         'css_classes': css_classes,
         'object': block,
         'related_pages': related_pages,
-        'related_pages_links': related_pages_links} 
+        'related_pages_links': related_pages_links}
     rendered = render_to_string(template_name, context, request=request)
     return rendered

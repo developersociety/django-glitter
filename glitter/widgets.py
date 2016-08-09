@@ -30,8 +30,8 @@ class MoveBlockSelect(Select):
 
 class CustomRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
     def get_related_url(self, info, action, *args):
-        current_app=AdminSite()
+        current_app = AdminSite()
         if django_version_gt_18():
-            current_app=None
-        viewname = "admin:%s_%s_%s" % (info + (action,)) 
+            current_app = None
+        viewname = "admin:%s_%s_%s" % (info + (action,))
         return reverse(viewname, current_app=current_app, args=args)

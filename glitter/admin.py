@@ -503,7 +503,7 @@ class GlitterAdminMixin(object):
         request.current_app = self.admin_site.name
         template = 'admin/glitter/version_discard.html'
         context = None
-    
+
         # POST request to initiate
         if request.method == 'POST':
             # Remove all blocks
@@ -577,7 +577,7 @@ class GlitterAdminMixin(object):
             raise PermissionDenied
 
         request.current_app = self.admin_site.name
-        
+
         # If block doesn't exist we don't need to display iframe.
         if request.POST or not block:
             # Save variables for use after deletion
@@ -599,9 +599,9 @@ class GlitterAdminMixin(object):
             template = 'admin/glitter/update_column.html'
             context = {'column': slugify(column),
                        'rendered_json': rendered_json}
-            
+
             return TemplateResponse(request, template, context)
-         
+
         template = 'admin/glitter/block_delete.html'
         context = {'content_block': block}
         return TemplateResponse(request, template, context)

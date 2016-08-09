@@ -3,9 +3,6 @@ from __future__ import unicode_literals
 
 from unittest import skipIf
 
-if __name__ == '__main__':
-    import django
-    django.setup()
 from django.conf import settings
 from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
@@ -174,8 +171,6 @@ class TestBlockAdmin(TestCase):
         self.assertEqual(response.status_code, 403)
 
     def test_change_view(self):
-#         from django.core import urlresolvers
-#         what = urlresolvers.reverse(self.change_view_url)
         response = self.superuser_client.get(self.change_view_url)
         self.assertEqual(response.status_code, 200)
 
@@ -236,7 +231,3 @@ class TestInlineBlockAdmin(TestCase):
         request = MockRequest()
         request.user = self.superuser
         self.assertTrue(self.model_admin.has_delete_permission(request))
-
-if __name__ == '__main__':
-    from django.core.management import call_command
-    call_command('test', 'test_block_admin.TestBlockAdmin.test_change_view') 

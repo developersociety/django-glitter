@@ -113,6 +113,5 @@ def django_version_gt_18():
             is_greater = True
     elif VERSION[0] > 1:
         is_greater = True
-    
-    return is_greater
 
+    return is_greater
