@@ -7,6 +7,7 @@ from django.http import Http404
 from django.shortcuts import render_to_response
 from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_protect
+from django.template.context import RequestContext
 
 from glitter.models import Version
 from glitter.page import Glitter
@@ -24,8 +25,11 @@ def render_page(request, page, page_version, edit=False):
         'columns': columns,
         page._meta.model_name: page,
         'object': page}
+    
+    context_instance = RequestContext(request)
 
-    return render_to_response(template_name, context)
+    return render_to_response(template_name, context,
+                              context_instance=context_instance)
 
 
 @csrf_protect
@@ -57,5 +61,8 @@ def render_object_unpublished(request, obj):
         'next_url': next_url,
         'verbose_name': verbose_name}
 
-    response = render_to_response(template_name, context)
+    context_instance = RequestContext(request)
+
+    response = render_to_response(template_name, context,
+                                  context_instance=context_instance)
     return response
