@@ -101,9 +101,21 @@ class BannerTestCase(TestCase):
         form_field = view.formfield_for_dbfield(field)
         self.assertTrue(len(list(form_field.choices)) > 1)
         
-    def test_view_as_request(self):
+    def test_banner_view_as_request(self):
         url = reverse('admin:glitter_banner_banner_change',
                       args=(self.banner.id,))
+        response = self.super_user_client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_bannerblock_view_as_request(self):
+        url = reverse('admin:glitter_banner_banner_change',
+                      args=(self.banner.id,))
+        response = self.super_user_client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_bannerblock_change(self):
+        url = reverse('block_admin:glitter_banner_bannerblock_change',
+                      args=(self.banner_block.id,))
         response = self.super_user_client.get(url, follow=True)
         self.assertEqual(response.status_code, 200)
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django import VERSION
 from django.db import router
 from django.db.models.deletion import Collector
 from django.db.models.fields.related import ForeignKey
@@ -101,3 +102,17 @@ def duplicate(obj, value=None, field=None, duplicate_order=None):
             if root_obj is None:
                 root_obj = obj
     return root_obj
+
+
+def django_version_gt_18():
+    "Returns true if version is greater then 1.8"
+    is_greater = False
+
+    if VERSION[0] == 1:
+        if VERSION[1] > 8:
+            is_greater = True
+    elif VERSION[0] > 1:
+        is_greater = True
+    
+    return is_greater
+
