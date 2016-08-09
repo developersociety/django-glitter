@@ -14,6 +14,7 @@ def glitter_head(context):
     with permission to edit the page.
     """
     user = context.get('user')
+    context = context.dicts[0] 
 
     if user is not None and user.is_staff:
         template = get_template('glitter/include/head.html')
@@ -28,6 +29,7 @@ def glitter_startbody(context):
     shown to users with permission to edit the page.
     """
     user = context.get('user')
+    context = context.dicts[0]
 
     if user is not None and user.is_staff:
         template_list = ['glitter/include/startbody.html']
