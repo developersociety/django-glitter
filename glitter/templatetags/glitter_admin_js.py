@@ -4,8 +4,7 @@ version 1.8 and 1.8+ of django.
 """
 from django import template
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from glitter.utils import django_version_gt_18
-
+from ..utils import django_version_gt_18
 register = template.Library()
 
 @register.simple_tag
