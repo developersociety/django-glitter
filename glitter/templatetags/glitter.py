@@ -1,22 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from django import template
-from django.template.loader import get_template, select_template
+from django.template.loader import get_template, select_template, _engine_list
 
 register = template.Library()
-
-
-def _get_context_request(context):
-    """
-    A function to help with the removal of RequestContext rendering in 1.10
-    """
-    request = context.request
-    render_context = dict()
-    for _ in context.dicts:
-        for key, value in _.items():
-            render_context[key] = value
-
-    return render_context, request
 
 
 @register.simple_tag(takes_context=True)
@@ -27,12 +14,12 @@ def glitter_head(context):
     with permission to edit the page.
     """
     user = context.get('user')
-    render_context, request = _get_context_request(context)
     rendered = ''
+    template_path = 'glitter/include/head.html'
 
     if user is not None and user.is_staff:
-        template = get_template('glitter/include/head.html')
-        rendered = template.render(render_context, request)
+        template = context.template.engine.get_template(template_path)
+        rendered = template.render(context)
 
     return rendered
 
@@ -44,23 +31,24 @@ def glitter_startbody(context):
     shown to users with permission to edit the page.
     """
     user = context.get('user')
-    render_context, request = _get_context_request(context)
-
+    path_body = 'glitter/include/startbody.html'
+    path_plus = 'glitter/include/startbody_%s_%s.html'
     rendered = ''
+    
     if user is not None and user.is_staff:
+        templates = [path_body]
         template_list = ['glitter/include/startbody.html']
-
         # We've got a page with a glitter object:
         # - May need a different startbody template
         # - Check if user has permission to add
         glitter = context.get('glitter')
         if glitter is not None:
             opts = glitter.obj._meta.app_label, glitter.obj._meta.model_name
-            template_list = [
-                'glitter/include/startbody_%s_%s.html' % opts] + template_list
-            render_context['has_add_permission'] = user.has_perm('%s.%s' % opts)
+            template_path = path_plus % opts
+            templates.insert(0, template_path)
+            context['has_add_permission'] = user.has_perm('%s.%s' % opts)
 
-        template = select_template(template_list)
-        rendered = template.render(render_context, request)
+        template = context.template.engine.select_template(templates)
+        rendered = template.render(context)
 
     return rendered
