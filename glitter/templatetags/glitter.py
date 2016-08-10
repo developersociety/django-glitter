@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django import template
-from django.template.loader import get_template, select_template, _engine_list
 
 register = template.Library()
 
@@ -34,10 +33,9 @@ def glitter_startbody(context):
     path_body = 'glitter/include/startbody.html'
     path_plus = 'glitter/include/startbody_%s_%s.html'
     rendered = ''
-    
+
     if user is not None and user.is_staff:
         templates = [path_body]
-        template_list = ['glitter/include/startbody.html']
         # We've got a page with a glitter object:
         # - May need a different startbody template
         # - Check if user has permission to add
