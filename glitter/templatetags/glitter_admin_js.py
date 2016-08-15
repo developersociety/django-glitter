@@ -10,7 +10,7 @@ register = template.Library()
 @register.simple_tag
 def jquery_min():
     "Return the path to jquery.min.js"
-    if VERSION > (1, 8):
+    if VERSION >= (1, 9):
         url = static('admin/js/vendor/jquery/jquery.min.js')
     else:
         url = static('admin/js/jquery.min.js')
