@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import django
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.core.urlresolvers import reverse
@@ -29,6 +30,8 @@ class MoveBlockSelect(Select):
 
 class CustomRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
     def get_related_url(self, info, action, *args):
-        return reverse(
-            "admin:%s_%s_%s" % (info + (action,)), current_app=AdminSite(), args=args
-        )
+        current_app = AdminSite()
+        if django.VERSION >= (1, 9):
+            current_app = None
+        viewname = "admin:%s_%s_%s" % (info + (action,))
+        return reverse(viewname, current_app=current_app, args=args)

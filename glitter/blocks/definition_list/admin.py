@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from glitter import block_admin
+from glitter.blockadmin import blocks
 
 from .models import DefinitionList, DefinitionListInline
 
 
-class DefinitionListInlineAdmin(block_admin.TabularInline):
+class DefinitionListInlineAdmin(blocks.TabularInline):
     model = DefinitionListInline
 
 
-class DefinitionListAdmin(block_admin.BlockModelAdmin):
+class DefinitionListAdmin(blocks.BlockAdmin):
     inlines = [DefinitionListInlineAdmin]
 
 
-block_admin.site.register(DefinitionList, DefinitionListAdmin)
-block_admin.site.register_block(DefinitionList, 'Common')
+blocks.site.register(DefinitionList, DefinitionListAdmin)
+blocks.site.register_block(DefinitionList, 'Common')

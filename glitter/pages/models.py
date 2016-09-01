@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
@@ -8,6 +9,7 @@ from mptt.models import MPTTModel, TreeForeignKey
 
 from glitter.mixins import GlitterMixin
 from glitter.models import Version
+
 from .validators import validate_page_url
 
 
@@ -45,13 +47,15 @@ class Page(MPTTModel, GlitterMixin):
 
     def save(self, *args, **kwargs):
         # Find the number of unpublished pages
+        content_type = ContentType.objects.get_for_model(self)
         unpublished_pages = Version.objects.filter(
-            content_type=ContentType.objects.get_for_model(self), object_id=self.id).exclude(
-            version_number__isnull=True)
+            content_type=content_type, object_id=self.id
+        ).exclude(version_number__isnull=True)
 
         if self.current_version:
             unpublished_pages = unpublished_pages.filter(
-                version_number__gt=self.current_version.version_number)
+                version_number__gt=self.current_version.version_number
+            )
 
         self.unpublished_count = unpublished_pages.count()
 

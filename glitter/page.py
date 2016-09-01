@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from collections import defaultdict, OrderedDict
 from importlib import import_module
@@ -38,15 +39,19 @@ class GlitterBlock(object):
         # Add some classes to the block to help style it
         block_classes = self.css_classes()
 
-        # Render the block
-        mod_name, func_name = get_mod_func(self.block.render_function)
+        block_class = self.content_block.content_type.model_class()
+        render_function = block_class.render_function
+        mod_name, func_name = get_mod_func(render_function)
         block_view = getattr(import_module(mod_name), func_name)
+
         self.html = block_view(
-            self.block, self.glitter_page.request, rerender, self.content_block, block_classes)
+            self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+        )
 
     def css_classes(self):
         # Add some classes to the block to help style it
-        block_classes = ['glitter_page_blocktype_%s' % (self.block._meta.model_name,)]
+
+        block_classes = ['glitter_page_blocktype_%s' % (self.content_block.content_type.model)]
 
         if self.block_number == 1:
             block_classes.append('glitter_page_block_first')
@@ -62,11 +67,14 @@ class GlitterBlock(object):
         return block_classes
 
     def block_type(self):
-        return capfirst(force_text(self.content_block.content_object._meta.verbose_name))
+        """ This gets display on the block header. """
+        return capfirst(force_text(
+            self.content_block.content_type.model_class()._meta.verbose_name
+        ))
 
     def edit_url(self):
-        opts = self.block._meta.app_label, self.block._meta.model_name
-        return reverse('block_admin:%s_%s_change' % opts, args=(self.block.pk,))
+        opts = self.content_block.content_type.app_label, self.content_block.content_type.model
+        return reverse('block_admin:%s_%s_change' % opts, args=(self.content_block.pk,))
 
     def choose_column_widget(self):
         column_options = self.glitter_page.get_column_choices()
@@ -78,6 +86,8 @@ class GlitterBlock(object):
         return widget.render(name='', value=self.column.name)
 
     def move_block_widget(self):
+
+        # Imported here as causing ciurcular imports.
         from glitter.forms import MoveBlockForm
 
         move_options = []
@@ -148,13 +158,13 @@ class GlitterColumn(object):
         return widget.render(name='', value=None)
 
     def add_block_options(self):
-        from glitter import block_admin
+        from .blockadmin import blocks
 
         block_choices = []
 
         # Group all block by category
-        for category in sorted(block_admin.site.block_list):
-            category_blocks = block_admin.site.block_list[category]
+        for category in sorted(blocks.site.block_list):
+            category_blocks = blocks.site.block_list[category]
             category_choices = (('%s.%s' % (x._meta.app_label, x._meta.object_name),
                                  capfirst(force_text(x._meta.verbose_name))) for x in
                                 category_blocks)

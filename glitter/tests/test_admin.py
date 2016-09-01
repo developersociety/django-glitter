@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
-from django.conf import settings
+from django.test.client import RequestFactory
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
 from glitter.models import Version, ContentBlock
-from glitter.pages.admin import PageAdmin, page_admin_fields
+from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
 
 
@@ -47,8 +49,8 @@ class TestAdmin(TestCase):
         # Information about model
         self.info = self.page._meta.app_label, self.page._meta.model_name
 
-        User = get_user_model()
         # Superuser
+        User = get_user_model()
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
         self.super_user_client.login(username='test', password='test')
@@ -120,8 +122,11 @@ class TestAdmin(TestCase):
         self.super_user_client.get(self.page_redirect_url)
 
     def test_show_login(self):
+        self.factory = RequestFactory()
+        request = self.factory.get('/')
+
         self.assertEqual(
-            page_admin_fields(),
+            self.page_admin.get_fields(request),
             ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
         )
 
@@ -163,6 +168,14 @@ class BaseViewsCase(TestAdmin):
         )
         self.html3_block.content_block = self.html3_content_block
         self.html3_block.save()
+
+        # Create content block without object.
+        self.html4_content_block = ContentBlock.objects.create(
+            obj_version=self.page_version,
+            column='main_content',
+            position=5,
+            content_type=ContentType.objects.get_for_model(self.html1_block),
+        )
 
     def change_page_version(self):
         self.page_version.version_number = 1

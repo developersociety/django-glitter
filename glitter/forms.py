@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
 from django.utils.encoding import force_text
 from django.utils.text import capfirst
 
-from . import block_admin
+from .blockadmin import blocks
 from .models import ContentBlock, Version
 from .templates import get_layout, get_templates
 
@@ -16,8 +17,8 @@ def get_addblock_form(page_version):
     block_choices = []
 
     # Group all block by category
-    for category in sorted(block_admin.site.block_list):
-        category_blocks = block_admin.site.block_list[category]
+    for category in sorted(blocks.site.block_list):
+        category_blocks = blocks.site.block_list[category]
         category_choices = (('%s.%s' % (x._meta.app_label, x._meta.object_name),
                              capfirst(force_text(x._meta.verbose_name))) for x in category_blocks)
         category_choices = sorted(category_choices, key=lambda x: x[1])

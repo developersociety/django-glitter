@@ -1,16 +1,20 @@
-from glitter import block_admin
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from glitter.blockadmin import blocks
+
 
 from .models import RelatedPage, RelatedPagesBlock
 
 
-class RelatedPageInline(block_admin.StackedInline):
+class RelatedPageInline(blocks.StackedInline):
     model = RelatedPage
     extra = 1
 
 
-class RelatedPagesBlockAdmin(block_admin.BlockModelAdmin):
+class RelatedPagesBlockAdmin(blocks.BlockAdmin):
     inlines = [RelatedPageInline]
 
 
-block_admin.site.register(RelatedPagesBlock, RelatedPagesBlockAdmin)
-block_admin.site.register_block(RelatedPagesBlock, 'App Blocks')
+blocks.site.register(RelatedPagesBlock, RelatedPagesBlockAdmin)
+blocks.site.register_block(RelatedPagesBlock, 'App Blocks')

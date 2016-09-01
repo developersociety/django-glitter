@@ -220,8 +220,13 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
         });
 
         $(document).on("click", "#glitter-discard-version, .glitter-delete-block, .glitter-edit-block", function() {
+
             var iframe_url = $(this).data("popupUrl");
-            $(document.body).addClass("glitter-lightbox-active").append('<div id="glitter-lightbox" class="glitter-lightbox"><iframe class="glitter-lightbox-iframe" src="' + iframe_url  + '" allowTransparency="true"></iframe></div>');
+
+            if (iframe_url){
+                $(document.body).addClass("glitter-lightbox-active").append('<div id="glitter-lightbox" class="glitter-lightbox"><iframe class="glitter-lightbox-iframe" src="' + iframe_url  + '" allowTransparency="true"></iframe></div>');
+            }
+
         });
 
         $(document).on("change", ".glitter-move-block-select", function() {
@@ -267,6 +272,25 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
                     GlitterEditor.update_column(data.dest_column, data.dest_content);
                 }
             });
+        });
+
+        $(document).on('click', '.glitter-delete-block-ajax', function(e){
+          e.preventDefault();
+          var ajax_url = $(this).attr('data-ajax-url');
+
+          // Delete element.
+          var block_header = $(this).closest('.block-header');
+          block_header.next('.glitter_page_block').remove();
+          block_header.remove();
+
+          $.ajax(ajax_url, {
+              type: "POST",
+              data: {
+                  csrfmiddlewaretoken: csrf_token,
+                  delete: true,
+              },
+              dataType: "json",
+          });
         });
 
 
