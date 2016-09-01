@@ -37,7 +37,7 @@ To make this usable in the frontend, we need to register this block in
 
 
     @blocks.register(HeadlineText, category='Common')
-    class HeadlineTextAdmin(BaseBlock):
+    class HeadlineTextAdmin(blocks.BlockAdmin):
         pass
 
 
