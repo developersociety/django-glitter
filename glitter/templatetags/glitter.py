@@ -50,3 +50,20 @@ def glitter_startbody(context):
         rendered = template.render(context)
 
     return rendered
+
+
+@register.assignment_tag(takes_context=True)
+def glitter_columns(context, object):
+    """
+    Generate a dict of render Glitter Columns for the supplied Glitter Model/Page
+
+    Used for rendering Glitter Model/Pages on non-Glitter pages.
+
+    Example usage:
+
+    {% glitter_columns post as cols %}
+    {{ cols.content }}
+    """
+    glitter_page = Glitter(page_version=object.current_version, request=context.request)
+    glitter_columns = glitter_page.render()
+    return glitter_columns
