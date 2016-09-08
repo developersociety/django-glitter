@@ -2,6 +2,8 @@
 
 from django import template
 
+from glitter.page import Glitter
+
 register = template.Library()
 
 
