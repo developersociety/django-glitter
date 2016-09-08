@@ -2,7 +2,7 @@
 
 from django import template
 
-from glitter.page import Glitter
+from ..page import Glitter
 
 register = template.Library()
 
