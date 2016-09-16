@@ -105,6 +105,9 @@ class BlockAdminSite(AdminSite):
         inner = csrf_protect(inner)
         return update_wrapper(inner, view)
 
+    def get_app_list(self, request):
+        return {}
+
 
 class BlockAdmin(ModelAdmin):
     # Keep block admin change forms in the blockadmin template directory
@@ -140,6 +143,7 @@ class BlockAdmin(ModelAdmin):
         pass
 
     def response_rerender(self, request, obj, template, extra_context=None):
+        request.current_app = self.admin_site.name
         content_block = obj.content_block
         version = content_block.obj_version
 
@@ -156,7 +160,7 @@ class BlockAdmin(ModelAdmin):
         if extra_context is not None:
             context.update(extra_context)
 
-        return TemplateResponse(request, template, context, current_app=self.admin_site.name)
+        return TemplateResponse(request, template, context)
 
     # A redirect back to the edit view
     def continue_view(self, request, object_id):

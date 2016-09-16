@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 
 install_requires = [
-    'Django>=1.8,<1.9',
+    'Django>=1.8,<1.10',
     'django-mptt>=0.7,<0.9',
     'django-mptt-admin>=0.3,<0.4',
     'sorl-thumbnail>=12.2',

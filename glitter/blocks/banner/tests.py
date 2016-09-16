@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import get_callable
-from django.test import TestCase
+from django.core.urlresolvers import get_callable, reverse
+from django.test import TestCase, Client
 from django.test.client import RequestFactory
-from django.test import modify_settings
+from django.test import modify_settings, override_settings
 
 from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
 
+from glitter.blocks.banner.models import Banner, BannerBlock, BannerInline
+from glitter.blocks.banner.admin import BannerInlineAdmin
 
-from .models import Banner, BannerBlock
 
-
-@modify_settings(
-    INSTALLED_APPS={
-        'append': 'glitter.tests.sample',
-    },
-)
+@modify_settings(INSTALLED_APPS={'append': 'glitter.tests.sample'})
+@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class BannerTestCase(TestCase):
     def setUp(self):
         User = get_user_model()
@@ -63,6 +61,14 @@ class BannerTestCase(TestCase):
         self.request = self.factory.get('/')
         self.view = get_callable(BannerBlock.render_function)
 
+        self.inline = BannerInline.objects.create(
+            banner_block=self.banner_block, banner=self.banner)
+
+        self.super_user = User.objects.create_superuser('test',
+                                                        'test@test.com', 'test')
+        self.super_user_client = Client()
+        self.super_user_client.login(username='test', password='test')
+
     def test_view_without_block(self):
         self.view(
             None, self.request, False, self.content_block_without_obj, 'test-class'
@@ -72,3 +78,32 @@ class BannerTestCase(TestCase):
         self.view(
             self.banner_block, self.request, False, self.content_block, 'test-class'
         )
+
+    def test_model_string(self):
+        self.assertEqual(str(self.banner), 'Banner')
+        self.assertEqual(str(self.inline), 'Banner')
+
+    def test_view_inline(self):
+        site = AdminSite()
+        view = BannerInlineAdmin(self.request, site)
+        field = self.inline._meta.get_field('banner')
+        form_field = view.formfield_for_dbfield(field)
+        self.assertTrue(len(list(form_field.choices)) > 1)
+
+    def test_banner_view_as_request(self):
+        url = reverse('admin:glitter_banner_banner_change',
+                      args=(self.banner.id,))
+        response = self.super_user_client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_bannerblock_view_as_request(self):
+        url = reverse('admin:glitter_banner_banner_change',
+                      args=(self.banner.id,))
+        response = self.super_user_client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_bannerblock_change(self):
+        url = reverse('block_admin:glitter_banner_bannerblock_change',
+                      args=(self.banner_block.id,))
+        response = self.super_user_client.get(url, follow=True)
+        self.assertEqual(response.status_code, 200)

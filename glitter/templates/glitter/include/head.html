@@ -1,7 +1,7 @@
 {% load static from staticfiles %}
-{% load admin_urls %}
+{% load admin_urls glitter_admin_js %}
 <link rel="stylesheet" href="{% static 'glitter/css/glitter.min.css' %}" />
-<script src="{% static 'admin/js/jquery.min.js' %}"></script>
+<script src="{% jquery_min %}"></script>
 <script src="{% static 'glitter/js/jquery.cookie.js' %}"></script>
 <script src="{% static 'glitter/js/jquery.simplePagination.js' %}"></script>
 <script src="{% static 'glitter/js/glitter_editor.js' %}"></script>

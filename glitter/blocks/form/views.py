@@ -8,7 +8,6 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import get_mod_func
 from django.forms import ModelForm
 from django.forms.fields import FileField
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils import six
 
@@ -99,12 +98,12 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
             email.send(fail_silently=False)
             raise GlitterRedirectException(block.success_page.url)
 
-    return render_to_string((
-        'glitter/blocks/%s.html' % (content_block.content_type.model,),
-        'glitter/blocks/formblock.html',
-    ), {
+    templates = ('glitter/blocks/%s.html' % content_block.content_type.model,
+                 'glitter/blocks/formblock.html')
+    context = {
         'content_block': content_block,
         'css_classes': css_classes,
         'object': block,
-        'form': form,
-    }, context_instance=RequestContext(request))
+        'form': form}
+    rendered = render_to_string(templates, context, request=request)
+    return rendered

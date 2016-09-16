@@ -1,6 +1,6 @@
 {% extends "blockadmin/change_form.html" %}
 {% load static from staticfiles %}
-
+{% load glitter_admin_js %}
 
 {% block extrastyle %}
 {{ block.super }}
@@ -16,7 +16,7 @@
 {% block content %}
 {{ block.super }}
 
-<script src="{% static 'admin/js/jquery.min.js' %}"></script>
+<script src="{% jquery_min %}"></script>
 <script src="{% static 'glitter/libs/redactorjs/redactor.min.js' %}"></script>
 <script type="text/javascript">
 /* global $ */
