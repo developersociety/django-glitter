@@ -146,12 +146,13 @@ class GlitterColumn(object):
                 'glitter': self.glitter_page,
                 'column_name': self.name,
                 'verbose_name': self.verbose_name,
-                'default_blocks': self.default_blocks(),
+                'default_blocks': self.default_blocks,
                 'add_block_widget': self.add_block_widget(),
             })
 
         return render_to_string(column_template, column_context)
 
+    @cached_property
     def default_blocks(self):
         # Use the block list provided by settings if it's defined
         block_list = getattr(settings, 'GLITTER_DEFAULT_BLOCKS', None)
