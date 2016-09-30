@@ -20,13 +20,27 @@ def glitter(request, url):
 
     page_opts = Page._meta.app_label, Page._meta.model_name
 
+    query = {
+        'url__exact': url
+    }
+
+    if Page.is_languages_required():
+        PAGE_LANGUAGES = dict(settings.PAGE_LANGUAGES)
+        split_url = list(filter(None, url.split('/')))
+        language_code = split_url.pop(0)
+        if language_code in PAGE_LANGUAGES:
+            url = '/{}/'.format('/'.join(split_url))
+            query['url__exact'] = url
+            query['language'] = language_code
+
     try:
         page = get_object_or_404(
-            Page.objects.select_related('current_version'), url__exact=url)
+            Page.objects.select_related('current_version'), **query)
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url += '/'
-            page = get_object_or_404(Page, url__exact=url)
+            query['url__exact'] = url
+            page = get_object_or_404(Page, **query)
             return HttpResponsePermanentRedirect('%s/' % request.path)
         else:
             raise

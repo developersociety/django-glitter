@@ -20,19 +20,74 @@ from mptt.admin import MPTTModelAdmin
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
 
-from .forms import DuplicatePageForm
+from .filters import GlitterPageLanguageFilter
+from .forms import PageAdminForm
 from .models import Page
 
 
 @admin.register(Page)
 class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
-    list_display = (
-        'title', 'url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
-    )
+    list_display = [
+        'title', 'get_url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
+    ]
     mptt_level_indent = 25
     glitter_render = True
+    form = PageAdminForm
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
+
+    def get_fieldsets(self, request, obj=None):
+        """ Get the fieldsets for admin. """
+
+        # Check if login required.
+        options = ['login_required', 'show_in_navigation']
+        if not self.model.is_login_required():
+            options.remove('login_required')
+        fieldsets = [
+            [
+                '', {
+                    'fields': (
+                        'url', 'title', 'parent'
+                    )
+                }
+            ],
+            [
+                'Options', {
+                    'fields': options
+                }
+            ],
+        ]
+
+        # Check if langues required
+        if self.model.is_languages_required():
+            fieldsets.append([
+                'Language', {
+                    'fields': (
+                        'language',
+                    )
+                }
+            ])
+        return fieldsets
+
+    def get_list_display(self, request):
+        """ Add languages to the list_display if it's enabled. """
+
+        if self.model.is_languages_required():
+            if 'get_language' not in self.list_display:
+                self.list_display.append('get_language')
+        return self.list_display
+
+    def get_url(self, obj):
+        return obj.get_absolute_url()
+    get_url.short_description = 'Full URL'
+
+    def get_list_filter(self, request):
+        """ Add languages filter if languages is enable. """
+
+        if self.model.is_languages_required():
+            if GlitterPageLanguageFilter not in self.list_filter:
+                self.list_filter.append(GlitterPageLanguageFilter)
+        return self.list_filter
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -40,6 +95,14 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return '<a href="%s">View page</a>' % (redirect_url)
     view_url.short_description = 'View page'
     view_url.allow_tags = True
+
+    def get_language(self, obj):
+        lang = ''
+        languages = dict(settings.PAGE_LANGUAGES)
+        if languages.get(obj.language):
+            lang = languages[obj.language].title()
+        return lang
+    get_language.short_description = 'Language'
 
     def in_nav(self, obj):
         return obj.show_in_navigation
@@ -49,15 +112,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return obj.unpublished_count or ''
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
-
-    def get_fields(self, request, obj=None):
-        fields = ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
-
-        # Don't show login_required unless needed
-        if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
-            fields.remove('login_required')
-
-        return fields
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
@@ -90,7 +144,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             raise PermissionDenied
 
         if request.method == "POST":
-            form = DuplicatePageForm(request.POST or None)
+            form = PageAdminForm(request.POST or None)
             if form.is_valid():
                 new_page = form.save()
 
@@ -115,16 +169,16 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
                     reverse('admin:glitter_pages_page_change', args=(new_page.id,))
                 )
         else:
-            form = DuplicatePageForm(initial={
+            form = PageAdminForm(initial={
                 'url': obj.url,
                 'title': obj.title,
                 'parent': obj.parent,
+                'language': obj.language,
             })
+        fieldsets = self.get_fieldsets(request)
         adminForm = admin.helpers.AdminForm(
             form=form,
-            fieldsets=[('Duplicate Page: {}'.format(obj), {
-                'fields': DuplicatePageForm.Meta.fields
-            })],
+            fieldsets=fieldsets,
             prepopulated_fields=self.get_prepopulated_fields(request, obj),
             readonly_fields=self.get_readonly_fields(request, obj),
             model_admin=self
