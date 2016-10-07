@@ -29,7 +29,7 @@
                 class="glitter-edit-toggle glitter-tab" type="submit"
                 data-target="#glitter-edit-menu"
                 data-state-on="#glitter-tab-edit">
-                    Edit
+                    Edit mode
             </button>
             <a class="glitter-properties-toggle"
                 href="{% url glitter.opts|admin_urlname:'change' glitter.obj.id %}">
@@ -71,7 +71,7 @@
                     <form method="POST" action="{% url glitter.opts|admin_urlname:'edit' version_id=glitter.version.id %}">
                         {% csrf_token %}
                         <button class="glitter-version-edit-toggle" type="submit">
-                            Edit <span></span>
+                            Edit Mode <span></span>
                         </button>
                     </form>
                 {% endif %}
