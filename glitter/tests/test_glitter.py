@@ -6,7 +6,7 @@ from glitter.page import Glitter
 from glitter.pages.models import Page
 
 
-class TestGlitterColumnException(TestCase):
+class TestGlitterDefaultBlocks(TestCase):
     def setUp(self):
         self.page = Page.objects.create(url='/test/', title='Test page')
         self.page_version = Version.objects.create(
@@ -37,4 +37,4 @@ class TestGlitterColumnException(TestCase):
     )
     def test_custom_blocks(self):
         # Custom will return whatever is given to it
-        self.assertEqual(self.glitter.default_blocks, [('glitter_html.HTML', 'HTML')],)
+        self.assertEqual(self.glitter.default_blocks, [('glitter_html.HTML', 'HTML')])
