@@ -127,9 +127,9 @@ Template name
 =============
 
 By default the template name used for rendering the layout is based on the name
-of the layout class, munged from ``CamelCase`` to ``camel_case``.
+of the layout class, converted to lowercase.
 
-The template for this would be ``glitter/news_post.html``::
+The template for this would be ``glitter/newspost.html``::
 
     class NewsPost(PageLayout):
         content = columns.Column(width=640)

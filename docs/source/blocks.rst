@@ -121,7 +121,7 @@ Templates
 =========
 
 By default the template name used for rendering the block is based on the name
-of the block class, munged from ``CamelCase`` to ``camel_case``.
+of the block class, converted to lowercase.
 
 The template for this would be ``glitter/blocks/link.html``::
 
