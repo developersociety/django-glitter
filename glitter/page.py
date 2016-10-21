@@ -272,6 +272,12 @@ class Glitter(object):
 
     @cached_property
     def default_blocks(self):
+        """
+        Return a list of default block tuples (appname.ModelName, verbose name).
+
+        Next to the dropdown where a block type is picked, a small number of common blocks which
+        are frequently used can be added. These can be added with a single click.
+        """
         # Use the block list provided by settings if it's defined
         block_list = getattr(settings, 'GLITTER_DEFAULT_BLOCKS', None)
 
