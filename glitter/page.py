@@ -275,8 +275,9 @@ class Glitter(object):
         """
         Return a list of default block tuples (appname.ModelName, verbose name).
 
-        Next to the dropdown where a block type is picked, a small number of common blocks which
-        are frequently used can be added. These can be added with a single click.
+        Next to the dropdown list of block types, a small number of common blocks which are
+        frequently used can be added immediately to a column with one click. This method defines
+        the list of default blocks.
         """
         # Use the block list provided by settings if it's defined
         block_list = getattr(settings, 'GLITTER_DEFAULT_BLOCKS', None)
