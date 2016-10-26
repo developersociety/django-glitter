@@ -57,6 +57,10 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
             fields.remove('login_required')
 
+        # Show glitter tags if it's set to show.
+        if getattr(settings, 'GLITTER_PAGES_TAGS', False):
+            fields.append('tags')
+
         return fields
 
     @csrf_protect_m

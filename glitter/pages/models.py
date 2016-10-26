@@ -4,11 +4,12 @@ from __future__ import unicode_literals
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from mptt.managers import TreeManager
-from mptt.models import MPTTModel, TreeForeignKey
 
 from glitter.mixins import GlitterMixin
 from glitter.models import Version
+from mptt.managers import TreeManager
+from mptt.models import MPTTModel, TreeForeignKey
+from taggit.managers import TaggableManager
 
 from .validators import validate_page_url
 
@@ -29,6 +30,7 @@ class Page(MPTTModel, GlitterMixin):
     login_required = models.BooleanField(default=False)
     show_in_navigation = models.BooleanField(default=True, db_index=True)
     unpublished_count = models.PositiveIntegerField(default=0, editable=False)
+    tags = TaggableManager(blank=True)
 
     objects = PageManager()
 

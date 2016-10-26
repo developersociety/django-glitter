@@ -19,9 +19,8 @@ settings.py
 INSTALLED_APPS
 --------------
 
-You'll need to add ``glitter`` to `INSTALLED_APPS`, as well as any app
-dependencies, or additional blocks which are included with Glitter as Django
-apps::
+You'll need to add ``glitter`` to `INSTALLED_APPS`, as well as any app dependencies, or additional
+blocks which are included with Glitter as Django apps::
 
     INSTALLED_APPS = (
         #...
@@ -40,6 +39,7 @@ apps::
         'mptt',
         'django_mptt_admin',
         'sorl.thumbnail',
+        'taggit',
 
         #...
     )

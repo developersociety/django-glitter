@@ -19,6 +19,7 @@ Contents
    adding
    layouts
    blocks
+   configuration
 
 
 Indices and tables
