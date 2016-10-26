@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from collections import defaultdict, OrderedDict
 from importlib import import_module
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_mod_func, reverse
@@ -21,9 +22,11 @@ from .templates import get_layout, get_templates
 from .widgets import AddBlockSelect, ChooseColumnSelect, MoveBlockSelect
 
 
-# If no other settings are provided, just show HTML as a quick add block
-GLITTER_DEFAULT_BLOCKS = (
-    ('glitter.blocks.HTML', 'HTML'),
+# If no other settings are provided, show text/image/HTML blocks
+GLITTER_FALLBACK_BLOCKS = (
+    'glitter_redactor.Redactor',
+    'glitter_image.ImageBlock',
+    'glitter_html.HTML',
 )
 
 
@@ -143,8 +146,7 @@ class GlitterColumn(object):
                 'glitter': self.glitter_page,
                 'column_name': self.name,
                 'verbose_name': self.verbose_name,
-                'default_blocks': getattr(
-                    settings, 'GLITTER_DEFAULT_BLOCKS', GLITTER_DEFAULT_BLOCKS),
+                'default_blocks': self.glitter_page.default_blocks,
                 'add_block_widget': self.add_block_widget(),
             })
 
@@ -267,3 +269,34 @@ class Glitter(object):
             name = self.layout.get_column_name(column)
             choices.append((column, name))
         return choices
+
+    @cached_property
+    def default_blocks(self):
+        """
+        Return a list of default block tuples (appname.ModelName, verbose name).
+
+        Next to the dropdown list of block types, a small number of common blocks which are
+        frequently used can be added immediately to a column with one click. This method defines
+        the list of default blocks.
+        """
+        # Use the block list provided by settings if it's defined
+        block_list = getattr(settings, 'GLITTER_DEFAULT_BLOCKS', None)
+
+        if block_list is not None:
+            return block_list
+
+        # Try and auto fill in default blocks if the apps are installed
+        block_list = []
+
+        for block in GLITTER_FALLBACK_BLOCKS:
+            app_name, model_name = block.split('.')
+
+            try:
+                model_class = apps.get_model(app_name, model_name)
+                verbose_name = capfirst(model_class._meta.verbose_name)
+                block_list.append((block, verbose_name))
+            except LookupError:
+                # Block isn't installed - don't add it as a quick add default
+                pass
+
+        return block_list
