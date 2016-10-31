@@ -51,15 +51,15 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     admin_unpublished_count.allow_tags = True
 
     def get_fields(self, request, obj=None):
-        fields = ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
+        fields = ['url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation']
 
         # Don't show login_required unless needed
         if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
             fields.remove('login_required')
 
         # Show glitter tags if it's set to show.
-        if getattr(settings, 'GLITTER_PAGES_TAGS', False):
-            fields.append('tags')
+        if not getattr(settings, 'GLITTER_PAGES_TAGS', False):
+            fields.remove('tags')
 
         return fields
 
