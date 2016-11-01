@@ -43,6 +43,12 @@ blocks which are included with Glitter as Django apps::
         #...
     )
 
+After updating ``INSTALLED_APPS``, you'll need to migrate your database:
+
+.. code:: console
+
+    $ python manage.py migrate
+
 
 MIDDLEWARE_CLASSES
 ------------------
