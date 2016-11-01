@@ -71,7 +71,7 @@ Example:
 Attributes
 ----------
 
-:attr:`width`
+`width`
 
     The width of the column in pixels. Any blocks which render images can use this data to
     thumbnail any large images to an appropriate width.
