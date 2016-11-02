@@ -189,8 +189,9 @@ class BlockAdmin(ModelAdmin):
         })
 
     def has_change_permission(self, request, obj=None):
-        # This shouldn't happen - but given that we need to find out the permissions for the glitter
-        # object and not just this content block, just fail early incase something goes wrong.
+        # This shouldn't happen - but given that we need to find out the permissions for the
+        # glitter object and not just this content block, just fail early incase something goes
+        # wrong.
         if obj is None:
             return False
 
@@ -242,9 +243,10 @@ class BlockAdmin(ModelAdmin):
         opts = self.opts.app_label, self.opts.model_name
 
         if "_continue" in request.POST:
-            msg = _('The %(name)s block was changed successfully. You may edit it again below.') % {
-                'name': force_text(self.opts.verbose_name),
-            }
+            msg = _(
+                'The %(name)s block was changed successfully. You may edit it again below.'
+            ) % {'name': force_text(self.opts.verbose_name)}
+
             self.message_user(request, msg, messages.SUCCESS)
 
             # We redirect to the save and continue page, which updates the

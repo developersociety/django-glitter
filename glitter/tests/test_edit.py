@@ -342,7 +342,8 @@ class TestEditCopyVersion(BaseEditCase):
         SampleInline.objects.create(parent_block=sample_block, foreign_model=sample_model)
         content_block = ContentBlock.objects.create(
             obj_version=page_version, column='content', position=2,
-            content_type=ContentType.objects.get_for_model(sample_block), object_id=sample_block.id)
+            content_type=ContentType.objects.get_for_model(sample_block), object_id=sample_block.id
+        )
         sample_block.content_block = content_block
         sample_block.save()
 
