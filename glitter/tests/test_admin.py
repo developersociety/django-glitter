@@ -7,6 +7,7 @@ from django.contrib.admin.sites import AdminSite
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
 from django.conf import settings
@@ -124,6 +125,78 @@ class TestAdmin(TestCase):
             page_admin_fields(),
             ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
         )
+
+
+class TestPermissions(TestCase):
+    def setUp(self):
+        self.edit_permission = Permission.objects.get_by_natural_key(
+            'edit_page', 'glitter_pages', 'page'
+        )
+        self.publish_permission = Permission.objects.get_by_natural_key(
+            'publish_page', 'glitter_pages', 'page'
+        )
+
+        # Superuser
+        User = get_user_model()
+        self.superuser = User.objects.create_superuser(
+            username='superuser', email='', password=None
+        )
+
+        # Editor with editing permissions
+        self.editor = User.objects.create_user(username='editor', email='', password=None)
+        self.editor.is_staff = True
+        self.editor.save()
+        self.editor.user_permissions.add(self.edit_permission)
+
+        # Publisher with edit and publish permissions
+        self.publisher = User.objects.create_user(username='publisher', email='', password=None)
+        self.publisher.is_staff = True
+        self.publisher.save()
+        self.publisher.user_permissions.add(self.edit_permission, self.publish_permission)
+
+        # Staff with no editing permissions
+        self.staff = User.objects.create_user(username='staff', email='', password=None)
+        self.staff.is_staff = True
+        self.staff.save()
+
+        # Page with an unsaved page version
+        self.page = Page.objects.create(url='/test/', title='Test page')
+        self.page_version = Version.objects.create(
+            content_type=ContentType.objects.get_for_model(Page), object_id=self.page.id,
+            template_name='glitter/sample.html', owner=self.editor
+        )
+        self.page_admin = PageAdmin(Page, AdminSite())
+
+    def test_edit_permission(self):
+        # Only people with glitter_pages.edit_page have edit permission
+        request = HttpRequest()
+
+        request.user = self.editor
+        self.assertTrue(self.page_admin.has_edit_permission(request=request))
+        request.user = self.staff
+        self.assertFalse(self.page_admin.has_edit_permission(request=request))
+
+    def test_edit_version(self):
+        # Only the creator of an unsaved version can edit it
+        request = HttpRequest()
+
+        request.user = self.superuser
+        self.assertFalse(self.page_admin.has_edit_permission(
+            request=request, version=self.page_version
+        ))
+        request.user = self.editor
+        self.assertTrue(self.page_admin.has_edit_permission(
+            request=request, version=self.page_version
+        ))
+
+    def test_publish_permission(self):
+        # Only people with glitter_pages.publish_page have publish permission
+        request = HttpRequest()
+
+        request.user = self.publisher
+        self.assertTrue(self.page_admin.has_publish_permission(request=request))
+        request.user = self.staff
+        self.assertFalse(self.page_admin.has_publish_permission(request=request))
 
 
 class BaseViewsCase(TestAdmin):
