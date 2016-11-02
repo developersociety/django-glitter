@@ -177,8 +177,10 @@ class TestPermissions(TestCase):
         # Page with an unsaved page version
         self.page = Page.objects.create(url='/test/', title='Test page')
         self.page_version = Version.objects.create(
-            content_type=ContentType.objects.get_for_model(Page), object_id=self.page.id,
-            template_name='glitter/sample.html', owner=self.editor
+            content_type=ContentType.objects.get_for_model(Page),
+            object_id=self.page.id,
+            template_name='glitter/sample.html',
+            owner=self.editor,
         )
         self.page_admin = PageAdmin(Page, AdminSite())
 
@@ -192,6 +194,7 @@ class TestPermissions(TestCase):
 
         request.user = self.editor
         self.assertTrue(self.page_admin.has_edit_permission(request=request))
+
         request.user = self.staff
         self.assertFalse(self.page_admin.has_edit_permission(request=request))
 
@@ -203,6 +206,7 @@ class TestPermissions(TestCase):
         self.assertFalse(self.page_admin.has_edit_permission(
             request=request, version=self.page_version
         ))
+
         request.user = self.editor
         self.assertTrue(self.page_admin.has_edit_permission(
             request=request, version=self.page_version
@@ -214,6 +218,7 @@ class TestPermissions(TestCase):
 
         request.user = self.publisher
         self.assertTrue(self.page_admin.has_publish_permission(request=request))
+
         request.user = self.staff
         self.assertFalse(self.page_admin.has_publish_permission(request=request))
 
@@ -223,8 +228,10 @@ class TestPermissions(TestCase):
 
         request.user = self.editor
         self.assertTrue(self.book_admin.has_edit_permission(request=request))
+
         request.user = self.publisher
         self.assertTrue(self.book_admin.has_publish_permission(request=request))
+
         request.user = self.staff
         self.assertFalse(self.book_admin.has_edit_permission(request=request))
         self.assertFalse(self.book_admin.has_publish_permission(request=request))
