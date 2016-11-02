@@ -17,6 +17,7 @@ from glitter.blocks.html.models import HTML
 from glitter.models import Version, ContentBlock
 from glitter.pages.admin import PageAdmin, page_admin_fields
 from glitter.pages.models import Page
+from glitter.tests.sample.models import Book
 
 
 SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_APPS
@@ -127,13 +128,25 @@ class TestAdmin(TestCase):
         )
 
 
+@modify_settings(
+    INSTALLED_APPS={
+        'append': 'glitter.tests.sample',
+    },
+)
 class TestPermissions(TestCase):
     def setUp(self):
-        self.edit_permission = Permission.objects.get_by_natural_key(
+        # Permissions for objects we're testing
+        self.edit_page = Permission.objects.get_by_natural_key(
             'edit_page', 'glitter_pages', 'page'
         )
-        self.publish_permission = Permission.objects.get_by_natural_key(
+        self.publish_page = Permission.objects.get_by_natural_key(
             'publish_page', 'glitter_pages', 'page'
+        )
+        self.edit_book = Permission.objects.get_by_natural_key(
+            'edit_book', 'sample', 'book'
+        )
+        self.publish_book = Permission.objects.get_by_natural_key(
+            'publish_book', 'sample', 'book'
         )
 
         # Superuser
@@ -146,13 +159,15 @@ class TestPermissions(TestCase):
         self.editor = User.objects.create_user(username='editor', email='', password=None)
         self.editor.is_staff = True
         self.editor.save()
-        self.editor.user_permissions.add(self.edit_permission)
+        self.editor.user_permissions.add(self.edit_page, self.edit_book)
 
         # Publisher with edit and publish permissions
         self.publisher = User.objects.create_user(username='publisher', email='', password=None)
         self.publisher.is_staff = True
         self.publisher.save()
-        self.publisher.user_permissions.add(self.edit_permission, self.publish_permission)
+        self.publisher.user_permissions.add(
+            self.edit_page, self.publish_page, self.edit_book, self.publish_book
+        )
 
         # Staff with no editing permissions
         self.staff = User.objects.create_user(username='staff', email='', password=None)
@@ -166,6 +181,10 @@ class TestPermissions(TestCase):
             template_name='glitter/sample.html', owner=self.editor
         )
         self.page_admin = PageAdmin(Page, AdminSite())
+
+        # Sample model
+        self.book = Book.objects.create(title='Hello')
+        self.book_admin = PageAdmin(Book, AdminSite())
 
     def test_edit_permission(self):
         # Only people with glitter_pages.edit_page have edit permission
@@ -197,6 +216,18 @@ class TestPermissions(TestCase):
         self.assertTrue(self.page_admin.has_publish_permission(request=request))
         request.user = self.staff
         self.assertFalse(self.page_admin.has_publish_permission(request=request))
+
+    def test_book_model(self):
+        # Test that permissions work with different types of models
+        request = HttpRequest()
+
+        request.user = self.editor
+        self.assertTrue(self.book_admin.has_edit_permission(request=request))
+        request.user = self.publisher
+        self.assertTrue(self.book_admin.has_publish_permission(request=request))
+        request.user = self.staff
+        self.assertFalse(self.book_admin.has_edit_permission(request=request))
+        self.assertFalse(self.book_admin.has_publish_permission(request=request))
 
 
 class BaseViewsCase(TestAdmin):
