@@ -128,7 +128,9 @@ class GlitterAdminMixin(object):
 
     def has_edit_permission(self, request, obj=None, version=None):
         # Has the edit permission for this object type
-        can_edit = request.user.has_perm(self.opts.app_label + '.' + 'edit_page')
+        can_edit = request.user.has_perm('{}.edit_{}'.format(
+            self.opts.app_label, self.opts.model_name
+        ))
 
         if can_edit and version is not None:
             # Version must not be saved, and must belong to this user
@@ -138,7 +140,9 @@ class GlitterAdminMixin(object):
         return can_edit
 
     def has_publish_permission(self, request, obj=None):
-        return request.user.has_perm(self.opts.app_label + '.' + 'publish_page')
+        return request.user.has_perm('{}.publish_{}'.format(
+            self.opts.app_label, self.opts.model_name
+        ))
 
     def response_add(self, request, obj, *args, **kwargs):
         if '_saveandedit' in request.POST:
