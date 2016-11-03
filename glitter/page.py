@@ -208,7 +208,8 @@ class Glitter(object):
         # Fetch all content blocks in one go
         self.column_blocks = defaultdict(list)
         content_blocks = self.version.contentblock_set.select_related(
-            'content_type').prefetch_related('content_object').all()
+            'content_type'
+        ).prefetch_related('content_object').all()
 
         for content_block in content_blocks:
             self.column_blocks[content_block.column].append(content_block)
