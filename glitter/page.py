@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 from importlib import import_module
 
 from django.apps import apps
@@ -20,7 +20,6 @@ from django.utils.text import capfirst
 from .models import Version
 from .templates import get_layout, get_templates
 from .widgets import AddBlockSelect, ChooseColumnSelect, MoveBlockSelect
-
 
 # If no other settings are provided, show text/image/HTML blocks
 GLITTER_FALLBACK_BLOCKS = (
@@ -47,9 +46,19 @@ class GlitterBlock(object):
         mod_name, func_name = get_mod_func(render_function)
         block_view = getattr(import_module(mod_name), func_name)
 
-        self.html = block_view(
-            self.block, self.glitter_page.request, rerender, self.content_block, block_classes
-        )
+        if self.block:
+            # Following https://github.com/blancltd/django-glitter/pull/15, now when adding a
+            # `GlitterBlock` to a page, `self.block` will not be set until the GlitterBlock has
+            # been saved on the front end.
+            #
+            # There's Block Views around, e.g. `glitter.blocks.form.views.form_view`, which
+            # presume `self.block` will be set and then error out.
+            #
+            # Ideally we'd change all the custom view functions to be less error prone, but
+            # this is the more defensive approach.
+            self.html = block_view(
+                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+            )
 
     def css_classes(self):
         # Add some classes to the block to help style it
