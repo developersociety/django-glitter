@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 from importlib import import_module
 
 from django.apps import apps
@@ -20,7 +20,6 @@ from django.utils.text import capfirst
 from .models import Version
 from .templates import get_layout, get_templates
 from .widgets import AddBlockSelect, ChooseColumnSelect, MoveBlockSelect
-
 
 # If no other settings are provided, show text/image/HTML blocks
 GLITTER_FALLBACK_BLOCKS = (
@@ -47,9 +46,10 @@ class GlitterBlock(object):
         mod_name, func_name = get_mod_func(render_function)
         block_view = getattr(import_module(mod_name), func_name)
 
-        self.html = block_view(
-            self.block, self.glitter_page.request, rerender, self.content_block, block_classes
-        )
+        if self.block:
+            self.html = block_view(
+                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+            )
 
     def css_classes(self):
         # Add some classes to the block to help style it
