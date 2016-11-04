@@ -47,6 +47,15 @@ class GlitterBlock(object):
         block_view = getattr(import_module(mod_name), func_name)
 
         if self.block:
+            # Following https://github.com/blancltd/django-glitter/pull/15, now when adding a
+            # `GlitterBlock` to a page, `self.block` will not be set until the GlitterBlock has
+            # been saved on the front end.
+            #
+            # There's Block Views around, e.g. `glitter.blocks.form.views.form_view`, which
+            # presume `self.block` will be set and then error out.
+            #
+            # Ideally we'd change all the custom view functions to be less error prone, but
+            # this is the more defensive approach.
             self.html = block_view(
                 self.block, self.glitter_page.request, rerender, self.content_block, block_classes
             )
