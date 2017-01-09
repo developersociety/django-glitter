@@ -182,9 +182,14 @@
             }
             check_window_size();
         });
+
+        $('.block-image-selector').scroll(function(){
+            console.log('Window height: ' +$(window).height());
+            console.log('Document height: ' +$(this).height());
+            console.log('ScrollTop: ' +$(this).scrollTop());
+
+        });
     });
 
 
 })(django.jQuery);
-
-

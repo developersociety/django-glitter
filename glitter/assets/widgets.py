@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.templatetags.admin_static import static
@@ -73,7 +74,7 @@ class ImageSelect(Select):
 
         context = {
             'options': options,
-            'images': self.choices.queryset.order_by('-created_at', 'modified_at', 'title',),
+            'images': self.choices.queryset.order_by('-created_at', 'modified_at', 'title')[:20],
             'categories': ImageCategory.objects.all()
         }
         return context

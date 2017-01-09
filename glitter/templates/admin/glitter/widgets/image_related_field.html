@@ -57,10 +57,12 @@
         {% for image in images %}
             <div class="grid-item" id="{{ forloop.counter }}" visible="true">
                 <div class="image spinner">
-                    <img src="" data-src="{% thumbnail image.file '200x200' %}" obj-id="{{ image.id }}" data-category-id="{{ image.category_id }}">
+                  <img src="" data-src="{% thumbnail image.file '200x200' %}" obj-id="{{ image.id }}" data-category-id="{{ image.category_id }}" data-url="{% url 'block_admin:get-lazy-images' %}">
                 </div>
                 <h5>{{ image.title }}</h5>
-                <p>{{ image.image_width }}x{{ image.image_height }} {{ image.file_size|filesizeformat }} </p>
+                <p>
+                  {{ image.image_width }}x{{ image.image_height }} {{ image.file_size|filesizeformat }}
+                </p>
             </div>
         {% endfor %}
     </div>

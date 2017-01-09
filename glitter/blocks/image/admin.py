@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from glitter import block_admin
-
 from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
+
+from django.conf.urls import url
+
 from .forms import ImageBlockForm
 from .models import ImageBlock
 
@@ -25,6 +28,15 @@ class ImageBlockAdmin(block_admin.BlockModelAdmin):
             )
         return formfield
 
+    def get_urls(self):
+        urls = super(ImageBlockAdmin, self).get_urls()
+        image_block_urls = [
+            url(r'^get-lazy-images/$', self.get_lazy_images, name='get-lazy-images')
+        ]
+        return image_block_urls + urls
+
+    def get_lazy_images(self, request):
+        import ipdb; ipdb.set_trace()
 
 block_admin.site.register(ImageBlock, ImageBlockAdmin)
 block_admin.site.register_block(ImageBlock, 'Common')
