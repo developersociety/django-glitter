@@ -191,7 +191,6 @@
         }
 
         $('.block-image-selector').scroll(function(){
-            
             // Load images when reached the bottom of 20%.
             var LAZY_THRESHOLD = 20;
 

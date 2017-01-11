@@ -12,6 +12,9 @@ from django.template.loader import render_to_string
 from glitter.assets.models import ImageCategory
 
 
+LIMIT_IMAGES_TO = 20
+
+
 class ImageRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
     def get_related_url(self, info, action, *args):
         url_params = '&'.join("%s=%s" % param for param in [
@@ -68,13 +71,16 @@ class ImageSelect(Select):
         js = ('glitter/js/widgets/images.js',)
 
     def render(self, name, value, attrs=None, choices=()):
+
         if value is None:
             value = ''
         options = self.render_options(choices, [value])
 
         context = {
             'options': options,
-            'images': self.choices.queryset.order_by('-created_at', 'modified_at', 'title')[:20],
+            'images': self.choices.queryset.order_by(
+                '-created_at', 'modified_at', 'title'
+            )[:LIMIT_IMAGES_TO],
             'categories': ImageCategory.objects.all()
         }
         return context

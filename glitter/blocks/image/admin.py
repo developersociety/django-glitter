@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from glitter import block_admin
 from glitter.assets.models import Image
-from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
+from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect, LIMIT_IMAGES_TO
 
 from django.conf.urls import url
 from django.http import JsonResponse
@@ -45,7 +45,7 @@ class ImageBlockAdmin(block_admin.BlockModelAdmin):
             id__lt=last_image_id
         ).order_by(
             '-created_at', 'modified_at', 'title'
-        )[:20]
+        )[:LIMIT_IMAGES_TO]
         template = get_template('glitter/blocks/includes/lazy_images.html')
         context = Context({'images': images})
         html = template.render(context)
