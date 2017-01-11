@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 from django.contrib.admin.sites import AdminSite
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
-from django.conf import settings
+from django.test.client import RequestFactory
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
 from glitter.models import Version, ContentBlock
-from glitter.pages.admin import PageAdmin, page_admin_fields
+from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
+from glitter.tests.sample.models import Book
 
 
 SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_APPS
@@ -47,8 +51,8 @@ class TestAdmin(TestCase):
         # Information about model
         self.info = self.page._meta.app_label, self.page._meta.model_name
 
-        User = get_user_model()
         # Superuser
+        User = get_user_model()
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
         self.super_user_client.login(username='test', password='test')
@@ -120,10 +124,122 @@ class TestAdmin(TestCase):
         self.super_user_client.get(self.page_redirect_url)
 
     def test_show_login(self):
+        self.factory = RequestFactory()
+        request = self.factory.get('/')
+
         self.assertEqual(
-            page_admin_fields(),
+            self.page_admin.get_fields(request),
             ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
         )
+
+
+@modify_settings(
+    INSTALLED_APPS={
+        'append': 'glitter.tests.sample',
+    },
+)
+class TestPermissions(TestCase):
+    def setUp(self):
+        # Permissions for objects we're testing
+        self.edit_page = Permission.objects.get_by_natural_key(
+            'edit_page', 'glitter_pages', 'page'
+        )
+        self.publish_page = Permission.objects.get_by_natural_key(
+            'publish_page', 'glitter_pages', 'page'
+        )
+        self.edit_book = Permission.objects.get_by_natural_key(
+            'edit_book', 'sample', 'book'
+        )
+        self.publish_book = Permission.objects.get_by_natural_key(
+            'publish_book', 'sample', 'book'
+        )
+
+        # Superuser
+        User = get_user_model()
+        self.superuser = User.objects.create_superuser(
+            username='superuser', email='', password=None
+        )
+
+        # Editor with editing permissions
+        self.editor = User.objects.create_user(username='editor', email='', password=None)
+        self.editor.is_staff = True
+        self.editor.save()
+        self.editor.user_permissions.add(self.edit_page, self.edit_book)
+
+        # Publisher with edit and publish permissions
+        self.publisher = User.objects.create_user(username='publisher', email='', password=None)
+        self.publisher.is_staff = True
+        self.publisher.save()
+        self.publisher.user_permissions.add(
+            self.edit_page, self.publish_page, self.edit_book, self.publish_book
+        )
+
+        # Staff with no editing permissions
+        self.staff = User.objects.create_user(username='staff', email='', password=None)
+        self.staff.is_staff = True
+        self.staff.save()
+
+        # Page with an unsaved page version
+        self.page = Page.objects.create(url='/test/', title='Test page')
+        self.page_version = Version.objects.create(
+            content_type=ContentType.objects.get_for_model(Page),
+            object_id=self.page.id,
+            template_name='glitter/sample.html',
+            owner=self.editor,
+        )
+        self.page_admin = PageAdmin(Page, AdminSite())
+
+        # Sample model
+        self.book = Book.objects.create(title='Hello')
+        self.book_admin = PageAdmin(Book, AdminSite())
+
+    def test_edit_permission(self):
+        # Only people with glitter_pages.edit_page have edit permission
+        request = HttpRequest()
+
+        request.user = self.editor
+        self.assertTrue(self.page_admin.has_edit_permission(request=request))
+
+        request.user = self.staff
+        self.assertFalse(self.page_admin.has_edit_permission(request=request))
+
+    def test_edit_version(self):
+        # Only the creator of an unsaved version can edit it
+        request = HttpRequest()
+
+        request.user = self.superuser
+        self.assertFalse(self.page_admin.has_edit_permission(
+            request=request, version=self.page_version
+        ))
+
+        request.user = self.editor
+        self.assertTrue(self.page_admin.has_edit_permission(
+            request=request, version=self.page_version
+        ))
+
+    def test_publish_permission(self):
+        # Only people with glitter_pages.publish_page have publish permission
+        request = HttpRequest()
+
+        request.user = self.publisher
+        self.assertTrue(self.page_admin.has_publish_permission(request=request))
+
+        request.user = self.staff
+        self.assertFalse(self.page_admin.has_publish_permission(request=request))
+
+    def test_book_model(self):
+        # Test that permissions work with different types of models
+        request = HttpRequest()
+
+        request.user = self.editor
+        self.assertTrue(self.book_admin.has_edit_permission(request=request))
+
+        request.user = self.publisher
+        self.assertTrue(self.book_admin.has_publish_permission(request=request))
+
+        request.user = self.staff
+        self.assertFalse(self.book_admin.has_edit_permission(request=request))
+        self.assertFalse(self.book_admin.has_publish_permission(request=request))
 
 
 class BaseViewsCase(TestAdmin):
@@ -163,6 +279,14 @@ class BaseViewsCase(TestAdmin):
         )
         self.html3_block.content_block = self.html3_content_block
         self.html3_block.save()
+
+        # Create content block without object.
+        self.html4_content_block = ContentBlock.objects.create(
+            obj_version=self.page_version,
+            column='main_content',
+            position=5,
+            content_type=ContentType.objects.get_for_model(self.html1_block),
+        )
 
     def change_page_version(self):
         self.page_version.version_number = 1

@@ -1,7 +1,10 @@
-from glitter import block_admin
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+from glitter.blockadmin import blocks
 
 from .models import CallToActionBlock
 
 
-block_admin.site.register(CallToActionBlock)
-block_admin.site.register_block(CallToActionBlock, 'Common')
+blocks.site.register(CallToActionBlock)
+blocks.site.register_block(CallToActionBlock, 'Common')

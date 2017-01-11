@@ -1,5 +1,5 @@
 {% extends "blockadmin/base_site.html" %}
-{% load i18n admin_urls admin_static admin_modify %}
+{% load i18n admin_urls admin_static admin_modify glitter_admin_js %}
 
 
 {% block extrahead %}{{ block.super }}
@@ -58,7 +58,7 @@
 {% block after_related_objects %}{% endblock %}
 
 {% block submit_buttons_bottom %}
-{% with has_delete_permission=False has_add_permission=False %}
+{% with has_delete_permission=False has_add_permission=False has_change_permission=True %}
     {% submit_row %}
 {% endwith %}
 {% endblock %}

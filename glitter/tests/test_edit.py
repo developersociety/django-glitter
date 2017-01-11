@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os.path
 from unittest import skipIf
@@ -341,9 +342,18 @@ class TestEditCopyVersion(BaseEditCase):
         SampleInline.objects.create(parent_block=sample_block, foreign_model=sample_model)
         content_block = ContentBlock.objects.create(
             obj_version=page_version, column='content', position=2,
-            content_type=ContentType.objects.get_for_model(sample_block), object_id=sample_block.id)
+            content_type=ContentType.objects.get_for_model(sample_block), object_id=sample_block.id
+        )
         sample_block.content_block = content_block
         sample_block.save()
+
+        # Create empty content block without object.
+        ContentBlock.objects.create(
+            obj_version=page_version,
+            column='content',
+            position=6,
+            content_type=ContentType.objects.get_for_model(html_block),
+        )
 
         page_version.generate_version()
         page_version.save()

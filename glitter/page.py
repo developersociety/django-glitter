@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict, defaultdict
 from importlib import import_module
 
+from django.apps import apps
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_mod_func, reverse
@@ -19,10 +21,11 @@ from .models import Version
 from .templates import get_layout, get_templates
 from .widgets import AddBlockSelect, ChooseColumnSelect, MoveBlockSelect
 
-
-# If no other settings are provided, just show HTML as a quick add block
-GLITTER_DEFAULT_BLOCKS = (
-    ('glitter.blocks.HTML', 'HTML'),
+# If no other settings are provided, show text/image/HTML blocks
+GLITTER_FALLBACK_BLOCKS = (
+    'glitter_redactor.Redactor',
+    'glitter_image.ImageBlock',
+    'glitter_html.HTML',
 )
 
 
@@ -38,15 +41,29 @@ class GlitterBlock(object):
         # Add some classes to the block to help style it
         block_classes = self.css_classes()
 
-        # Render the block
-        mod_name, func_name = get_mod_func(self.block.render_function)
+        block_class = self.content_block.content_type.model_class()
+        render_function = block_class.render_function
+        mod_name, func_name = get_mod_func(render_function)
         block_view = getattr(import_module(mod_name), func_name)
-        self.html = block_view(
-            self.block, self.glitter_page.request, rerender, self.content_block, block_classes)
+
+        if self.block:
+            # Following https://github.com/blancltd/django-glitter/pull/15, now when adding a
+            # `GlitterBlock` to a page, `self.block` will not be set until the GlitterBlock has
+            # been saved on the front end.
+            #
+            # There's Block Views around, e.g. `glitter.blocks.form.views.form_view`, which
+            # presume `self.block` will be set and then error out.
+            #
+            # Ideally we'd change all the custom view functions to be less error prone, but
+            # this is the more defensive approach.
+            self.html = block_view(
+                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+            )
 
     def css_classes(self):
         # Add some classes to the block to help style it
-        block_classes = ['glitter_page_blocktype_%s' % (self.block._meta.model_name,)]
+
+        block_classes = ['glitter_page_blocktype_%s' % (self.content_block.content_type.model)]
 
         if self.block_number == 1:
             block_classes.append('glitter_page_block_first')
@@ -62,11 +79,14 @@ class GlitterBlock(object):
         return block_classes
 
     def block_type(self):
-        return capfirst(force_text(self.content_block.content_object._meta.verbose_name))
+        """ This gets display on the block header. """
+        return capfirst(force_text(
+            self.content_block.content_type.model_class()._meta.verbose_name
+        ))
 
     def edit_url(self):
-        opts = self.block._meta.app_label, self.block._meta.model_name
-        return reverse('block_admin:%s_%s_change' % opts, args=(self.block.pk,))
+        opts = self.content_block.content_type.app_label, self.content_block.content_type.model
+        return reverse('block_admin:%s_%s_change' % opts, args=(self.content_block.pk,))
 
     def choose_column_widget(self):
         column_options = self.glitter_page.get_column_choices()
@@ -78,6 +98,8 @@ class GlitterBlock(object):
         return widget.render(name='', value=self.column.name)
 
     def move_block_widget(self):
+
+        # Imported here as causing ciurcular imports.
         from glitter.forms import MoveBlockForm
 
         move_options = []
@@ -133,8 +155,7 @@ class GlitterColumn(object):
                 'glitter': self.glitter_page,
                 'column_name': self.name,
                 'verbose_name': self.verbose_name,
-                'default_blocks': getattr(
-                    settings, 'GLITTER_DEFAULT_BLOCKS', GLITTER_DEFAULT_BLOCKS),
+                'default_blocks': self.glitter_page.default_blocks,
                 'add_block_widget': self.add_block_widget(),
             })
 
@@ -148,13 +169,13 @@ class GlitterColumn(object):
         return widget.render(name='', value=None)
 
     def add_block_options(self):
-        from glitter import block_admin
+        from .blockadmin import blocks
 
         block_choices = []
 
         # Group all block by category
-        for category in sorted(block_admin.site.block_list):
-            category_blocks = block_admin.site.block_list[category]
+        for category in sorted(blocks.site.block_list):
+            category_blocks = blocks.site.block_list[category]
             category_choices = (('%s.%s' % (x._meta.app_label, x._meta.object_name),
                                  capfirst(force_text(x._meta.verbose_name))) for x in
                                 category_blocks)
@@ -195,9 +216,12 @@ class Glitter(object):
 
         # Fetch all content blocks in one go
         self.column_blocks = defaultdict(list)
+        content_blocks = self.version.contentblock_set.select_related(
+            'content_type'
+        ).prefetch_related('content_object').all()
 
-        for i in self.version.contentblock_set.all():
-            self.column_blocks[i.column].append(i)
+        for content_block in content_blocks:
+            self.column_blocks[content_block.column].append(content_block)
 
     def render(self, edit_mode=False, rerender=False):
         columns = OrderedDict()
@@ -257,3 +281,34 @@ class Glitter(object):
             name = self.layout.get_column_name(column)
             choices.append((column, name))
         return choices
+
+    @cached_property
+    def default_blocks(self):
+        """
+        Return a list of default block tuples (appname.ModelName, verbose name).
+
+        Next to the dropdown list of block types, a small number of common blocks which are
+        frequently used can be added immediately to a column with one click. This method defines
+        the list of default blocks.
+        """
+        # Use the block list provided by settings if it's defined
+        block_list = getattr(settings, 'GLITTER_DEFAULT_BLOCKS', None)
+
+        if block_list is not None:
+            return block_list
+
+        # Try and auto fill in default blocks if the apps are installed
+        block_list = []
+
+        for block in GLITTER_FALLBACK_BLOCKS:
+            app_name, model_name = block.split('.')
+
+            try:
+                model_class = apps.get_model(app_name, model_name)
+                verbose_name = capfirst(model_class._meta.verbose_name)
+                block_list.append((block, verbose_name))
+            except LookupError:
+                # Block isn't installed - don't add it as a quick add default
+                pass
+
+        return block_list

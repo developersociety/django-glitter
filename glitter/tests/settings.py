@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 import os
 
@@ -43,19 +44,26 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'glitter.tests.sample',
-    'mptt',
     'glitter',
-    'glitter.pages',
+    'glitter.assets',
+    'glitter.blocks.banner',
+    'glitter.blocks.form',
     'glitter.blocks.html',
+    'glitter.blocks.redactor',
+    'glitter.blocks.related_pages',
+    'glitter.pages',
+    'glitter.tests.sample',
     'glitter.tests.sampleblocks',
+    'mptt',
+    'sorl.thumbnail',
+    'taggit',
 )
 
 USE_TZ = True

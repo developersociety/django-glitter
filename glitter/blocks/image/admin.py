@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from glitter import block_admin
-from glitter.assets.models import Image
-from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect, LIMIT_IMAGES_TO
-
 from django.conf.urls import url
 from django.http import JsonResponse
 from django.template import Context
 from django.template.loader import get_template
 
+from glitter.assets.models import Image
+from glitter.assets.widgets import LIMIT_IMAGES_TO, ImageRelatedFieldWidgetWrapper, ImageSelect
+from glitter.blockadmin import blocks
+
 from .forms import ImageBlockForm
 from .models import ImageBlock
 
 
-class ImageBlockAdmin(block_admin.BlockModelAdmin):
+class ImageBlockAdmin(blocks.BlockAdmin):
     form = ImageBlockForm
 
     def formfield_for_dbfield(self, db_field, **kwargs):
@@ -52,5 +52,5 @@ class ImageBlockAdmin(block_admin.BlockModelAdmin):
         return JsonResponse({'html': html, 'last_image_id': last_image_id})
 
 
-block_admin.site.register(ImageBlock, ImageBlockAdmin)
-block_admin.site.register_block(ImageBlock, 'Common')
+blocks.site.register(ImageBlock, ImageBlockAdmin)
+blocks.site.register_block(ImageBlock, 'Common')

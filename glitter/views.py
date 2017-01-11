@@ -4,10 +4,10 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.http.response import HttpResponse
 from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_protect
+from django.template.loader import render_to_string
 
 from glitter.models import Version
 from glitter.page import Glitter
@@ -18,13 +18,16 @@ def render_page(request, page, page_version, edit=False):
     glitter = Glitter(page_version, request=request)
     columns = glitter.render(edit_mode=edit)
 
-    return render_to_response(page_version.template_name, {
+    template_name = page_version.template_name
+    context = {
         'glitter': glitter,
         'edit_mode': edit,
         'columns': columns,
         page._meta.model_name: page,
-        'object': page,
-    }, context_instance=RequestContext(request))
+        'object': page}
+
+    rendered = render_to_string(template_name, context, request=request)
+    return HttpResponse(rendered)
 
 
 @csrf_protect
@@ -49,11 +52,12 @@ def render_object_unpublished(request, obj):
         # No version available, go edit a new template
         next_url = reverse('admin:%s_%s_template' % info, kwargs={'object_id': obj.id})
 
-    response = render_to_response('admin/glitter/object_unpublished.html', {
+    template_name = 'admin/glitter/object_unpublished.html'
+    context = {
         'object': obj,
         'version': version,
         'next_url': next_url,
-        'verbose_name': verbose_name,
-    }, context_instance=RequestContext(request))
+        'verbose_name': verbose_name}
 
-    return response
+    rendered = render_to_string(template_name, context, request=request)
+    return HttpResponse(rendered)

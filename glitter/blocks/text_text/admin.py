@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django import forms
 from django.conf import settings
 
-from glitter import block_admin
+from glitter.blockadmin import blocks
 
 from .models import TextTextBlock
 
@@ -35,9 +36,9 @@ def redactor_block_form():
     return TextTextBlockForm
 
 
-class TextTextBlockAdmin(block_admin.BlockModelAdmin):
+class TextTextBlockAdmin(blocks.BlockAdmin):
     form = redactor_block_form()
 
 
-block_admin.site.register(TextTextBlock, TextTextBlockAdmin)
-block_admin.site.register_block(TextTextBlock, 'Common')
+blocks.site.register(TextTextBlock, TextTextBlockAdmin)
+blocks.site.register_block(TextTextBlock, 'Common')
