@@ -138,7 +138,6 @@
             });
         }
 
-
         $('.browse-images').click(function(){
             reveal_images();
         });
@@ -147,7 +146,7 @@
             $(this).parent().find('select').val('');
         });
 
-        $('.block-image-selector img').click(function(){
+        $('.block-image-selector').on('click', 'img', function(){
             obj_id = $(this).attr('obj-id');
             $select_image = $(this).closest('.block-image-selector').parent().find('.image-related-field');
             $select_image.val(obj_id);
@@ -183,11 +182,39 @@
             check_window_size();
         });
 
-        $('.block-image-selector').scroll(function(){
-            console.log('Window height: ' +$(window).height());
-            console.log('Document height: ' +$(this).height());
-            console.log('ScrollTop: ' +$(this).scrollTop());
+        // Array to hold what ID's been called for the images:
+        IDS_CALLED = [];
+        function inject_images(data){
+            $('.image-grid').append(data.html);
+            reveal_images();
+            check_window_size();
+        }
 
+        $('.block-image-selector').scroll(function(){
+            
+            // Load images when reached the bottom of 20%.
+            var LAZY_THRESHOLD = 20;
+
+            // Ajax load image url.
+            var AJAX_LOAD_IMAGES_URL = this.dataset.url;
+
+            // Measurement of the height of an element's content, including content not visible on the scree due to overlfow.
+            var scroll_height = this.scrollHeight;
+
+            // Variable at what pixel height should start loading the images.
+            var load_images =  (scroll_height - (scroll_height * (LAZY_THRESHOLD/100)));
+
+            // Get last image id.
+            var last_image_id = $(this).find($('.grid-item')).last().find('img').attr('obj-id');
+
+            if (load_images <= (this.scrollTop + this.offsetHeight)){
+                if (IDS_CALLED.indexOf(last_image_id) < 0){
+                    IDS_CALLED.push(last_image_id);
+                    $.get(AJAX_LOAD_IMAGES_URL, {'last_image_id': last_image_id}, function(data){
+                        inject_images(data);
+                    }, "json");
+                }
+            }
         });
     });
 

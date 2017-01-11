@@ -1,0 +1,13 @@
+{% load thumbnail %}
+
+{% for image in images %}
+    <div class="grid-item" id="{{ image.id }}" visible="true">
+        <div class="image spinner">
+          <img src="" data-src="{% thumbnail image.file '200x200' %}" obj-id="{{ image.id }}" data-category-id="{{ image.category_id }}">
+        </div>
+        <h5>{{ image.title }}</h5>
+        <p>
+          {{ image.image_width }}x{{ image.image_height }} {{ image.file_size|filesizeformat }}
+        </p>
+    </div>
+{% endfor %}

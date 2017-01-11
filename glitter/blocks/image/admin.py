@@ -2,9 +2,13 @@
 from __future__ import unicode_literals
 
 from glitter import block_admin
+from glitter.assets.models import Image
 from glitter.assets.widgets import ImageRelatedFieldWidgetWrapper, ImageSelect
 
 from django.conf.urls import url
+from django.http import JsonResponse
+from django.template import Context
+from django.template.loader import get_template
 
 from .forms import ImageBlockForm
 from .models import ImageBlock
@@ -36,7 +40,17 @@ class ImageBlockAdmin(block_admin.BlockModelAdmin):
         return image_block_urls + urls
 
     def get_lazy_images(self, request):
-        import ipdb; ipdb.set_trace()
+        last_image_id = request.GET['last_image_id']
+        images = Image.objects.filter(
+            id__lt=last_image_id
+        ).order_by(
+            '-created_at', 'modified_at', 'title'
+        )[:20]
+        template = get_template('glitter/blocks/includes/lazy_images.html')
+        context = Context({'images': images})
+        html = template.render(context)
+        return JsonResponse({'html': html, 'last_image_id': last_image_id})
+
 
 block_admin.site.register(ImageBlock, ImageBlockAdmin)
 block_admin.site.register_block(ImageBlock, 'Common')

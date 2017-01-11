@@ -1,4 +1,5 @@
-{% load i18n admin_static thumbnail %}
+{% load i18n %}
+{% load admin_static %}
 
 
 <div class="related-widget-wrapper btn-holder">
@@ -25,7 +26,7 @@
 
 
 
-<div class="block-image-selector">
+<div class="block-image-selector" data-url="{% url 'block_admin:get-lazy-images' %}">
     <h2>Choose an Image</h2>
     <hr />
 
@@ -54,16 +55,6 @@
     </fieldset>
 
     <div class="image-grid" id="image_grid">
-        {% for image in images %}
-            <div class="grid-item" id="{{ forloop.counter }}" visible="true">
-                <div class="image spinner">
-                  <img src="" data-src="{% thumbnail image.file '200x200' %}" obj-id="{{ image.id }}" data-category-id="{{ image.category_id }}" data-url="{% url 'block_admin:get-lazy-images' %}">
-                </div>
-                <h5>{{ image.title }}</h5>
-                <p>
-                  {{ image.image_width }}x{{ image.image_height }} {{ image.file_size|filesizeformat }}
-                </p>
-            </div>
-        {% endfor %}
+      {% include "glitter/blocks/includes/lazy_images.html" %}
     </div>
 </div>
