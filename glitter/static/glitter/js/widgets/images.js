@@ -190,6 +190,14 @@
             check_window_size();
         }
 
+        function toggle_loader(show){
+            if (show === true){
+                $('.image-grid').after('<div class="loader"></div>');
+            } else {
+                $('.block-image-selector').find('.loader').remove();
+            }
+        }
+
         $('.block-image-selector').scroll(function(){
             // Load images when reached the bottom of 20%.
             var LAZY_THRESHOLD = 20;
@@ -209,7 +217,9 @@
             if (load_images <= (this.scrollTop + this.offsetHeight)){
                 if (IDS_CALLED.indexOf(last_image_id) < 0){
                     IDS_CALLED.push(last_image_id);
+                    toggle_loader(show=true);
                     $.get(AJAX_LOAD_IMAGES_URL, {'last_image_id': last_image_id}, function(data){
+                        toggle_loader(show=false);
                         inject_images(data);
                     }, "json");
                 }

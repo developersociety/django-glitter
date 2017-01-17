@@ -57,7 +57,7 @@ class ImageRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
         )
         css_media = Media(
             css={
-                'all': (static('glitter/css/widgets/images.css'),)
+                'all': (static('glitter/css/widgets/images.min.css'),)
             }
         )
         return self.widget.media + js_media + css_media
@@ -66,7 +66,7 @@ class ImageRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
 class ImageSelect(Select):
     class Media:
         css = {
-            'all': ('glitter/css/widgets/images.css',)
+            'all': ('glitter/css/widgets/images.min.css',)
         }
         js = ('glitter/js/widgets/images.js',)
 
