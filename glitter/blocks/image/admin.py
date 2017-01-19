@@ -40,16 +40,22 @@ class ImageBlockAdmin(blocks.BlockAdmin):
         return image_block_urls + urls
 
     def get_lazy_images(self, request):
-        last_image_id = request.GET['last_image_id']
-        images = Image.objects.filter(
-            id__lt=last_image_id
-        ).order_by(
-            '-created_at', 'modified_at', 'title'
-        )[:LIMIT_IMAGES_TO]
-        template = get_template('glitter/blocks/includes/lazy_images.html')
-        context = Context({'images': images})
-        html = template.render(context)
-        return JsonResponse({'html': html, 'last_image_id': last_image_id})
+        last_image_id = request.GET.get('last_image_id', None)
+        if last_image_id and last_image_id.isdigit():
+            images = Image.objects.filter(
+                id__lt=last_image_id
+            ).order_by(
+                '-created_at', 'modified_at', 'title'
+            )[:LIMIT_IMAGES_TO]
+            template = get_template('glitter/blocks/includes/lazy_images.html')
+            context = Context({'images': images})
+            html = template.render(context)
+            return JsonResponse({'html': html, 'last_image_id': last_image_id})
+        else:
+            response = JsonResponse({'error': 'No last image id passed'})
+            response.status_code = 400
+
+        return response
 
 
 blocks.site.register(ImageBlock, ImageBlockAdmin)
