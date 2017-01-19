@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test import override_settings
+
+from glitter.blockadmin.blocks import BlockAdminSite
 
 
+@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class TestImageBlockAdmin(TestCase):
     fixtures = ['image.json']
+
+    def setUp(self):
+        self.site = BlockAdminSite(name='block_admin')
 
     def test_lazy_loading(self):
         url = reverse('block_admin:get-lazy-images')

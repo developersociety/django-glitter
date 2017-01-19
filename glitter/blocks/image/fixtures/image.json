@@ -24,7 +24,7 @@
         "template_name": "glitter/home.html",
         "modified": "2017-01-17T11:30:49.541Z",
         "object_id": 1,
-        "content_type": 46,
+        "content_type": 23,
         "owner": 1
     },
     "model": "glitter.version",

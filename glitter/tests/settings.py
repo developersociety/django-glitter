@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'glitter',
     'glitter.assets',
     'glitter.blocks.banner',
+    'glitter.blocks.image',
     'glitter.blocks.form',
     'glitter.blocks.html',
     'glitter.blocks.redactor',
