@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.functional import cached_property
+from django.utils.http import urlencode
 from django.utils.text import capfirst
 
 from .models import Version
@@ -41,29 +42,18 @@ class GlitterBlock(object):
         # Add some classes to the block to help style it
         block_classes = self.css_classes()
 
-        block_class = self.content_block.content_type.model_class()
-        render_function = block_class.render_function
-        mod_name, func_name = get_mod_func(render_function)
+        # Render the block
+        mod_name, func_name = get_mod_func(self.block.render_function)
         block_view = getattr(import_module(mod_name), func_name)
 
-        if self.block:
-            # Following https://github.com/blancltd/django-glitter/pull/15, now when adding a
-            # `GlitterBlock` to a page, `self.block` will not be set until the GlitterBlock has
-            # been saved on the front end.
-            #
-            # There's Block Views around, e.g. `glitter.blocks.form.views.form_view`, which
-            # presume `self.block` will be set and then error out.
-            #
-            # Ideally we'd change all the custom view functions to be less error prone, but
-            # this is the more defensive approach.
-            self.html = block_view(
-                self.block, self.glitter_page.request, rerender, self.content_block, block_classes
-            )
+        self.html = block_view(
+            self.block, self.glitter_page.request, rerender, self.content_block, block_classes
+        )
 
     def css_classes(self):
         # Add some classes to the block to help style it
 
-        block_classes = ['glitter_page_blocktype_%s' % (self.content_block.content_type.model)]
+        block_classes = ['glitter_page_blocktype_{}'.format(self.block._meta.model_name)]
 
         if self.block_number == 1:
             block_classes.append('glitter_page_block_first')
@@ -85,8 +75,8 @@ class GlitterBlock(object):
         ))
 
     def edit_url(self):
-        opts = self.content_block.content_type.app_label, self.content_block.content_type.model
-        return reverse('block_admin:%s_%s_change' % opts, args=(self.content_block.pk,))
+        opts = self.block._meta.app_label, self.block._meta.model_name
+        return reverse('block_admin:%s_%s_change' % opts, args=(self.block.pk,))
 
     def choose_column_widget(self):
         column_options = self.glitter_page.get_column_choices()
@@ -98,8 +88,7 @@ class GlitterBlock(object):
         return widget.render(name='', value=self.column.name)
 
     def move_block_widget(self):
-
-        # Imported here as causing ciurcular imports.
+        # Imported here due to circular imports
         from glitter.forms import MoveBlockForm
 
         move_options = []
@@ -153,22 +142,57 @@ class GlitterColumn(object):
 
             column_context.update({
                 'glitter': self.glitter_page,
-                'column_name': self.name,
                 'verbose_name': self.verbose_name,
-                'default_blocks': self.glitter_page.default_blocks,
-                'add_block_widget': self.add_block_widget(),
+                'default_blocks_top': self.get_default_blocks(top=True),
+                'default_blocks_bottom': self.get_default_blocks(),
+                'add_block_widget_top': self.add_block_widget(top=True),
+                'add_block_widget_bottom': self.add_block_widget(),
             })
 
         return render_to_string(column_template, column_context)
 
-    def add_block_widget(self):
+    def get_default_blocks(self, top=False):
+        """
+        Return a list of column default block tuples (URL, verbose name).
+
+        Used for quick add block buttons.
+        """
+        default_blocks = []
+
+        for block_model, block_name in self.glitter_page.default_blocks:
+            block = apps.get_model(block_model)
+            base_url = reverse('block_admin:{}_{}_add'.format(
+                block._meta.app_label, block._meta.model_name,
+            ), kwargs={
+                'version_id': self.glitter_page.version.id,
+            })
+            block_qs = {
+                'column': self.name,
+                'top': top,
+            }
+            block_url = '{}?{}'.format(base_url, urlencode(block_qs))
+            block_text = capfirst(force_text(block._meta.verbose_name))
+
+            default_blocks.append((block_url, block_text))
+
+        return default_blocks
+
+    def add_block_widget(self, top=False):
+        """
+        Return a select widget for blocks which can be added to this column.
+        """
         widget = AddBlockSelect(attrs={
             'class': 'glitter-add-block-select',
-        }, choices=self.add_block_options())
+        }, choices=self.add_block_options(top=top))
 
         return widget.render(name='', value=None)
 
-    def add_block_options(self):
+    def add_block_options(self, top):
+        """
+        Return a list of URLs and titles for blocks which can be added to this column.
+
+        All available blocks are grouped by block category.
+        """
         from .blockadmin import blocks
 
         block_choices = []
@@ -176,9 +200,23 @@ class GlitterColumn(object):
         # Group all block by category
         for category in sorted(blocks.site.block_list):
             category_blocks = blocks.site.block_list[category]
-            category_choices = (('%s.%s' % (x._meta.app_label, x._meta.object_name),
-                                 capfirst(force_text(x._meta.verbose_name))) for x in
-                                category_blocks)
+            category_choices = []
+
+            for block in category_blocks:
+                base_url = reverse('block_admin:{}_{}_add'.format(
+                    block._meta.app_label, block._meta.model_name,
+                ), kwargs={
+                    'version_id': self.glitter_page.version.id,
+                })
+                block_qs = {
+                    'column': self.name,
+                    'top': top,
+                }
+                block_url = '{}?{}'.format(base_url, urlencode(block_qs))
+                block_text = capfirst(force_text(block._meta.verbose_name))
+
+                category_choices.append((block_url, block_text))
+
             category_choices = sorted(category_choices, key=lambda x: x[1])
             block_choices.append((category, category_choices))
 
@@ -221,7 +259,11 @@ class Glitter(object):
         ).prefetch_related('content_object').all()
 
         for content_block in content_blocks:
-            self.column_blocks[content_block.column].append(content_block)
+            # As ContentBlock links to blocks using GenericForeignKey, it's possible to delete a
+            # block and for the ContentBlock to still exist. We need to filter them out to prevent
+            # any errors.
+            if content_block.content_object is not None:
+                self.column_blocks[content_block.column].append(content_block)
 
     def render(self, edit_mode=False, rerender=False):
         columns = OrderedDict()

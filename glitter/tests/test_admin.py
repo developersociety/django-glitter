@@ -353,7 +353,10 @@ class TestPageBlockAddView(BaseViewsCase):
     def setUp(self):
         super(TestPageBlockAddView, self).setUp()
         self.page_block_add_view_url = reverse(
-            'admin:%s_%s_block_add' % self.info, args=(self.page_version.id,)
+            'block_admin:%s_%s_add' % (HTML._meta.app_label, HTML._meta.model_name),
+            kwargs={
+                'version_id': self.page_version.id,
+            }
         )
 
     def test_permissions(self):

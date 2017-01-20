@@ -52,15 +52,10 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
     // Get the local namespaced utils
     var $ = GlitterEditor.jQuery;
 
-    var csrf_token,
-        add_block_url;
+    var csrf_token;
 
     GlitterEditor.store_csrf_token = function(token) {
         csrf_token = token;
-    };
-
-    GlitterEditor.set_add_block_url = function(url) {
-        add_block_url = url;
     };
 
 
@@ -177,56 +172,29 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
             }
         });
 
-
-        var add_block_click = function(block_type) {
-            var column_name = $(this).parents(".glitter-column").data("columnName"),
-                block_top = $(this).parents(".glitter-button-row").data("blockTop");
-
-            $.ajax(add_block_url, {
-                type: "POST",
-                data: {
-                    csrfmiddlewaretoken: csrf_token,
-                    column: column_name,
-                    block_type: block_type,
-                    top: block_top
-                },
-                dataType: "json",
-                success: function(data) {
-                    if (data.column === undefined) {
-                        // If no column is returned, user probably tried to move a block too far
-                        return;
-                    }
-
-                    GlitterEditor.update_column(data.column, data.content);
-                }
-            });
+        var iframe_popup = function(url) {
+            $(document.body).addClass("glitter-lightbox-active").append('<div id="glitter-lightbox" class="glitter-lightbox"><iframe class="glitter-lightbox-iframe" src="' + url  + '" allowTransparency="true"></iframe></div>');
         };
 
         $(document).on("click", ".glitter-add-block", function() {
-            var block_type = $(this).data("blockType");
+            var iframe_url = $(this).data("popupUrl");
 
             // Avoid span with the same class
-            if (block_type === undefined) {
+            if (iframe_url === undefined) {
                 return;
             }
 
-            add_block_click.call(this, block_type);
+            iframe_popup(iframe_url);
         });
 
         $(document).on("change", ".glitter-add-block-select", function() {
-            var block_type = $(this).val();
-
-            add_block_click.call(this, block_type);
+            var iframe_url = $(this).val();
+            iframe_popup(iframe_url);
         });
 
         $(document).on("click", "#glitter-discard-version, .glitter-delete-block, .glitter-edit-block", function() {
-
             var iframe_url = $(this).data("popupUrl");
-
-            if (iframe_url){
-                $(document.body).addClass("glitter-lightbox-active").append('<div id="glitter-lightbox" class="glitter-lightbox"><iframe class="glitter-lightbox-iframe" src="' + iframe_url  + '" allowTransparency="true"></iframe></div>');
-            }
-
+            iframe_popup(iframe_url);
         });
 
         $(document).on("change", ".glitter-move-block-select", function() {
@@ -272,25 +240,6 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
                     GlitterEditor.update_column(data.dest_column, data.dest_content);
                 }
             });
-        });
-
-        $(document).on('click', '.glitter-delete-block-ajax', function(e){
-          e.preventDefault();
-          var ajax_url = $(this).attr('data-ajax-url');
-
-          // Delete element.
-          var block_header = $(this).closest('.block-header');
-          block_header.next('.glitter_page_block').remove();
-          block_header.remove();
-
-          $.ajax(ajax_url, {
-              type: "POST",
-              data: {
-                  csrfmiddlewaretoken: csrf_token,
-                  delete: true,
-              },
-              dataType: "json",
-          });
         });
 
 

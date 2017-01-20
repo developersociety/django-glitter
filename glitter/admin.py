@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from functools import update_wrapper
 
-from django.apps import apps
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.models import CHANGE, LogEntry
@@ -21,7 +20,7 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.views.decorators.http import require_POST
 
-from .forms import get_addblock_form, get_movecolumn_form, get_newpagetemplateform, MoveBlockForm
+from .forms import get_movecolumn_form, get_newpagetemplateform, MoveBlockForm
 from .models import ContentBlock, Version
 from .page import Glitter
 from .signals import page_version_published, page_version_saved, page_version_unpublished
@@ -106,11 +105,6 @@ class GlitterAdminMixin(object):
             url(r'^edit/page/(?P<version_id>\d+)/discard/$',
                 wrap(self.page_discard_view),
                 name='%s_%s_discard' % info),
-
-            # Block add
-            url(r'^edit/page/(?P<version_id>\d+)/block/add/$',
-                wrap(self.page_block_add_view),
-                name='%s_%s_block_add' % info),
 
             # Block editing/updating/moving
             url(r'^edit/block/del/(?P<contentblock_id>\d+)/$',
@@ -523,53 +517,6 @@ class GlitterAdminMixin(object):
 
     @csrf_protect_m
     @transaction.atomic
-    def page_block_add_view(self, request, version_id):
-
-        version = get_object_or_404(self.version_queryset().select_related(), id=version_id)
-        obj = version.content_object
-
-        if not self.has_edit_permission(request, obj, version=version):
-            raise PermissionDenied
-
-        AddBlockForm = get_addblock_form(version)
-        form = AddBlockForm(request.POST, instance=ContentBlock(obj_version=version))
-
-        response_dict = {}
-
-        if form.is_valid():
-            # Figure out the block type we need
-            new_obj_class = form.cleaned_data['block_type']
-            app_name, model_name = new_obj_class.split('.', 1)
-            new_obj_class = apps.get_model(app_name, model_name)
-
-            # Create a ContentBlock pointing to it
-            content_block = form.save(commit=False)
-
-            if form.cleaned_data['top']:
-                # User wants block at the top of the column, so set the position or it'll end up
-                # being autosaved to the end of the column
-                first_block = ContentBlock.objects.filter(
-                    obj_version=version, column=content_block.column).first()
-
-                if first_block is not None:
-                    content_block.position = first_block.position - 1
-
-            content_block.content_type = ContentType.objects.get_for_model(new_obj_class)
-            content_block.save()
-
-            # Updated the modified timestamp
-            version.save()
-
-            # Render the updated column
-            response_dict['column'] = slugify(content_block.column)
-            glitter = Glitter(version, request=request)
-            columns = glitter.render(edit_mode=True, rerender=True)
-            response_dict['content'] = columns[content_block.column]
-
-        return JsonResponse(response_dict)
-
-    @csrf_protect_m
-    @transaction.atomic
     def page_block_delete_view(self, request, contentblock_id):
 
         content_block = get_object_or_404(self.contentblock_queryset(), id=contentblock_id)
@@ -582,8 +529,7 @@ class GlitterAdminMixin(object):
 
         request.current_app = self.admin_site.name
 
-        # If block doesn't exist we don't need to display iframe.
-        if request.POST or not block:
+        if request.POST:
             # Save variables for use after deletion
             column = content_block.column
 
