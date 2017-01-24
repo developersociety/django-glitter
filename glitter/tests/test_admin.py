@@ -352,12 +352,12 @@ class TestPageChangeTemplateView(BaseViewsCase):
 class TestPageBlockAddView(BaseViewsCase):
     def setUp(self):
         super(TestPageBlockAddView, self).setUp()
-        self.page_block_add_view_url = reverse(
+        self.page_block_add_view_url = '{}?column=main_content'.format(reverse(
             'block_admin:%s_%s_add' % (HTML._meta.app_label, HTML._meta.model_name),
             kwargs={
                 'version_id': self.page_version.id,
             }
-        )
+        ))
 
     def test_permissions(self):
         # Permission denied as user doesn't have permissions
