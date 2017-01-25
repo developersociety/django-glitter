@@ -13,6 +13,7 @@ from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
 from django.test.client import RequestFactory
+from django.utils.http import urlencode
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
@@ -368,19 +369,26 @@ class TestPageBlockAddView(BaseViewsCase):
         response = self.editor_client.get(self.page_block_add_view_url)
         self.assertEqual(response.status_code, 200)
 
-    def test_post(self):
+    def test_add_block(self):
         response = self.editor_client.post(self.page_block_add_view_url, {
-            'column': 'main_content',
-            'block_type': u'glitter_html_block.HTML',
-            'top': 'true',
+            'content': '<p>Test</p>',
         })
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/glitter/update_column.html')
 
-        response = self.editor_client.post(self.page_block_add_view_url, {
-            'column': 'main_content',
-            'block_type': u'glitter_html_block.HTML',
+    def test_add_block_top(self):
+        response = self.editor_client.post(self.page_block_add_view_url + '&top=true', {
+            'content': '<p>Test</p>',
         })
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'admin/glitter/update_column.html')
+
+    def test_add_continue(self):
+        response = self.editor_client.post(self.page_block_add_view_url, {
+            'content': '<p>Test</p>',
+            '_continue': '',
+        })
+        self.assertEqual(response.status_code, 302)
 
     def test_page_version(self):
         """ Check page version. """
