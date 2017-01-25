@@ -13,7 +13,6 @@ from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
 from django.test.client import RequestFactory
-from django.utils.http import urlencode
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
