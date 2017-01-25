@@ -192,7 +192,7 @@ class BlockAdmin(ModelAdmin):
         # As this is the Django admin and we can't just set self.version_id due to thread safety
         # issues, we need to find the version ID of the page when adding a new block. It'll be
         # accessible in the URL - although this is a very hacky way to access it.
-        _, _, kwargs = resolve(request.path)
+        func, args, kwargs = resolve(request.path)
         version_id = kwargs.get('version_id', None)
 
         if version_id is None:
