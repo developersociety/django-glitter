@@ -129,7 +129,7 @@ class TestAdmin(TestCase):
 
         self.assertEqual(
             self.page_admin.get_fields(request),
-            ['url', 'title', 'parent', 'login_required', 'show_in_navigation']
+            ['url', 'title', 'parent', 'login_required', 'show_in_navigation', 'glitter_app_name']
         )
 
 

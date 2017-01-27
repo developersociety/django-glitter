@@ -32,6 +32,10 @@ class Page(MPTTModel, GlitterMixin):
     unpublished_count = models.PositiveIntegerField(default=0, editable=False)
     tags = TaggableManager(blank=True)
 
+    glitter_app_name = models.CharField(
+        verbose_name='Glitter App', max_length=255, db_index=True, blank=True
+    )
+
     objects = PageManager()
 
     def __str__(self):

@@ -3,6 +3,9 @@
 from django.http import Http404, HttpResponseRedirect
 
 from glitter.exceptions import GlitterRedirectException, GlitterUnpublishedException
+from django.conf import settings
+from glitter import urls as glitter_urls
+import importlib
 
 
 class PageFallbackMiddleware(object):
@@ -25,3 +28,16 @@ class PageFallbackMiddleware(object):
             return HttpResponseRedirect(exception.url)
 
         return None
+
+
+class GlitterUrlConf(object):
+    def __init__(self):
+        root_urlconf = importlib.import_module(settings.ROOT_URLCONF)
+        importlib.reload(root_urlconf)
+        importlib.reload(glitter_urls)
+        self.urlpatterns = root_urlconf.urlpatterns
+
+
+class GlitterUrlConfMiddleware(object):
+    def process_request(self, request):
+        request.urlconf = GlitterUrlConf()

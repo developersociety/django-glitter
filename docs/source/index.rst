@@ -14,6 +14,7 @@ Contents
    adding
    layouts
    blocks
+   integration
    configuration
 
 
