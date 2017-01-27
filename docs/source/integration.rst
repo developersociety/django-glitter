@@ -35,7 +35,25 @@ Instructions
    you might have for the Django apps you're integrating into Glitter. If you don't remove these,
    then they tend to conflict with the Glitter App Pages and you'll get unpredictable results.
 
-4) Include `glitter.urls` into your project's main `urls.py` by adding this line to your
+4) Add the `glitter.pages.middleware.GlitterUrlConfMiddleware` to your project's settings. This
+   should be added before Glitter's other middleware. Something like this will work::
+
+       MIDDLEWARE_CLASSES = [
+           'django.contrib.sessions.middleware.SessionMiddleware',
+           'django.middleware.common.CommonMiddleware',
+           'django.middleware.csrf.CsrfViewMiddleware',
+           'django.contrib.auth.middleware.AuthenticationMiddleware',
+           'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+           'django.contrib.messages.middleware.MessageMiddleware',
+           'django.middleware.clickjacking.XFrameOptionsMiddleware',
+           'django.middleware.security.SecurityMiddleware',
+           'django.contrib.sites.middleware.CurrentSiteMiddleware',
+           'glitter.pages.middleware.GlitterUrlConfMiddleware',  # Before other Glitter middleware
+           'glitter.pages.middleware.PageFallbackMiddleware',
+           'glitter.middleware.ExceptionMiddleware',
+       ]
+
+5) Include `glitter.urls` into your project's main `urls.py` by adding this line to your
    `urlpatterns`::
 
        urlpatterns = [
@@ -46,7 +64,7 @@ Instructions
            ...
        ]
 
-5) Create a `glitter_apps.py` file in the app. This will tell Glitter that the app supports
+6) Create a `glitter_apps.py` file in the app. This will tell Glitter that the app supports
    Glitter App Pages, where to find the app's URLs and sets a human friendly name.
 
    Glitter News's `glitter_news/glitter_apps.py` file looks like this::
@@ -68,9 +86,9 @@ Instructions
    `url_conf='glitter_news.urls', namespace='glitter-news'` are the same value you'd normally enter
    (and probably just removed) in your project's `urls.py`.
 
-6) Restart your web server. This is required to ensure Glitter has the latest version of the
+7) Restart your web server. This is required to ensure Glitter has the latest version of the
    `glitter_apps.py` files.
 
-7) In the Django Admin, add a new Glitter Page. You should notice the name of your Glitter App
+8) In the Django Admin, add a new Glitter Page. You should notice the name of your Glitter App
    appears in the Advanced Options. Select that, and now when you go to that page's URL, you'll
    see your standard Django app.

@@ -3,6 +3,9 @@ from importlib import import_module
 
 
 class GlitterApp(object):
+    """
+    A simple class to store Glitter App config options.
+    """
     def __init__(self, name, url_conf, namespace=None):
         self.name = name
         self.url_conf = url_conf
@@ -13,11 +16,19 @@ class GlitterApp(object):
 
 
 class GlitterAppPool(object):
+    """
+    An interface to the Glitter App configs in the current project.
+
+    Will lazily discover Glitter App configs when needed.
+    """
     def __init__(self):
         self.glitter_apps = {}
         self.discovered = False
 
     def get_glitter_app(self, glitter_app_name):
+        """
+        Retrieve the Glitter App config for a specific Glitter App.
+        """
         if not self.discovered:
             self.discover_glitter_apps()
 
@@ -28,6 +39,9 @@ class GlitterAppPool(object):
             return None
 
     def discover_glitter_apps(self):
+        """
+        Find all the Glitter App configurations in the current project.
+        """
         for app_name in settings.INSTALLED_APPS:
             module_name = '{app_name}.glitter_apps'.format(app_name=app_name)
             try:

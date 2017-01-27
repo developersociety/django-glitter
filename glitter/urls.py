@@ -9,11 +9,16 @@ import importlib
 urlpatterns = []
 
 try:
+    # Attempt to find all Glitter App Pages, get their corresponding Glitter App configs and then
+    # use those to create URL patterns.
     app_pages = Page.objects.exclude(glitter_app_name='')
     for app_page in app_pages:
         glitter_app = glitter_app_pool.get_glitter_app(app_page.glitter_app_name)
         if glitter_app:
             app_url_conf = importlib.import_module(glitter_app.url_conf)
+
+            # Django caches URLs quite hard, without the reload it continues to just use the
+            # cached version.
             importlib.reload(app_url_conf)
 
             app_url = url(

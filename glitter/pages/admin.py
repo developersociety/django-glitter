@@ -59,7 +59,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             'fields': ['glitter_app_name'],
         }]
     ]
-    # fields = get_page_admin_fields()
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
