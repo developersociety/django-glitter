@@ -39,18 +39,11 @@ Instructions
    should be added before Glitter's other middleware. Something like this will work::
 
        MIDDLEWARE_CLASSES = [
-           'django.contrib.sessions.middleware.SessionMiddleware',
-           'django.middleware.common.CommonMiddleware',
-           'django.middleware.csrf.CsrfViewMiddleware',
-           'django.contrib.auth.middleware.AuthenticationMiddleware',
-           'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-           'django.contrib.messages.middleware.MessageMiddleware',
-           'django.middleware.clickjacking.XFrameOptionsMiddleware',
-           'django.middleware.security.SecurityMiddleware',
-           'django.contrib.sites.middleware.CurrentSiteMiddleware',
-           'glitter.pages.middleware.GlitterUrlConfMiddleware',  # Before other Glitter middleware
+           ...
+           'glitter.pages.middleware.GlitterUrlConfMiddleware',
            'glitter.pages.middleware.PageFallbackMiddleware',
            'glitter.middleware.ExceptionMiddleware',
+           ...
        ]
 
 5) Include `glitter.urls` into your project's main `urls.py` by adding this line to your

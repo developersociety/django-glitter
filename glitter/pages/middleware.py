@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import importlib
+
+from django.conf import settings
 from django.http import Http404, HttpResponseRedirect
 
-from glitter.exceptions import GlitterRedirectException, GlitterUnpublishedException
-from django.conf import settings
 from glitter import urls as glitter_urls
-import importlib
+from glitter.exceptions import GlitterRedirectException, GlitterUnpublishedException
 
 
 class PageFallbackMiddleware(object):
