@@ -15,7 +15,7 @@ class Banner(models.Model):
     title = models.CharField(max_length=100, db_index=True)
     image = AssetForeignKey('glitter_assets.Image', null=True, blank=True)
     description = models.TextField(blank=True)
-    link = LinkField()
+    link = LinkField(blank=True)
     link_text = models.CharField(max_length=100, blank=True)
     new_window = models.BooleanField('Open link in new window', default=False)
 
