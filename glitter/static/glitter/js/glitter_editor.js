@@ -189,6 +189,7 @@ GlitterEditor.jQuery = jQuery.noConflict(true);
 
         $(document).on("change", ".glitter-add-block-select", function() {
             var iframe_url = $(this).val();
+            this.selectedIndex = undefined;
             iframe_popup(iframe_url);
         });
 
