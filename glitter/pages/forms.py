@@ -36,6 +36,6 @@ class PageAdminForm(forms.ModelForm):
     class Meta:
         model = Page
         widgets = {
-          'glitter_app_name': forms.widgets.Select(choices=get_glitter_app_choices()),
+            'glitter_app_name': forms.widgets.Select(choices=get_glitter_app_choices()),
         }
         fields = '__all__'
