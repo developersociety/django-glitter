@@ -4,8 +4,9 @@ from __future__ import unicode_literals
 from django import forms
 from django.conf import settings
 
-from .models import Page
 from glitter.integration import glitter_app_pool
+
+from .models import Page
 
 
 class DuplicatePageForm(forms.ModelForm):
@@ -27,8 +28,11 @@ class DuplicatePageForm(forms.ModelForm):
 def get_glitter_app_choices():
     glitter_apps = glitter_app_pool.get_glitter_apps()
     choices = [('', '(none)')]
-    for app_name, glitter_app in glitter_apps.items():
-        choices.append((app_name, glitter_app.name))
+    for app_system_name, glitter_app in glitter_apps.items():
+        choices.append((app_system_name, glitter_app.name))
+
+    # Sort by glitter_app name
+    choices = sorted(choices, key=lambda x: x[1])
     return choices
 
 
