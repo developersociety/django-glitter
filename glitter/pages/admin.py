@@ -24,22 +24,6 @@ from .forms import DuplicatePageForm, PageAdminForm
 from .models import Page
 
 
-def get_page_admin_fields():
-    fields = [
-        'url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation',
-    ]
-
-    # Don't show login_required unless needed
-    if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
-        fields.remove('login_required')
-
-    # Show glitter tags if it's set to show.
-    if not getattr(settings, 'GLITTER_PAGES_TAGS', False):
-        fields.remove('tags')
-
-    return fields
-
-
 @admin.register(Page)
 class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     list_display = (
@@ -51,14 +35,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
     form = PageAdminForm
-    fieldsets = [
-        [None, {'fields': get_page_admin_fields()}],
-
-        ['Advanced options', {
-            'classes': ['collapse'],
-            'fields': ['glitter_app_name'],
-        }]
-    ]
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -76,10 +52,9 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
 
-    def get_fields(self, request, obj=None):
+    def get_fieldsets(self, request, obj=None):
         fields = [
             'url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation',
-            'glitter_app_name',
         ]
 
         # Don't show login_required unless needed
@@ -90,7 +65,15 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         if not getattr(settings, 'GLITTER_PAGES_TAGS', False):
             fields.remove('tags')
 
-        return fields
+        fieldsets = [
+            [None, {'fields': fields}],
+
+            ['Advanced options', {
+                'classes': ['collapse'],
+                'fields': ['glitter_app_name'],
+            }]
+        ]
+        return fieldsets
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
