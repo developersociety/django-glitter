@@ -20,7 +20,7 @@ from mptt.admin import MPTTModelAdmin
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
 
-from .forms import DuplicatePageForm
+from .forms import DuplicatePageForm, PageAdminForm
 from .models import Page
 
 
@@ -28,11 +28,13 @@ from .models import Page
 class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     list_display = (
         'title', 'url', 'view_url', 'is_published', 'in_nav', 'admin_unpublished_count',
+        'glitter_app_name',
     )
     mptt_level_indent = 25
     glitter_render = True
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
+    form = PageAdminForm
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
@@ -50,8 +52,10 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     admin_unpublished_count.short_description = 'Unpublished pages'
     admin_unpublished_count.allow_tags = True
 
-    def get_fields(self, request, obj=None):
-        fields = ['url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation']
+    def get_fieldsets(self, request, obj=None):
+        fields = [
+            'url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation',
+        ]
 
         # Don't show login_required unless needed
         if not getattr(settings, 'GLITTER_SHOW_LOGIN_REQUIRED', False):
@@ -61,7 +65,15 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         if not getattr(settings, 'GLITTER_PAGES_TAGS', False):
             fields.remove('tags')
 
-        return fields
+        fieldsets = [
+            [None, {'fields': fields}],
+
+            ['Advanced options', {
+                'classes': ['collapse'],
+                'fields': ['glitter_app_name'],
+            }]
+        ]
+        return fieldsets
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
