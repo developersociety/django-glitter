@@ -12,7 +12,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpRequest
 from django.test import TestCase, Client
 from django.test import override_settings, modify_settings
-from django.test.client import RequestFactory
 
 from glitter.forms import MoveBlockForm
 from glitter.blocks.html.models import HTML
@@ -122,15 +121,6 @@ class TestAdmin(TestCase):
         self.super_user_client.post(self.add_obj_url, response_save_and_edit_data)
         self.super_user_client.post(self.add_obj_url, response_save_and_continue_edit)
         self.super_user_client.get(self.page_redirect_url)
-
-    def test_show_login(self):
-        self.factory = RequestFactory()
-        request = self.factory.get('/')
-
-        self.assertEqual(
-            self.page_admin.get_fields(request),
-            ['url', 'title', 'parent', 'login_required', 'show_in_navigation', 'glitter_app_name']
-        )
 
 
 @modify_settings(
