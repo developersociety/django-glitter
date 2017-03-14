@@ -1,74 +1,77 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-import os
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
-from django.test import TestCase, Client
-from django.test import override_settings, modify_settings
+from django.template import Context, Template
+from django.test import SimpleTestCase
 
-from glitter.models import Version
-from glitter.pages.models import Page
+from glitter.templatetags.glitter import glitter_head, glitter_startbody
 
 
-SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_APPS
+class TestGlitterHead(SimpleTestCase):
+    def test_anonymous_user(self):
+        context = Context()
+
+        html = glitter_head(context=context)
+
+        self.assertEqual(html, '')
+
+    def test_staff_user(self):
+        user = mock.Mock(is_staff=True)
+        context = Context({
+            'user': user,
+        })
+        context.template = mock.Mock()
+        context.template.engine.get_template.return_value = Template('<p>Staff User</p>')
+
+        html = glitter_head(context=context)
+
+        context.template.engine.get_template.assert_called_once_with('glitter/include/head.html')
+        self.assertEqual(html, '<p>Staff User</p>')
 
 
-@modify_settings(
-    INSTALLED_APPS={
-        'append': 'glitter.tests.sample',
-    },
-)
-@override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-    TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-    ROOT_URLCONF='glitter.tests.urls',
-)
-class TestAdmin(TestCase):
+class TestGlitterStartbody(SimpleTestCase):
+    def test_anonymous_user(self):
+        context = Context()
 
-    def setUp(self):
+        html = glitter_startbody(context=context)
 
-        # Permissions
-        self.edit_permissions = Permission.objects.get_by_natural_key(
-            'edit_page', 'glitter_pages', 'page'
+        self.assertEqual(html, '')
+
+    def test_no_glitter_object(self):
+        user = mock.Mock(is_staff=True)
+        context = Context({
+            'user': user,
+        })
+        context.template = mock.Mock()
+        context.template.engine.select_template.return_value = Template('<p>Staff User</p>')
+
+        html = glitter_startbody(context=context)
+
+        context.template.engine.select_template.assert_called_once_with(
+            ['glitter/include/startbody.html']
         )
+        self.assertEqual(html, '<p>Staff User</p>')
 
-        # Page
-        self.page = Page.objects.create(url='/test/', title='Test page', published=True)
+    def test_glitter_object(self):
+        user = mock.Mock(is_staff=True)
+        glitter = mock.Mock()
+        glitter.obj._meta.app_label = 'applabel'
+        glitter.obj._meta.model_name = 'modelname'
+        context = Context({
+            'user': user,
+            'glitter': glitter,
+        })
+        context.template = mock.Mock()
+        context.template.engine.select_template.return_value = Template('<p>Staff User</p>')
 
-        User = get_user_model()
-        # Editor with editing permissions
-        self.editor = User.objects.create_user('editor', 'editor@test.com', 'editor')
-        self.editor.is_staff = True
-        self.editor.user_permissions.add(self.edit_permissions)
-        self.editor.save()
-        self.editor_client = Client()
-        self.editor_client.login(username='editor', password='editor')
+        html = glitter_startbody(context=context)
 
-        # Editor with not editing permissions
-        self.editor_no_permissions = User.objects.create_user(
-            'editor_no_perm', 'editor_no_perm@test.com', 'editor_no_perm'
-        )
-        self.editor_no_permissions.save()
-        self.editor_no_permissions_client = Client()
-
-        # Page version.
-        self.page_version = Version.objects.create(
-            content_type=ContentType.objects.get_for_model(Page), object_id=self.page.id,
-            template_name='glitter/sample.html', owner=self.editor,
-            version_number=1
-        )
-
-        self.page.current_version = self.page_version
-        self.page.save()
-
-    def test_glitter_head(self):
-        """Test as front-end user to see if controllers are shown."""
-
-        response = self.editor_no_permissions_client.get(self.page.url)
-        self.assertEqual(response.status_code, 200)
-
-        response = self.editor_client.get(self.page.url)
-        self.assertEqual(response.status_code, 200)
+        context.template.engine.select_template.assert_called_once_with([
+            'glitter/include/startbody_applabel_modelname.html',
+            'glitter/include/startbody.html',
+        ])
+        self.assertEqual(html, '<p>Staff User</p>')
