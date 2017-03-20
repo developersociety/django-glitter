@@ -60,6 +60,7 @@ INSTALLED_APPS = (
     'glitter.blocks.redactor',
     'glitter.blocks.related_pages',
     'glitter.pages',
+    'glitter.publisher',
     'glitter.tests.sample',
     'glitter.tests.sampleblocks',
     'mptt',
