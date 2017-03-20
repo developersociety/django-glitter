@@ -73,31 +73,39 @@ class PublishAction(models.Model):
 
     def _publish(self):
         """
-        Process a publish action on the related object.
+        Process a publish action on the related object, returns a boolean if a change is made.
 
         Only objects where a version change is needed will be updated.
         """
         obj = self.content_object
         version = self.get_version()
+        actioned = False
 
         # Only update if needed
         if obj.current_version != version:
             version = self.get_version()
             obj.current_version = version
             obj.save(update_fields=['current_version'])
+            actioned = True
+
+        return actioned
 
     def _unpublish(self):
         """
-        Process an unpublish action on the related object.
+        Process an unpublish action on the related object, returns a boolean if a change is made.
 
         Only objects with a current active version will be updated.
         """
         obj = self.content_object
+        actioned = False
 
         # Only update if needed
         if obj.current_version is not None:
             obj.current_version = None
             obj.save(update_fields=['current_version'])
+            actioned = True
+
+        return actioned
 
     def _log_action(self):
         """
@@ -119,11 +127,15 @@ class PublishAction(models.Model):
 
     def process_action(self):
         """
-        Process the action and update the related object.
+        Process the action and update the related object, returns a boolean if a change is made.
         """
         if self.publish_version == self.UNPUBLISH_CHOICE:
-            self._unpublish()
+            actioned = self._unpublish()
         else:
-            self._publish()
+            actioned = self._publish()
 
-        self._log_action()
+        # Only log if an action was actually taken
+        if actioned:
+            self._log_action()
+
+        return actioned
