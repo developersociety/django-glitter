@@ -8,6 +8,7 @@ install_requires = [
     'django-mptt-admin>=0.3,<0.4',
     'sorl-thumbnail>=12.2',
     'django-taggit>=0.21.3',
+    'python-dateutil>=2.6.0',
 ]
 
 
