@@ -29,7 +29,7 @@ class Carousel(BaseCarousel):
 class BaseCarouselImage(models.Model):
     carousel = models.ForeignKey(Carousel, related_name='carousel_images')
     title = models.CharField(max_length=100)
-    subtitle = models.CharField(max_length=100, blank=True)
+    subtitle = models.TextField(blank=True)
     image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
     link = LinkField()
 
