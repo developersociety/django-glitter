@@ -16,14 +16,14 @@ class Command(BaseCommand):
 
             if content_obj.current_version and content_obj.published:
 
-                date_difference = timezone.now() - content_obj.current_version.modified
-
-                # Check when the last time this reminder was sent to make sure it's not sending
-                # every day to remind it.
-                if reminder.sent_at:
-                    date_difference = timezone.now() - reminder.sent_at
+                date_difference = reminder.sent_at - content_obj.current_version.modified
 
                 if date_difference >= reminder.get_interval_timedelta():
+
+                    # Check when the last time this reminder was sent to make sure it's not sending
+                    # every day to remind it.
+                    if reminder.sent_at:
+                        date_difference = timezone.now() - reminder.sent_at
 
                     current_site = Site.objects.get_current()
 

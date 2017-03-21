@@ -57,6 +57,7 @@ class ReminderManagementTestCase(TestCase):
         )
 
     def test_send_reminder(self):
+        """ Send reminder in two weeks interal. """
         # More then two weeks ago.
         modified_at = timezone.now() - timedelta(days=16)
 
@@ -76,18 +77,46 @@ class ReminderManagementTestCase(TestCase):
         )
 
     def test_not_send_reminder_next_day(self):
+        """
+        Should not sent reminder if content updated 16 days ago but reminder was sent 1 day ago
+        based on 2 weeks interval.
+        """
         modified_at = timezone.now() - timedelta(days=16)
 
         self.create_page_with_version(modified=modified_at)
-        self.create_reminder(choices.INTERVAL_2_WEEKS, self.page)
-
-        self.reminder.sent_at = timezone.now()
+        self.create_reminder(
+            choices.INTERVAL_2_WEEKS, self.page
+        )
+        self.reminder.sent_at = timezone.now() - timedelta(days=1)
         self.reminder.save()
 
         self.stdout = six.StringIO()
 
         management.call_command('send_reminders', stdout=self.stdout)
 
+        command_output = self.stdout.getvalue().strip()
+        self.assertEqual(
+            command_output,
+            'Email for {} is not sent to: {}'.format(
+                self.reminder.content_object, self.reminder.user.email
+            )
+        )
+
+    def test_reminder_sent_at(self):
+        """
+        Test if sent_at set 100 days ago and the content was modified 3 days ago based on 2 weeks
+        interval.
+        """
+        modified_at = timezone.now() - timedelta(days=3)
+
+        self.create_page_with_version(modified=modified_at)
+        self.create_reminder(choices.INTERVAL_2_WEEKS, self.page)
+
+        self.reminder.sent_at = timezone.now() - timedelta(days=100)
+        self.reminder.save()
+
+        self.stdout = six.StringIO()
+        management.call_command('send_reminders', stdout=self.stdout)
         command_output = self.stdout.getvalue().strip()
         self.assertEqual(
             command_output,

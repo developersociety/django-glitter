@@ -18,7 +18,7 @@ class Reminder(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     interval = models.IntegerField(choices=reminders_choices.INTERVAL_CHOICES)
-    sent_at = models.DateTimeField(blank=True, null=True)
+    sent_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
