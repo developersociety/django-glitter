@@ -11,7 +11,11 @@ class Command(BaseCommand):
     help = 'Management command to send reminder about out dated content.'
 
     def handle(self, *args, **options):
-        for reminder in Reminder.objects.select_related('content_type').iterator():
+        for reminder in Reminder.objects.select_related(
+                'content_type'
+        ).filter(
+            user__email__isnull=False
+        ).iterator():
             content_obj = reminder.content_object
 
             if content_obj.current_version and content_obj.published:
