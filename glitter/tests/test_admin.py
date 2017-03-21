@@ -103,25 +103,6 @@ class TestAdmin(TestCase):
     def test_unpublish_count(self):
         self.page_admin.admin_unpublished_count(self.page)
 
-    def test_response_change(self):
-        response_data, response_save_and_edit_data, response_save_and_continue_edit = (
-            self.test_data_for_change_and_add_response()
-        )
-        self.super_user_client.post(self.change_obj_url, response_save_and_edit_data)
-        self.super_user_client.post(self.change_obj_url, response_data)
-        self.super_user_client.post(self.change_obj_url, response_save_and_continue_edit)
-        self.super_user_client.get(self.page_redirect_url)
-
-    def test_response_add(self):
-        response_data, response_save_and_edit_data, response_save_and_continue_edit = (
-            self.test_data_for_change_and_add_response()
-        )
-        response_data['_saveasnew'] = 'Testing'
-        self.super_user_client.post(self.add_obj_url, response_data)
-        self.super_user_client.post(self.add_obj_url, response_save_and_edit_data)
-        self.super_user_client.post(self.add_obj_url, response_save_and_continue_edit)
-        self.super_user_client.get(self.page_redirect_url)
-
 
 @modify_settings(
     INSTALLED_APPS={

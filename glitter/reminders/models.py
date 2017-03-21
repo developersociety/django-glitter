@@ -19,7 +19,7 @@ class Reminder(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     interval = models.IntegerField(choices=reminders_choices.INTERVAL_CHOICES)
     sent_at = models.DateTimeField(blank=True, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return '{model} {obj} interval - {interval}'.format(

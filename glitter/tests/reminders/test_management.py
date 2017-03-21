@@ -2,11 +2,11 @@ from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.test import TestCase, override_settings
-from django.utils import timezone, six
-
 from django.core import management
+from django.test import TestCase, override_settings
+from django.utils import six, timezone
 
+import mock
 from glitter.models import Version
 from glitter.pages.models import Page
 from glitter.reminders import choices
@@ -31,20 +31,22 @@ class ReminderManagementTestCase(TestCase):
         self.stdout.close()
         self.stderr.close()
 
-    def create_page_with_version(self, modified_at):
+    def create_page_with_version(self, modified):
         self.page = Page.objects.create(url='/test/', title='Test page')
-        self.page_version = Version.objects.create(
-            content_type=ContentType.objects.get_for_model(Page), object_id=self.page.id,
-            template_name='glitter/sample.html', owner=self.user, modified=modified_at,
-        )
-        modified_field = self.page_version._meta.get_field('modified')
-        modified_field.auto_now = False
-        self.page_version.modified = modified_at
-        self.page_version.save()
-
-        self.page_version.generate_version()
-        self.page.current_version = self.page_version
-        self.page.save()
+        with mock.patch('django.db.models.fields.DateTimeField.pre_save') as mock_pre_save:
+            mock_pre_save.return_value = modified
+            self.page_version = Version.objects.create(
+                content_type=ContentType.objects.get_for_model(Page),
+                object_id=self.page.id,
+                template_name='glitter/sample.html',
+                owner=self.user
+            )
+            self.page_version.generate_version()
+            self.page.current_version = self.page_version
+            self.page.current_version.modified = mock.Mock(
+                return_value=timezone.now() - timedelta(days=16)
+            )
+            self.page.save()
 
     def create_reminder(self, interval, page):
         self.reminder = Reminder.objects.create(
@@ -55,10 +57,13 @@ class ReminderManagementTestCase(TestCase):
         )
 
     def test_send_reminder(self):
+        # More then two weeks ago.
         modified_at = timezone.now() - timedelta(days=16)
 
-        self.create_page_with_version(modified_at=modified_at)
-        self.create_reminder(choices.INTERVAL_2_WEEKS, self.page)
+        self.create_page_with_version(modified=modified_at)
+        self.create_reminder(
+            interval=choices.INTERVAL_2_WEEKS, page=self.page
+        )
 
         management.call_command('send_reminders', stdout=self.stdout)
         command_output = self.stdout.getvalue().strip()
@@ -73,14 +78,16 @@ class ReminderManagementTestCase(TestCase):
     def test_not_send_reminder_next_day(self):
         modified_at = timezone.now() - timedelta(days=16)
 
-        self.create_page_with_version(modified_at=modified_at)
+        self.create_page_with_version(modified=modified_at)
         self.create_reminder(choices.INTERVAL_2_WEEKS, self.page)
 
         self.reminder.sent_at = timezone.now()
         self.reminder.save()
 
         self.stdout = six.StringIO()
+
         management.call_command('send_reminders', stdout=self.stdout)
+
         command_output = self.stdout.getvalue().strip()
         self.assertEqual(
             command_output,

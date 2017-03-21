@@ -14,8 +14,9 @@ class ReminderInline(GenericTabularInline):
 
     def get_formset(self, request, obj=None, **kwargs):
         """ Default user to the current version owner. """
-        data = super().get_formset(request, obj, **kwargs)
-        if obj and obj.current_version:
-            owner_id = obj.current_version.owner_id
-            data.form.base_fields['user'].initial = owner_id
+        data = super(ReminderInline, self).get_formset(request, obj, **kwargs)
+        if obj and hasattr(obj, 'current_version'):
+            if obj.current_version:
+                owner_id = obj.current_version.owner_id
+                data.form.base_fields['user'].initial = owner_id
         return data

@@ -83,8 +83,10 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return urlpatterns
 
     def get_inline_instances(self, request, obj=None):
-        self.inlines = []
-        if getattr(settings, 'GLITTER_PAGES_REMINDER', False):
+        if (
+                getattr(settings, 'GLITTER_PAGES_REMINDER', False) and
+                ReminderInline not in self.inlines
+        ):
             # To prevent multiple same inlines.
             self.inlines.append(ReminderInline)
         return super(PageAdmin, self).get_inline_instances(request, obj)
