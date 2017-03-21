@@ -1,3 +1,4 @@
+from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase, override_settings
@@ -5,8 +6,6 @@ from django.test import TestCase, override_settings
 from glitter.models import Version
 from glitter.pages.models import Page
 from glitter.reminders.admin import ReminderInline
-
-from .admin import site as admin_site
 
 
 class MockRequest(object):
@@ -56,7 +55,7 @@ class ReminderAdminTestCase(TestCase):
         """
         self.create_page_with_version()
 
-        inline = ReminderInline(Page, admin_site)
+        inline = ReminderInline(Page, AdminSite())
         formset = inline.get_formset(request, self.page)
         self.assertEqual(
             formset.form.base_fields['user'].initial, self.page.current_version.owner.id

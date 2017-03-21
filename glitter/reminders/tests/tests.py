@@ -6,7 +6,6 @@ from django.test import TestCase, override_settings
 from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
 from glitter.reminders.admin import ReminderInline
-
 from glitter.reminders.choices import INTERVAL_CHOICES
 from glitter.reminders.models import Reminder
 

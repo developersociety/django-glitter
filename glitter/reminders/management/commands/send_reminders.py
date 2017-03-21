@@ -11,7 +11,6 @@ class Command(BaseCommand):
     help = 'Management command to send reminder about out dated content.'
 
     def handle(self, *args, **options):
-        # TODO: Add select_related.
         for reminder in Reminder.objects.select_related('content_type').iterator():
             content_obj = reminder.content_object
 

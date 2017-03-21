@@ -1,13 +1,13 @@
 import datetime
 from calendar import monthrange
 
+from dateutil.relativedelta import relativedelta
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
-
-from dateutil.relativedelta import relativedelta
 
 from . import choices as reminders_choices
 
