@@ -9,7 +9,7 @@
                 {% for image in carousel_images %}
                     <li data-target="#carousel-{{ content_block.id }}" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
                     <h2>{{ image.title }}</h2>
-                    <p>{{ image.subtitle | linebreaks }}</p>
+                    <p>{{ image.subtitle | linebreaksbr }}</p>
                 {% endfor %}
             </ol>
 
