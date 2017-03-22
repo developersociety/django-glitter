@@ -11,6 +11,9 @@ class Command(BaseCommand):
     help = 'Management command to send reminder about out dated content.'
 
     def handle(self, *args, **options):
+
+        self.verbosity = options.get('verbosity')
+
         for reminder in Reminder.objects.select_related(
                 'content_type'
         ).filter(
@@ -20,14 +23,14 @@ class Command(BaseCommand):
 
             if content_obj.current_version and content_obj.published:
 
-                date_difference = reminder.sent_at - content_obj.current_version.modified
+                date_difference = timezone.now() - content_obj.current_version.modified
+                reminder_difference = timezone.now() - reminder.sent_at
 
-                if date_difference >= reminder.get_interval_timedelta():
+                if (
+                        date_difference >= reminder.get_interval_timedelta() and
+                        reminder_difference >= reminder.get_interval_timedelta()
 
-                    # Check when the last time this reminder was sent to make sure it's not sending
-                    # every day to remind it.
-                    if reminder.sent_at:
-                        date_difference = timezone.now() - reminder.sent_at
+                ):
 
                     current_site = Site.objects.get_current()
 
@@ -54,6 +57,7 @@ class Command(BaseCommand):
                     reminder.sent_at = timezone.now()
                     reminder.save()
                 else:
-                    self.stdout.write(
-                        'Email for {} is not sent to: {}'.format(content_obj, reminder.user.email)
-                    )
+                    if self.verbosity == 3:
+                        self.stdout.write(
+                            'Email for {} is not sent to: {}'.format(content_obj, reminder.user.email)
+                        )

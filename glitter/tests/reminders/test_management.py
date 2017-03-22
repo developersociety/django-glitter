@@ -65,8 +65,10 @@ class ReminderManagementTestCase(TestCase):
         self.create_reminder(
             interval=choices.INTERVAL_2_WEEKS, page=self.page
         )
+        self.reminder.sent_at = modified_at
+        self.reminder.save()
 
-        management.call_command('send_reminders', stdout=self.stdout)
+        management.call_command('send_reminders', stdout=self.stdout, verbosity=3)
         command_output = self.stdout.getvalue().strip()
 
         self.assertEqual(
@@ -92,7 +94,7 @@ class ReminderManagementTestCase(TestCase):
 
         self.stdout = six.StringIO()
 
-        management.call_command('send_reminders', stdout=self.stdout)
+        management.call_command('send_reminders', stdout=self.stdout, verbosity=3)
 
         command_output = self.stdout.getvalue().strip()
         self.assertEqual(
@@ -116,7 +118,7 @@ class ReminderManagementTestCase(TestCase):
         self.reminder.save()
 
         self.stdout = six.StringIO()
-        management.call_command('send_reminders', stdout=self.stdout)
+        management.call_command('send_reminders', stdout=self.stdout, verbosity=3)
         command_output = self.stdout.getvalue().strip()
         self.assertEqual(
             command_output,
