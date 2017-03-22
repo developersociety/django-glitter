@@ -12,8 +12,8 @@ class ReminderInlineAdminForm(forms.ModelForm):
         user = self.cleaned_data['user']
         if not user.email:
             raise forms.ValidationError(
-                "{} - don't have email address please pick different user or enter "
-                "the email address.".format(user)
+                "User doesn't have an email address, please pick a different user or add an "
+                "emaill address"
             )
         return user
 
