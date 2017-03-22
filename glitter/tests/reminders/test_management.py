@@ -14,9 +14,7 @@ from glitter.reminders.models import Reminder
 
 
 @override_settings(
-    DEBUG=True,
     ROOT_URLCONF='glitter.reminders.tests.urls',
-    DEBUG_TOOLBAR_PATCH_SETTINGS=False,
 )
 class ReminderManagementTestCase(TestCase):
 

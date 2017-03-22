@@ -22,9 +22,7 @@ request.user = MockSuperUser()
 
 
 @override_settings(
-    DEBUG=True,
     ROOT_URLCONF='glitter.reminders.tests.urls',
-    DEBUG_TOOLBAR_PATCH_SETTINGS=False,
 )
 class ReminderAdminTestCase(TestCase):
 
