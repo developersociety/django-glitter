@@ -29,7 +29,6 @@ class Command(BaseCommand):
                 if (
                         date_difference >= reminder.get_interval_timedelta() and
                         reminder_difference >= reminder.get_interval_timedelta()
-
                 ):
 
                     current_site = Site.objects.get_current()

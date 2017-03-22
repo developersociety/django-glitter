@@ -21,6 +21,9 @@ class Reminder(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = (('user', 'object_id', 'content_type',))
+
     def __str__(self):
         return '{model} {obj} interval - {interval}'.format(
             model=self.content_type.model.title(),
