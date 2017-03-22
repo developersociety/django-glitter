@@ -4,12 +4,13 @@ from __future__ import unicode_literals
 
 from functools import update_wrapper
 
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.options import csrf_protect_m
-from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -36,6 +37,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
     form = PageAdminForm
+    inlines = [ReminderInline]
 
     def get_fieldsets(self, request, obj=None):
         fields = [
@@ -82,14 +84,12 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         ] + urlpatterns
         return urlpatterns
 
-    def get_inline_instances(self, request, obj=None):
-        if (
-                getattr(settings, 'GLITTER_PAGES_REMINDER', False) and
-                ReminderInline not in self.inlines
-        ):
-            # To prevent multiple same inlines.
-            self.inlines.append(ReminderInline)
-        return super(PageAdmin, self).get_inline_instances(request, obj)
+    def get_formsets_with_inlines(self, request, obj=None):
+        for inline in self.get_inline_instances(request, obj):
+            if isinstance(inline, ReminderInline):
+                if not apps.is_installed('glitter.reminders'):
+                    continue
+            yield inline.get_formset(request, obj), inline
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name

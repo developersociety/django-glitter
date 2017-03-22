@@ -1,7 +1,8 @@
 import datetime
 
 from django.contrib.admin.sites import AdminSite
-from django.test import SimpleTestCase, override_settings
+from django.test import SimpleTestCase, modify_settings
+from django.test.client import RequestFactory
 
 from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
@@ -10,17 +11,20 @@ from glitter.reminders.choices import INTERVAL_CHOICES
 from glitter.reminders.models import Reminder
 
 
-class MockRequest(object):
-    pass
-
-
 class MockSuperUser(object):
+    id = 10
+
     def has_perm(self, perm):
         return True
 
+    def has_module_perms(self, module):
+        return True
 
-request = MockRequest()
-request.user = MockSuperUser()
+    def is_active(self):
+        return True
+
+    def is_staff(self):
+        return True
 
 
 class ReminderModelTestCase(SimpleTestCase):
@@ -39,18 +43,30 @@ class ReminderModelTestCase(SimpleTestCase):
 
 class ReminderAdminTestCase(SimpleTestCase):
 
-    @override_settings(GLITTER_PAGES_REMINDER=False)
+    def setUp(self):
+        self.request = RequestFactory().request()
+        self.request.user = MockSuperUser()
+
+    @modify_settings(INSTALLED_APPS={
+        'remove': 'glitter.reminders',
+    })
     def test_the_inline_not_appears(self):
         """ Test to make sure inline is not set if the settings variable is not set. """
-        PageAdmin.inlines = []
         page_admin = PageAdmin(model=Page, admin_site=AdminSite())
-        page_admin.get_inline_instances(request)
-        self.assertNotIn(ReminderInline, page_admin.inlines)
+        data = page_admin.changeform_view(self.request, object_id=None)
+        inlines = [
+            formset.opts.__class__ for formset in data.context_data['inline_admin_formsets']
+        ]
+        self.assertNotIn(ReminderInline, inlines)
 
-    @override_settings(GLITTER_PAGES_REMINDER=True)
+    @modify_settings(INSTALLED_APPS={
+        'append': 'glitter.reminders',
+    })
     def test_the_inline_appears(self):
         """ Test to make sure inline is not set if the settings variable is not set. """
-        PageAdmin.inlines = []
         page_admin = PageAdmin(model=Page, admin_site=AdminSite())
-        page_admin.get_inline_instances(request)
-        self.assertIn(ReminderInline, page_admin.inlines)
+        data = page_admin.changeform_view(self.request, object_id=None)
+        inlines = [
+            formset.opts.__class__ for formset in data.context_data['inline_admin_formsets']
+        ]
+        self.assertIn(ReminderInline, inlines)

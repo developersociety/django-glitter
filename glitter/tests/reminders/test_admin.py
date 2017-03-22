@@ -13,18 +13,29 @@ class MockRequest(object):
 
 
 class MockSuperUser(object):
+    id = 10
+
     def has_perm(self, perm):
         return True
 
+    def has_module_perms(self, module):
+        return True
 
-request = MockRequest()
-request.user = MockSuperUser()
+    def is_active(self):
+        return True
+
+    def is_staff(self):
+        return True
 
 
 @override_settings(
     ROOT_URLCONF='glitter.reminders.tests.urls',
 )
 class ReminderAdminTestCase(TestCase):
+
+    def setUp(self):
+        self.request = MockRequest()
+        self.request.user = MockSuperUser()
 
     @classmethod
     def setUpTestData(cls):
@@ -54,7 +65,7 @@ class ReminderAdminTestCase(TestCase):
         self.create_page_with_version()
 
         inline = ReminderInline(Page, AdminSite())
-        formset = inline.get_formset(request, self.page)
+        formset = inline.get_formset(self.request, self.page)
         self.assertEqual(
-            formset.form.base_fields['user'].initial, self.page.current_version.owner.id
+            formset.form.base_fields['user'].initial, self.request.user.id
         )
