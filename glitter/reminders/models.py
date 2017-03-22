@@ -22,7 +22,7 @@ class Reminder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = (('user', 'object_id', 'content_type',))
+        unique_together = ('user', 'object_id', 'content_type',)
 
     def __str__(self):
         return '{model} {obj} interval - {interval}'.format(
