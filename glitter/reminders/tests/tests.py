@@ -1,7 +1,7 @@
 import datetime
 
 from django.contrib.admin.sites import AdminSite
-from django.test import TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
 
 from glitter.pages.admin import PageAdmin
 from glitter.pages.models import Page
@@ -23,7 +23,7 @@ request = MockRequest()
 request.user = MockSuperUser()
 
 
-class ReminderModelTestCase(TestCase):
+class ReminderModelTestCase(SimpleTestCase):
 
     def test_intervals_data(self):
         """
@@ -37,7 +37,7 @@ class ReminderModelTestCase(TestCase):
             )
 
 
-class ReminderAdminTestCase(TestCase):
+class ReminderAdminTestCase(SimpleTestCase):
 
     @override_settings(GLITTER_PAGES_REMINDER=False)
     def test_the_inline_not_appears(self):
