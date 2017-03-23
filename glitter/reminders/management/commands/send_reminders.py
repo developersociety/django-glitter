@@ -58,5 +58,7 @@ class Command(BaseCommand):
                 else:
                     if self.verbosity == 3:
                         self.stdout.write(
-                            'Email for {} is not sent to: {}'.format(content_obj, reminder.user.email)
+                            'Email for {} is not sent to: {}'.format(
+                                content_obj, reminder.user.email
+                            )
                         )
