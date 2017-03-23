@@ -20,7 +20,6 @@ from mptt.admin import MPTTModelAdmin
 
 from glitter.admin import GlitterAdminMixin
 from glitter.models import Version
-from glitter.reminders.admin import ReminderInline
 
 from .forms import DuplicatePageForm, PageAdminForm
 from .models import Page
@@ -37,7 +36,10 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
     form = PageAdminForm
-    inlines = [ReminderInline]
+
+    def __init__(self, *args, **kwargs):
+        self.inlines = self.inlines[:]
+        return super().__init__(*args, **kwargs)
 
     def get_fieldsets(self, request, obj=None):
         fields = [
@@ -84,12 +86,14 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         ] + urlpatterns
         return urlpatterns
 
-    def get_formsets_with_inlines(self, request, obj=None):
-        for inline in self.get_inline_instances(request, obj):
-            if isinstance(inline, ReminderInline):
-                if not apps.is_installed('glitter.reminders'):
-                    continue
-            yield inline.get_formset(request, obj), inline
+    def get_inline_instances(self, request, obj=None):
+        if apps.is_installed('glitter.reminders'):
+            # Import here to prevent migrations on the glitter level.
+            from glitter.reminders.admin import ReminderInline
+            if ReminderInline not in self.inlines:
+                self.inlines.append(ReminderInline)
+
+        return super(PageAdmin, self).get_inline_instances(request, obj)
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name
