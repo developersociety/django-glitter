@@ -13,7 +13,7 @@ class ReminderInlineAdminForm(forms.ModelForm):
         if not user.email:
             raise forms.ValidationError(
                 "User doesn't have an email address, please pick a different user or add an "
-                "emaill address"
+                "email address"
             )
         return user
 

@@ -16,8 +16,8 @@ class Command(BaseCommand):
 
         for reminder in Reminder.objects.select_related(
                 'content_type'
-        ).filter(
-            user__email__isnull=False
+        ).exclude(
+            user__email=''
         ).iterator():
             content_obj = reminder.content_object
 
