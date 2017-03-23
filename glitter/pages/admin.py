@@ -37,10 +37,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     change_form_template = 'admin/pages/page/change_form.html'
     form = PageAdminForm
 
-    def __init__(self, *args, **kwargs):
-        self.inlines = self.inlines[:]
-        return super().__init__(*args, **kwargs)
-
     def get_fieldsets(self, request, obj=None):
         fields = [
             'url', 'title', 'parent', 'tags', 'login_required', 'show_in_navigation',
