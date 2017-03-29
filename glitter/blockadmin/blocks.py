@@ -202,6 +202,23 @@ class BlockAdmin(ModelAdmin):
         else:
             return Version.objects.get(id=version_id)
 
+    def has_glitter_edit_permission(self, request, obj):
+        """
+        Return a boolean if a user has edit access to the glitter object/page this object is on.
+        """
+
+        # We're testing for the edit permission here with the glitter object - not the current
+        # object, not the change permission. Once a user has edit access to an object they can edit
+        # all content on it.
+        permission_name = '{}.edit_{}'.format(
+            obj._meta.app_label, obj._meta.model_name,
+        )
+        has_permission = (
+            request.user.has_perm(permission_name) or
+            request.user.has_perm(permission_name, obj=obj)
+        )
+        return has_permission
+
     def has_add_permission(self, request):
         # Find the glitter object to see if they've got permission to edit that
         version = self.get_version(request=request)
@@ -212,8 +229,10 @@ class BlockAdmin(ModelAdmin):
             return True
 
         glitter_obj = version.content_object
-        opts = glitter_obj._meta.app_label, glitter_obj._meta.model_name
-        return request.user.has_perm('%s.edit_%s' % opts)
+
+        # Use the glitter object for permission testing
+        has_permission = self.has_glitter_edit_permission(request, obj=glitter_obj)
+        return has_permission
 
     def has_change_permission(self, request, obj=None):
         # This shouldn't happen - but given that we need to find out the permissions for the
@@ -225,8 +244,10 @@ class BlockAdmin(ModelAdmin):
         # Find the glitter object to see if they've got permission to edit that
         version = obj.content_block.obj_version
         glitter_obj = version.content_object
-        opts = glitter_obj._meta.app_label, glitter_obj._meta.model_name
-        return request.user.has_perm('%s.edit_%s' % opts)
+
+        # Use the glitter object for permission testing
+        has_permission = self.has_glitter_edit_permission(request, obj=glitter_obj)
+        return has_permission
 
     def add_view(self, request, version_id, form_url='', extra_context=None):
         version = get_object_or_404(Version, id=version_id)
