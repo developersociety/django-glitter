@@ -1,4 +1,8 @@
 from datetime import timedelta
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
@@ -6,7 +10,6 @@ from django.core import management
 from django.test import TestCase, override_settings
 from django.utils import six, timezone
 
-import mock
 from glitter.models import Version
 from glitter.pages.models import Page
 from glitter.reminders import choices
