@@ -44,7 +44,6 @@ def glitter_startbody(context):
             opts = glitter.obj._meta.app_label, glitter.obj._meta.model_name
             template_path = path_plus % opts
             templates.insert(0, template_path)
-            context['has_add_permission'] = user.has_perm('%s.%s' % opts)
 
         template = context.template.engine.select_template(templates)
         rendered = template.render(context)
