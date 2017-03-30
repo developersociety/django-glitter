@@ -8,8 +8,7 @@ from django.contrib.admin.sites import AdminSite
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
-from django.test import override_settings, modify_settings
+from django.test import TestCase, Client, modify_settings
 
 from glitter.blockadmin.blocks import BlockAdminSite, BlockAdmin
 from glitter.blocks.html.models import HTML
