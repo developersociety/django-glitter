@@ -13,21 +13,7 @@ class ActionInline(GenericStackedInline):
     extra = 0
 
     def get_formset(self, request, obj=None, form=None, **kwargs):
-        class VersionForm(forms.ModelForm):
-            """
-            Customised form which limits the users choices to versions which have been saved for
-            this object.
-            """
-            class Meta:
-                widgets = {
-                    'publish_version': forms.widgets.Select(
-                        choices=object_version_choices(obj=obj),
-                    ),
-                }
-
-        BaseFormset = super(ActionInline, self).get_formset(
-            request, obj, form=VersionForm, **kwargs
-        )
+        BaseFormset = super(ActionInline, self).get_formset(request, obj, **kwargs)
 
         class ActionFormset(BaseFormset):
             """
@@ -44,5 +30,11 @@ class ActionInline(GenericStackedInline):
                 obj.user = request.user
                 obj.save()
                 return obj
+
+        # Customised widget which limits the users choices to versions which have been saved for
+        # this object.
+        ActionFormset.form.base_fields['publish_version'].widget = forms.widgets.Select(
+            choices=object_version_choices(obj=obj),
+        )
 
         return ActionFormset
