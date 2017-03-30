@@ -31,7 +31,6 @@ SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_AP
 )
 @override_settings(
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-    ROOT_URLCONF='glitter.tests.urls',
     GLITTER_SHOW_LOGIN_REQUIRED=True,
 )
 class TestAdmin(TestCase):

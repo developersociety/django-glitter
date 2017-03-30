@@ -3,12 +3,10 @@ from __future__ import unicode_literals
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test import override_settings
 
 from glitter.blockadmin.blocks import BlockAdminSite
 
 
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class TestImageBlockAdmin(TestCase):
     fixtures = ['image.json']
 

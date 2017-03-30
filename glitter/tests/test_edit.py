@@ -41,7 +41,6 @@ if not SAMPLE_BLOCK_MISSING:
     TEMPLATE_DIRS=(
         os.path.join(os.path.dirname(__file__), 'templates'),
     ),
-    ROOT_URLCONF='glitter.tests.urls',
 )
 class BaseEditCase(TestCase):
 

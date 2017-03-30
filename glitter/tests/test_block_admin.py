@@ -40,7 +40,6 @@ request.user = MockSuperUser()
         'append': 'glitter.tests.sampleblocks',
     },
 )
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class TestBlockAdminSite(TestCase):
     def setUp(self):
         self.site = BlockAdminSite(name='block_admin')
@@ -94,7 +93,6 @@ class TestBlockAdminSite(TestCase):
         'append': 'glitter.tests.sampleblocks',
     },
 )
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class TestBlockAdmin(TestCase):
     def setUp(self):
 

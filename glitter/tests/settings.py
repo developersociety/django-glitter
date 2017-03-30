@@ -31,7 +31,7 @@ STATIC_URL = '/static/'
 
 SECRET_KEY = get_random_string(length=50)
 
-ROOT_URLCONF = ''
+ROOT_URLCONF = 'glitter.tests.urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

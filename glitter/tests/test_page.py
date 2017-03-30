@@ -20,7 +20,6 @@ from glitter.pages.models import Page
 )
 @override_settings(
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-    ROOT_URLCONF='glitter.tests.urls',
 )
 class TestAdmin(TestCase):
 
