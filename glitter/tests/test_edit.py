@@ -7,10 +7,9 @@ from unittest import skipIf
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.test import override_settings, modify_settings
+from django.test import override_settings, modify_settings, TestCase
 from django.test.client import Client
 
 from glitter.blocks.html.models import HTML
@@ -47,7 +46,7 @@ if not SAMPLE_BLOCK_MISSING:
     ),
     ROOT_URLCONF='glitter.tests.urls',
 )
-class BaseEditCase(StaticLiveServerTestCase):
+class BaseEditCase(TestCase):
 
     def setUp(self):
 
