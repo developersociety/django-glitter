@@ -38,9 +38,6 @@ if not SAMPLE_BLOCK_MISSING:
         'django.contrib.messages.middleware.MessageMiddleware',
         'glitter.pages.middleware.PageFallbackMiddleware',
     ),
-    PASSWORD_HASHERS=(
-        'django.contrib.auth.hashers.MD5PasswordHasher',
-    ),
     TEMPLATE_DIRS=(
         os.path.join(os.path.dirname(__file__), 'templates'),
     ),

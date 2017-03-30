@@ -22,7 +22,6 @@ SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_AP
     },
 )
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
     ROOT_URLCONF='glitter.tests.urls',
     GLITTER_LOGIN_PERMS=True,

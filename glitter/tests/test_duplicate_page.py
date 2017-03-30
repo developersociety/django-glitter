@@ -15,7 +15,6 @@ from glitter.pages.models import Page
 
 
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
     ROOT_URLCONF='glitter.tests.urls',
     GLITTER_SHOW_LOGIN_REQUIRED=True,

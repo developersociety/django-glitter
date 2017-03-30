@@ -41,9 +41,6 @@ request.user = MockSuperUser()
     },
 )
 @override_settings(ROOT_URLCONF='glitter.tests.urls')
-@override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-)
 class TestBlockAdminSite(TestCase):
     def setUp(self):
         self.site = BlockAdminSite(name='block_admin')

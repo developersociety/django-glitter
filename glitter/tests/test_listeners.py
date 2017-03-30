@@ -9,7 +9,6 @@ from glitter.models import Version
 
 
 @override_settings(ROOT_URLCONF='glitter.tests.urls')
-@override_settings(PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',))
 class TestListeners(TestCase):
     def setUp(self):
         # Page

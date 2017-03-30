@@ -33,7 +33,6 @@ request.user = MockSuperUser()
 )
 @override_settings(ROOT_URLCONF='glitter.tests.urls')
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
     ROOT_URLCONF='glitter.tests.urls',
 )

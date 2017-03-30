@@ -99,3 +99,9 @@ TEMPLATES = [
         },
     },
 ]
+
+
+# Fastest possible password hasher for test users
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+]

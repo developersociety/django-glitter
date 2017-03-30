@@ -3,7 +3,7 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
-from django.test import TestCase, Client, override_settings
+from django.test import TestCase, Client
 
 from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
@@ -11,7 +11,6 @@ from glitter.pages.validators import validate_page_url
 from glitter.blocks.html.models import HTML
 
 
-@override_settings(PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',))
 class TestModelsPage(TestCase):
     def setUp(self):
         # Page
