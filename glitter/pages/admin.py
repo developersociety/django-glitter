@@ -4,12 +4,13 @@ from __future__ import unicode_literals
 
 from functools import update_wrapper
 
+from django.apps import apps
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.options import csrf_protect_m
-from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -35,22 +36,6 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
     change_list_template = 'admin/pages/page/change_list.html'
     change_form_template = 'admin/pages/page/change_form.html'
     form = PageAdminForm
-
-    def view_url(self, obj):
-        info = self.model._meta.app_label, self.model._meta.model_name
-        redirect_url = reverse('admin:%s_%s_redirect' % info, kwargs={'object_id': obj.id})
-        return '<a href="%s">View page</a>' % (redirect_url)
-    view_url.short_description = 'View page'
-    view_url.allow_tags = True
-
-    def in_nav(self, obj):
-        return obj.show_in_navigation
-    in_nav.boolean = True
-
-    def admin_unpublished_count(self, obj):
-        return obj.unpublished_count or ''
-    admin_unpublished_count.short_description = 'Unpublished pages'
-    admin_unpublished_count.allow_tags = True
 
     def get_fieldsets(self, request, obj=None):
         fields = [
@@ -96,6 +81,31 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             url(r'^(\d+)/duplicate/$', wrap(self.duplicate_page), name='%s_%s_duplicate' % info),
         ] + urlpatterns
         return urlpatterns
+
+    def get_inline_instances(self, request, obj=None):
+        if apps.is_installed('glitter.reminders'):
+            # Import here to prevent migrations on the glitter level.
+            from glitter.reminders.admin import ReminderInline
+            if ReminderInline not in self.inlines:
+                self.inlines.append(ReminderInline)
+
+        return super(PageAdmin, self).get_inline_instances(request, obj)
+
+    def view_url(self, obj):
+        info = self.model._meta.app_label, self.model._meta.model_name
+        redirect_url = reverse('admin:%s_%s_redirect' % info, kwargs={'object_id': obj.id})
+        return '<a href="%s">View page</a>' % (redirect_url)
+    view_url.short_description = 'View page'
+    view_url.allow_tags = True
+
+    def in_nav(self, obj):
+        return obj.show_in_navigation
+    in_nav.boolean = True
+
+    def admin_unpublished_count(self, obj):
+        return obj.unpublished_count or ''
+    admin_unpublished_count.short_description = 'Unpublished pages'
+    admin_unpublished_count.allow_tags = True
 
     @csrf_protect_m
     @transaction.atomic

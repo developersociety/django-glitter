@@ -191,20 +191,6 @@ class TestBlockAdmin(TestCase):
         response = self.superuser_client.get(self.change_view_url)
         self.assertEqual(response.status_code, 403)
 
-    def test_response_change(self):
-        """Test response change with and without _continue post."""
-        opts = self.html_block._meta.app_label, self.html_block._meta.model_name
-        cat = reverse('block_admin:%s_%s_change' % opts, args=(self.html_block.id,))
-        response = self.superuser_client.post(cat, {
-            'content': '<h1>Test</h1>',
-            '_continue': True,
-        })
-        self.assertEqual(response.status_code, 302)
-        response = self.superuser_client.post(cat, {
-            'content': '<h1>Test</h1>',
-        })
-        self.assertEqual(response.status_code, 200)
-
 
 @skipIf(SAMPLE_BLOCK_MISSING, 'glitter.tests.sampleblocks is not installed')
 class TestInlineBlockAdmin(TestCase):
