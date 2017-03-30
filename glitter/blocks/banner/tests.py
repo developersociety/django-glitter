@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_callable, reverse
 from django.test import TestCase
@@ -19,7 +19,6 @@ from glitter.blocks.banner.admin import BannerInlineAdmin
 @modify_settings(INSTALLED_APPS={'append': 'glitter.tests.sample'})
 class BannerTestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.page = Page.objects.create(url='/redactor/', title='Test page')
         self.page_content_type = ContentType.objects.get_for_model(Page)
 

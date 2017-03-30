@@ -5,7 +5,7 @@ from unittest import skipIf
 
 from django.conf import settings
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client, modify_settings
@@ -46,7 +46,6 @@ class TestBlockAdminSite(TestCase):
 
         self.page_admin = PageAdmin(Page, AdminSite())
 
-        User = get_user_model()
         # Superuser
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
@@ -95,7 +94,6 @@ class TestBlockAdminSite(TestCase):
 class TestBlockAdmin(TestCase):
     def setUp(self):
 
-        User = get_user_model()
         # Superuser
         self.superuser = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.superuser_client = Client()
@@ -190,7 +188,6 @@ class TestBlockAdmin(TestCase):
 class TestInlineBlockAdmin(TestCase):
     def setUp(self):
         # Superuser
-        User = get_user_model()
         self.superuser = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.superuser_client = Client()
         self.superuser_client.login(username='test', password='test')

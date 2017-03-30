@@ -5,8 +5,7 @@ import os
 
 from django.conf import settings
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest
@@ -49,7 +48,6 @@ class TestAdmin(TestCase):
         self.info = self.page._meta.app_label, self.page._meta.model_name
 
         # Superuser
-        User = get_user_model()
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
         self.super_user_client.login(username='test', password='test')
@@ -124,7 +122,6 @@ class TestPermissions(TestCase):
         )
 
         # Superuser
-        User = get_user_model()
         self.superuser = User.objects.create_superuser(
             username='superuser', email='', password=None
         )

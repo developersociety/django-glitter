@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 import os.path
 from unittest import skipIf
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.conf import settings
@@ -55,7 +54,6 @@ class BaseEditCase(TestCase):
         # Content type used regularly
         self.page_content_type = ContentType.objects.get_for_model(Page)
 
-        User = get_user_model()
         # Staff - admin access without pages permissions
         self.staff = User.objects.create_user(username='staff', password='staff')
         self.staff.is_staff = True

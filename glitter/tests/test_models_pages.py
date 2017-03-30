@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase, Client
@@ -16,7 +16,6 @@ class TestModelsPage(TestCase):
         # Page
         self.page = Page.objects.create(url='/test/', title='Test page')
 
-        User = get_user_model()
         # Editor with not editing permissions
         self.editor_no_permissions = User.objects.create_user(
             'editor_no_perm', 'editor_no_perm@test.com', 'editor_no_perm'

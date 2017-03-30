@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import os
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
@@ -25,7 +25,6 @@ class DuplicatePageTestCase(TestCase):
         self.page = Page.objects.create(url='/test/', title='Test page')
 
         # User
-        User = get_user_model()
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
         self.super_user_client.login(username='test', password='test')
