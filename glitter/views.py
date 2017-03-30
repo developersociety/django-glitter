@@ -33,7 +33,13 @@ def render_object_unpublished(request, obj):
     verbose_name = force_text(obj._meta.verbose_name)
 
     # Users without the edit permission for this object get a 404 instead of object not published
-    if not request.user.has_perm('%s.edit_%s' % info):
+    edit_permission = '%s.edit_%s' % info
+    has_edit_permission = (
+        request.user.has_perm(edit_permission) or
+        request.user.has_perm(edit_permission, obj=obj)
+    )
+
+    if not has_edit_permission:
         raise Http404('No published %(verbose_name)s available' % {
             'verbose_name': verbose_name,
         })
