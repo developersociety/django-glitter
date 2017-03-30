@@ -26,10 +26,7 @@ class PublishAction(models.Model):
 
     class Meta:
         verbose_name = 'Scheduled publishing'
-        ordering = ('scheduled_time',)
-        unique_together = (
-            ('content_type', 'object_id', 'scheduled_time'),
-        )
+        ordering = ('scheduled_time', 'id')
 
     def __str__(self):
         if self.publish_version == self.UNPUBLISH_CHOICE:

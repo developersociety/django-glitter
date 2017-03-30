@@ -25,12 +25,8 @@ class Migration(migrations.Migration):
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.PROTECT)),
             ],
             options={
-                'ordering': ('scheduled_time',),
+                'ordering': ('scheduled_time', 'id'),
                 'verbose_name': 'Scheduled publishing',
             },
-        ),
-        migrations.AlterUniqueTogether(
-            name='publishaction',
-            unique_together=set([('content_type', 'object_id', 'scheduled_time')]),
         ),
     ]
