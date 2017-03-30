@@ -83,8 +83,14 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         return urlpatterns
 
     def get_inline_instances(self, request, obj=None):
+        # Optional glitter applications. Both are imported after the is_installed check to prevent
+        # migrations applied to the core glitter app
+        if apps.is_installed('glitter.publisher'):
+            from glitter.publisher.admin import ActionInline
+            if ActionInline not in self.inlines:
+                self.inlines.append(ActionInline)
+
         if apps.is_installed('glitter.reminders'):
-            # Import here to prevent migrations on the glitter level.
             from glitter.reminders.admin import ReminderInline
             if ReminderInline not in self.inlines:
                 self.inlines.append(ReminderInline)
