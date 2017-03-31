@@ -15,7 +15,7 @@ DEBUG = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'test',
+        'NAME': ':memory:',
     }
 }
 
@@ -31,7 +31,7 @@ STATIC_URL = '/static/'
 
 SECRET_KEY = get_random_string(length=50)
 
-ROOT_URLCONF = ''
+ROOT_URLCONF = 'glitter.tests.urls'
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -96,7 +96,12 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'debug': True,
         },
     },
+]
+
+
+# Fastest possible password hasher for test users
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.MD5PasswordHasher',
 ]

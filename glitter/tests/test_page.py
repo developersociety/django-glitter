@@ -2,8 +2,7 @@
 
 import os
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client, override_settings, modify_settings
@@ -19,14 +18,11 @@ from glitter.pages.models import Page
     },
 )
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-    ROOT_URLCONF='glitter.tests.urls',
 )
 class TestAdmin(TestCase):
 
     def setUp(self):
-        User = get_user_model()
         # Page
         self.page = Page.objects.create(url='/test/', title='Test page')
 

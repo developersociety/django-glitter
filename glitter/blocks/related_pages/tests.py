@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_callable
 from django.test import TestCase
@@ -22,7 +22,6 @@ from .models import RelatedPagesBlock
 )
 class RelatedPageTestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.page = Page.objects.create(url='/related-page/', title='Test page')
 
         self.page_content_type = ContentType.objects.get_for_model(Page)

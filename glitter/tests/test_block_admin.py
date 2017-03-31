@@ -5,11 +5,10 @@ from unittest import skipIf
 
 from django.conf import settings
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.test import TestCase, Client
-from django.test import override_settings, modify_settings
+from django.test import TestCase, Client, modify_settings
 
 from glitter.blockadmin.blocks import BlockAdminSite, BlockAdmin
 from glitter.blocks.html.models import HTML
@@ -40,10 +39,6 @@ request.user = MockSuperUser()
         'append': 'glitter.tests.sampleblocks',
     },
 )
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
-@override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
-)
 class TestBlockAdminSite(TestCase):
     def setUp(self):
         self.site = BlockAdminSite(name='block_admin')
@@ -51,7 +46,6 @@ class TestBlockAdminSite(TestCase):
 
         self.page_admin = PageAdmin(Page, AdminSite())
 
-        User = get_user_model()
         # Superuser
         self.super_user = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.super_user_client = Client()
@@ -97,11 +91,9 @@ class TestBlockAdminSite(TestCase):
         'append': 'glitter.tests.sampleblocks',
     },
 )
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class TestBlockAdmin(TestCase):
     def setUp(self):
 
-        User = get_user_model()
         # Superuser
         self.superuser = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.superuser_client = Client()
@@ -196,7 +188,6 @@ class TestBlockAdmin(TestCase):
 class TestInlineBlockAdmin(TestCase):
     def setUp(self):
         # Superuser
-        User = get_user_model()
         self.superuser = User.objects.create_superuser('test', 'test@test.com', 'test')
         self.superuser_client = Client()
         self.superuser_client.login(username='test', password='test')

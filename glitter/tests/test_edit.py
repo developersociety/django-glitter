@@ -4,13 +4,11 @@ from __future__ import unicode_literals
 import os.path
 from unittest import skipIf
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.test import override_settings, modify_settings
+from django.test import override_settings, modify_settings, TestCase
 from django.test.client import Client
 
 from glitter.blocks.html.models import HTML
@@ -39,17 +37,14 @@ if not SAMPLE_BLOCK_MISSING:
         'django.contrib.messages.middleware.MessageMiddleware',
         'glitter.pages.middleware.PageFallbackMiddleware',
     ),
-    PASSWORD_HASHERS=(
-        'django.contrib.auth.hashers.MD5PasswordHasher',
-    ),
     TEMPLATE_DIRS=(
         os.path.join(os.path.dirname(__file__), 'templates'),
     ),
-    ROOT_URLCONF='glitter.tests.urls',
 )
-class BaseEditCase(StaticLiveServerTestCase):
-
-    def setUp(self):
+class BaseEditCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(BaseEditCase, cls).setUpClass()
 
         # Permissions
         edit_perm = Permission.objects.get_by_natural_key('edit_page', 'glitter_pages', 'page')
@@ -58,50 +53,49 @@ class BaseEditCase(StaticLiveServerTestCase):
         )
 
         # Content type used regularly
-        self.page_content_type = ContentType.objects.get_for_model(Page)
+        cls.page_content_type = ContentType.objects.get_for_model(Page)
 
-        User = get_user_model()
         # Staff - admin access without pages permissions
-        self.staff = User.objects.create_user(username='staff', password='staff')
-        self.staff.is_staff = True
-        self.staff.save()
-        self.staff_client = Client()
-        self.staff_client.login(username='staff', password='staff')
+        cls.staff = User.objects.create_user(username='staff', password='staff')
+        cls.staff.is_staff = True
+        cls.staff.save()
+        cls.staff_client = Client()
+        cls.staff_client.login(username='staff', password='staff')
 
         # Editor - can edit pages but can't publish
-        self.editor = User.objects.create_user(username='editor', password='editor')
-        self.editor.is_staff = True
-        self.editor.save()
-        self.editor.user_permissions.add(edit_perm)
-        self.editor_client = Client()
-        self.editor_client.login(username='editor', password='editor')
+        cls.editor = User.objects.create_user(username='editor', password='editor')
+        cls.editor.is_staff = True
+        cls.editor.save()
+        cls.editor.user_permissions.add(edit_perm)
+        cls.editor_client = Client()
+        cls.editor_client.login(username='editor', password='editor')
 
         # Other editor, testing cases which protect users content
-        self.editor2 = User.objects.create_user(username='editor2', password='editor2')
-        self.editor2.is_staff = True
-        self.editor2.save()
-        self.editor2.user_permissions.add(edit_perm)
-        self.editor2_client = Client()
-        self.editor2_client.login(username='editor2', password='editor2')
+        cls.editor2 = User.objects.create_user(username='editor2', password='editor2')
+        cls.editor2.is_staff = True
+        cls.editor2.save()
+        cls.editor2.user_permissions.add(edit_perm)
+        cls.editor2_client = Client()
+        cls.editor2_client.login(username='editor2', password='editor2')
 
         # Publisher - can edit and publish pages
-        self.publisher = User.objects.create_user(username='publisher', password='publisher')
-        self.publisher.is_staff = True
-        self.publisher.save()
-        self.publisher.user_permissions.add(edit_perm, publish_perm)
-        self.publisher_client = Client()
-        self.publisher_client.login(username='publisher', password='publisher')
+        cls.publisher = User.objects.create_user(username='publisher', password='publisher')
+        cls.publisher.is_staff = True
+        cls.publisher.save()
+        cls.publisher.user_permissions.add(edit_perm, publish_perm)
+        cls.publisher_client = Client()
+        cls.publisher_client.login(username='publisher', password='publisher')
 
         # Other publisher
-        self.publisher2 = User.objects.create_user(username='publisher2', password='publisher2')
-        self.publisher2.is_staff = True
-        self.publisher2.save()
-        self.publisher2.user_permissions.add(edit_perm, publish_perm)
-        self.publisher2_client = Client()
-        self.publisher2_client.login(username='publisher2', password='publisher2')
+        cls.publisher2 = User.objects.create_user(username='publisher2', password='publisher2')
+        cls.publisher2.is_staff = True
+        cls.publisher2.save()
+        cls.publisher2.user_permissions.add(edit_perm, publish_perm)
+        cls.publisher2_client = Client()
+        cls.publisher2_client.login(username='publisher2', password='publisher2')
 
         # Anonymous user
-        self.anon_client = Client()
+        cls.anon_client = Client()
 
 
 class TestNoSavedVersions(BaseEditCase):

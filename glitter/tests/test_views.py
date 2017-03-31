@@ -2,8 +2,7 @@
 
 import os
 
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.test import TestCase, Client
@@ -22,9 +21,7 @@ SAMPLE_BLOCK_MISSING = 'glitter.tests.sampleblocks' not in settings.INSTALLED_AP
     },
 )
 @override_settings(
-    PASSWORD_HASHERS=('django.contrib.auth.hashers.MD5PasswordHasher',),
     TEMPLATE_DIRS=(os.path.join(os.path.dirname(__file__), 'templates'),),
-    ROOT_URLCONF='glitter.tests.urls',
     GLITTER_LOGIN_PERMS=True,
 )
 class BaseViewCase(TestCase):
@@ -56,7 +53,6 @@ class BaseViewCase(TestCase):
             url='/testing/', title='Test page', published=True
         )
 
-        User = get_user_model()
         # Editor with editing permissions
         self.editor = User.objects.create_user('editor', 'editor@test.com', 'editor')
         self.editor.is_staff = True

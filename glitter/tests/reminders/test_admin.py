@@ -1,5 +1,5 @@
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase, override_settings
 
@@ -42,7 +42,7 @@ class ReminderAdminTestCase(TestCase):
         cls.superuser_password = 'secret'
         cls.superuser_username = 'super'
         cls.superuser_email = 'test@test.com'
-        cls.superuser = get_user_model().objects.create_superuser(
+        cls.superuser = User.objects.create_superuser(
             username=cls.superuser_username,
             password=cls.superuser_password,
             email=cls.superuser_email

@@ -2,12 +2,12 @@
 from __future__ import unicode_literals
 
 from django.contrib.admin.sites import AdminSite
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import get_callable, reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.test import modify_settings, override_settings
+from django.test import modify_settings
 
 from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
@@ -17,10 +17,8 @@ from glitter.blocks.banner.admin import BannerInlineAdmin
 
 
 @modify_settings(INSTALLED_APPS={'append': 'glitter.tests.sample'})
-@override_settings(ROOT_URLCONF='glitter.tests.urls')
 class BannerTestCase(TestCase):
     def setUp(self):
-        User = get_user_model()
         self.page = Page.objects.create(url='/redactor/', title='Test page')
         self.page_content_type = ContentType.objects.get_for_model(Page)
 
