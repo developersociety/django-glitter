@@ -9,6 +9,8 @@ from django.utils.encoding import force_text, python_2_unicode_compatible
 
 from glitter.models import Version
 
+from .validators import future_date
+
 
 @python_2_unicode_compatible
 class PublishAction(models.Model):
@@ -20,7 +22,7 @@ class PublishAction(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     # When/what we're updating, and by who
-    scheduled_time = models.DateTimeField()
+    scheduled_time = models.DateTimeField(validators=[future_date])
     publish_version = models.IntegerField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
