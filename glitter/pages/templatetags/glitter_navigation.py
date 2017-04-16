@@ -97,3 +97,8 @@ def get_page_ancestor_ids(current_page=None):
         ancestors = current_page.get_ancestors(include_self=True).values_list('id', flat=True)
 
     return ancestors
+
+
+@register.filter
+def child_pages(page):
+    return page.get_children().filter(published=True).exclude(current_version__isnull=True)
