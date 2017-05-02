@@ -1,0 +1,10 @@
+{% extends "blockadmin/change_form.html" %}
+{% load static from staticfiles %}
+{% load glitter_admin_js %}
+
+{% block extrastyle %}
+  <script>
+    var DROP_IMAGE_URL="{% url 'block_admin:glitter_image_imageblock_drop_image' %}";
+  </script>
+  {{ block.super }}
+{% endblock extrastyle %}

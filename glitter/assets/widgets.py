@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.forms.widgets import Media, Select
 from django.template.loader import render_to_string
 
+from glitter.templatetags.glitter_admin_js import jquery_min
 from glitter.assets.models import ImageCategory
 
 
@@ -52,7 +53,10 @@ class ImageRelatedFieldWidgetWrapper(RelatedFieldWidgetWrapper):
     def media(self):
         js_media = Media(
             js=[
+                jquery_min(),
                 static('admin/js/related-widget-wrapper.js'),
+                static('glitter/libs/dropzonejs/dropzone.min.js'),
+                static('glitter/js/widgets/image_dropzone.js'),
             ],
         )
         css_media = Media(

@@ -40,7 +40,7 @@ class ImageCategory(BaseCategory):
 
 
 class Image(FileMixin, models.Model):
-    category = models.ForeignKey(ImageCategory)
+    category = models.ForeignKey(ImageCategory, blank=True, null=True)
     title = models.CharField(max_length=100, db_index=True)
     file = models.ImageField(
         'Image', upload_to='assets/image', height_field='image_height', width_field='image_width'

@@ -8,6 +8,16 @@
 @c-line-dark:  #373737;
 @c-grey: #636363;
 
+.related-widget-wrapper {
+    width: 100%;
+
+    h2 {
+        margin-top: .875em;
+        text-align: center;
+        font-weight: bold;
+    }
+}
+
 #container #id_image {
     width: 100%;
     background: url(../../img/select-arrow.png) center right 10px no-repeat, #fff;
@@ -392,5 +402,23 @@
     .back {
         color: @c-line-dark;
         pointer-events: none;
+    }
+}
+
+.dropzone {
+    border: 2px dashed #0087F7;
+    background: white;
+    border-radius: 5px;
+    min-height: 150px;
+    padding: 54px 54px;
+    margin-top: 1.875em;
+
+    .dz-message {
+        text-align: center;
+        color: black;
+    }
+    .dropzonePreview {
+        text-align: center;
+        margin-top: 20px;
     }
 }

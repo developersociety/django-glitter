@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
+
 from django.conf.urls import url
-from django.http import JsonResponse
+from django.forms.forms import pretty_name
+from django.http import HttpResponse, JsonResponse
 from django.template import Context
 from django.template.loader import get_template
 
+from glitter.assets.forms import ImageForm
 from glitter.assets.models import Image
 from glitter.assets.widgets import LIMIT_IMAGES_TO, ImageRelatedFieldWidgetWrapper, ImageSelect
 from glitter.blockadmin import blocks
@@ -34,8 +38,16 @@ class ImageBlockAdmin(blocks.BlockAdmin):
 
     def get_urls(self):
         urls = super(ImageBlockAdmin, self).get_urls()
+        app_label, model_name = self.model._meta.app_label, self.model._meta.model_name
         image_block_urls = [
-            url(r'^get-lazy-images/$', self.get_lazy_images, name='get-lazy-images')
+            url(r'^get-lazy-images/$', self.get_lazy_images, name='get-lazy-images'),
+            url(
+                r'^drop-image/$',
+                self.drop_image,
+                name='{app_label}_{model_name}_drop_image'.format(
+                    app_label=app_label, model_name=model_name
+                )
+            ),
         ]
         return image_block_urls + urls
 
@@ -56,6 +68,24 @@ class ImageBlockAdmin(blocks.BlockAdmin):
             response.status_code = 400
 
         return response
+
+    def drop_image(self, request):
+        form = ImageForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            filename, ext = os.path.splitext(form.files['file'].name)
+            filename = pretty_name(filename)
+
+            image = form.save(commit=False)
+            image.title = filename
+            image.save()
+            return JsonResponse({'image_id': image.id, 'filename': filename})
+        else:
+            message = ''
+            for field_name, error_list in form.errors.items():
+                message = '{field} - {message}'.format(
+                    field=field_name.capitalize(), message=''.join(error_list)
+                )
+                return HttpResponse(message, status=403)
 
 
 blocks.site.register(ImageBlock, ImageBlockAdmin)

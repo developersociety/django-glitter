@@ -1,60 +1,74 @@
-{% load i18n %}
 {% load admin_static %}
+{% load glitter_admin_js %}
+{% load i18n %}
+{% load thumbnail %}
 
 
 <div class="related-widget-wrapper btn-holder">
-    <select class="image-related-field" id="id_image" name="image">
-        {{ options|safe }}
-    </select>
-    <a href="#" class="browse-images">Browse</a>
+  <select class="image-related-field" id="id_image" name="image">
+    {{ options|safe }}
+  </select>
+  <a href="#" class="browse-images">Browse</a>
 
-    {% if can_change_related_url %}
-        <a class="related-widget-wrapper-link change-related" id="change_id_image"
-            data-href-template="{{ can_change_related_url }}">
-            Edit
-        </a>
-    {% endif %}
+  {% if can_change_related_url %}
+    <a class="related-widget-wrapper-link change-related" id="change_id_image"
+      data-href-template="{{ can_change_related_url }}">
+      Edit
+    </a>
+  {% endif %}
 
-    <a href="#" class="clear-image">Clear</a>
+  <a href="#" class="clear-image">Clear</a>
 
-    {% if can_add_related_url %}
-        <a href="{{ can_add_related_url }}" id="add_id_{{ name }}"
-            onclick="return showAddAnotherPopup(this)">Upload new
-        </a>
-    {% endif %}
+  <h2>OR</h2>
+
+  {% if can_add_related_url %}
+    <div class="dropzone">
+      <div class="dz-message">
+        Drop files here or click to upload.
+      </div>
+      <div class="dropzonePreview">
+        <div class="img-preview">
+          {% if original %}
+            {% thumbnail original.image.file "x300" as thumb %}
+              <img class="img-responsive" src="{{ thumb.url }}" />
+            {% endthumbnail %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
 </div>
 
 
 
 <div class="block-image-selector" data-url="{% url 'block_admin:get-lazy-images' %}">
-    <h2>Choose an Image</h2>
-    <hr />
+  <h2>Choose an Image</h2>
+  <hr />
+  <div class="control-area">
+    <a href="javascript:;" class="close">
+      Close
+    </a>
+  </div>
 
-    <div class="control-area">
-        <a href="javascript:;" class="close">
-            Close
-        </a>
-    </div>
-
-    <fieldset>
-        <div class="inline-container">
-            <div class="field-container">
-                <label for="category">Category</label>
-                <div class="select-wrapper">
-                    <select id="category">
-                        <optgroup label="Select Category">
-                            <option value="0">All images</option>
-                            {% for category in categories %}
-                                <option value="{{ category.id }}">{{ category.title }}</option>
-                            {% endfor %}
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
+  <fieldset>
+    <div class="inline-container">
+      <div class="field-container">
+        <label for="category">Category</label>
+        <div class="select-wrapper">
+          <select id="category">
+            <optgroup label="Select Category">
+              <option value="0">All images</option>
+              {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.title }}</option>
+              {% endfor %}
+            </optgroup>
+          </select>
         </div>
-    </fieldset>
-
-    <div class="image-grid" id="image_grid">
-      {% include "glitter/blocks/includes/lazy_images.html" %}
+      </div>
     </div>
+  </fieldset>
+
+  <div class="image-grid" id="image_grid">
+    {% include "glitter/blocks/includes/lazy_images.html" %}
+  </div>
 </div>
