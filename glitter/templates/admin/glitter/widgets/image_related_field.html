@@ -8,16 +8,18 @@
   <select class="image-related-field" id="id_image" name="image">
     {{ options|safe }}
   </select>
-  <a href="#" class="browse-images">Browse</a>
+  <div class="image-file-choices">
+    <a href="#" class="browse-images">Browse</a>
 
-  {% if can_change_related_url %}
-    <a class="related-widget-wrapper-link change-related" id="change_id_image"
-      data-href-template="{{ can_change_related_url }}">
-      Edit
-    </a>
-  {% endif %}
+    {% if can_change_related_url %}
+      <a class="related-widget-wrapper-link change-related" id="change_id_image"
+        data-href-template="{{ can_change_related_url }}">
+        Edit
+      </a>
+    {% endif %}
 
-  <a href="#" class="clear-image">Clear</a>
+    <a href="#" class="clear-image">Clear</a>
+  </div>
 
   <h2>OR</h2>
 
