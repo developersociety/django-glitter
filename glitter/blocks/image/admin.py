@@ -5,7 +5,7 @@ import os
 
 from django.conf.urls import url
 from django.forms.forms import pretty_name
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.template import Context
 from django.template.loader import get_template
 
@@ -70,6 +70,11 @@ class ImageBlockAdmin(blocks.BlockAdmin):
         return response
 
     def drop_image(self, request):
+
+        permission_name = '{}.edit_{}'.format(self.opts.app_label, self.opts.model_name)
+        if not request.user.has_perm(permission_name):
+            return HttpResponseForbidden('403 Forbidden', content_type='text/html')
+
         form = ImageForm(request.POST, request.FILES or None)
         if form.is_valid():
             filename, ext = os.path.splitext(form.files['file'].name)
