@@ -38,7 +38,8 @@ class Video(BaseBlock):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """ Set html field with correct iframe. """
         if self.url:
-            self.html = """<iframe src="{}" frameborder="0" title="{}" allowfullscreen></iframe>""".format(
+            iframe_html = '<iframe src="{}" frameborder="0" title="{}" allowfullscreen></iframe>'
+            self.html = iframe_html.format(
                 self.get_embed_url(),
                 self.title
             )
