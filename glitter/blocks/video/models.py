@@ -17,6 +17,7 @@ class Video(BaseBlock):
         validators=[validate_url],
     )
     html = models.TextField(editable=False)
+    title = models.CharField(max_length=150, blank=True, help_text='Used for accessibility')
 
     class Meta:
         verbose_name = 'video'
@@ -37,7 +38,9 @@ class Video(BaseBlock):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         """ Set html field with correct iframe. """
         if self.url:
-            self.html = """<iframe src="{}" frameborder="0" allowfullscreen></iframe>""".format(
-                self.get_embed_url()
+            iframe_html = '<iframe src="{}" frameborder="0" title="{}" allowfullscreen></iframe>'
+            self.html = iframe_html.format(
+                self.get_embed_url(),
+                self.title
             )
         return super(Video, self).save(force_insert, force_update, using, update_fields)
