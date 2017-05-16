@@ -351,8 +351,12 @@ class BlockAdmin(ModelAdmin):
         if '_continue' in request.POST:
             msg = _('The block was added successfully. You may edit it again below.')
             self.message_user(request, msg, messages.SUCCESS)
+
+            # We redirect to the save and continue page, which updates the
+            # parent window in javascript and redirects back to the edit page
+            # in javascript.
             post_url_continue = reverse(
-                'block_admin:%s_%s_change' % (opts.app_label, opts.model_name),
+                'block_admin:%s_%s_continue' % (opts.app_label, opts.model_name),
                 args=(quote(pk_value),),
                 current_app=self.admin_site.name
             )

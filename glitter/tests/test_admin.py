@@ -352,8 +352,9 @@ class TestPageBlockAddView(BaseViewsCase):
         response = self.editor_client.post(self.page_block_add_view_url, {
             'content': '<p>Test</p>',
             '_continue': '',
-        })
-        self.assertEqual(response.status_code, 302)
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'blockadmin/continue.html')
 
     def test_page_version(self):
         """ Check page version. """
