@@ -6,9 +6,9 @@
             {% for related_page, link_url in related_pages_links %}
                 <li>
                     {% if related_page.page %}
-                        <a href="{{ related_page.page.get_absolute_url }}">{{ related_page.title|default:related_page.page.title }} <span>{{ link_url }}</span></a>
+                        <a href="{{ related_page.page.get_absolute_url }}" {% if related_page.new_window %}target="_blank" rel="noopener"{% endif %}>{{ related_page.title|default:related_page.page.title }} <span>{{ link_url }}</span></a>
                     {% else %}
-                        <a href="{{ related_page.link }}">{{ related_page.title }} <span>{{ link_url }}</span></a>
+                        <a href="{{ related_page.link }}" {% if related_page.new_window %}target="_blank" rel="noopener"{% endif %}>{{ related_page.title }} <span>{{ link_url }}</span></a>
                     {% endif %}
                 </li>
             {% endfor %}
