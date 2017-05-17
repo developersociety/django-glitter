@@ -25,6 +25,7 @@ class RelatedPage(models.Model):
     page = TreeForeignKey(Page, blank=True, null=True)
     link = LinkField(blank=True)
     position = models.PositiveIntegerField(default=0, db_index=True)
+    new_window = models.BooleanField('Open link in new window', default=False)
 
     class Meta:
         ordering = ('position',)
