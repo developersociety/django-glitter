@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
@@ -8,6 +9,8 @@ from glitter.models import Version, ContentBlock
 from glitter.pages.models import Page
 from glitter.pages.validators import validate_page_url
 from glitter.blocks.html.models import HTML
+
+from .factories import PageFactory, PageVersionFactory
 
 
 class TestModelsPage(TestCase):
@@ -110,3 +113,27 @@ class TestModelsPage(TestCase):
         self.html2_content_block.position = None
         self.html2_content_block.save()
         self.assertEqual(self.html1_content_block.position, 1)
+
+
+class TestPageIsVisible(TestCase):
+    def test_not_in_navigation(self):
+        page = PageFactory(show_in_navigation=False)
+
+        self.assertFalse(page.is_visible)
+
+    def test_unpublished_page(self):
+        page_version = PageVersionFactory()
+        page = page_version.content_object
+
+        self.assertFalse(page.is_visible)
+
+    def test_published_page(self):
+        page_version = PageVersionFactory(version_number=1, set_version=True)
+        page = page_version.content_object
+
+        self.assertTrue(page.is_visible)
+
+    def test_page_with_app(self):
+        page = PageFactory(glitter_app_name='fake')
+
+        self.assertTrue(page.is_visible)
