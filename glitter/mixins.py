@@ -29,6 +29,15 @@ class GlitterMixin(models.Model):
         ).exclude(version_number=None).first()
         return latest_version
 
+    @property
+    def is_published(self):
+        """
+        Return a boolean if the object is fully published and visible.
+
+        Glitter objects need to be published and have a current version to be visible to end users.
+        """
+        return self.published and self.current_version is not None
+
 
 class GlitterDetailMixin(object):
     def post(self, request, *args, **kwargs):
