@@ -7,6 +7,8 @@ from .models import DefinitionList, DefinitionListInline
 
 
 class DefinitionListInlineAdmin(blocks.TabularInline):
+    min_num = 1
+    extra = 0
     model = DefinitionListInline
 
 
