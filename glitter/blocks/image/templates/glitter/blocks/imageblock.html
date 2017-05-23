@@ -1,26 +1,24 @@
 {% load thumbnail %}
 
 
-{% if object.image %}
-    <div class="{{ css_classes }}">
-        <figure>
-            {% with thumb_width=column.width|stringformat:"d" %}
-                {% thumbnail object.image.file thumb_width as thumb %}
-                    {% if object.link %}
-                        <a href="{{ object.link }}"{% if object.new_window %} target="_blank"{% endif %}>
-                            <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
-                        </a>
-                    {% else %}
-                        <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
-                    {% endif %}
-                {% endthumbnail %}
-            {% endwith %}
+<div class="{{ css_classes }}">
+  <figure>
+    {% with thumb_width=column.width|stringformat:'d' %}
+      {% thumbnail object.image.file thumb_width as thumb %}
+        {% if object.link %}
+          <a href="{{ object.link }}"{% if object.new_window %} target="_blank"{% endif %}>
+            <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
+          </a>
+        {% else %}
+          <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="{{ object.description }}">
+        {% endif %}
+      {% endthumbnail %}
+    {% endwith %}
 
-            {% if object.caption %}
-                <figcaption>
-                    {{ object.caption }}
-                </figcaption>
-            {% endif %}
-        </figure>
-    </div>
-{% endif %}
+    {% if object.caption %}
+      <figcaption>
+        {{ object.caption }}
+      </figcaption>
+    {% endif %}
+  </figure>
+</div>

@@ -10,7 +10,7 @@ from .managers import BaseImageBlockManager
 
 
 class BaseImageBlock(BaseBlock):
-    image = AssetForeignKey('glitter_assets.Image', null=True, on_delete=models.PROTECT)
+    image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
     description = models.CharField(max_length=200, blank=True, help_text='Used as ALT text')
     caption = models.CharField(max_length=200, blank=True, help_text='Shown below the image')
     link = LinkField(blank=True)
