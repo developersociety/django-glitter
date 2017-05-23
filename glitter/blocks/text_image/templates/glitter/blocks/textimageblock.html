@@ -1,16 +1,14 @@
 {% load thumbnail %}
 
 
-{% if object.image %}
-    <div class="{{ css_classes }} {{ object.position }}">
-        {% with thumb_width=column.width|stringformat:"d" %}
-            {% thumbnail object.image.file thumb_width as thumb %}
-                <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="">
-            {% endthumbnail %}
-        {% endwith %}
+<div class="{{ css_classes }} {{ object.position }}">
+  {% with thumb_width=column.width|stringformat:"d" %}
+    {% thumbnail object.image.file thumb_width as thumb %}
+      <img src="{{ thumb.url }}" height="{{ thumb.height }}" width="{{ thumb.width }}" alt="">
+    {% endthumbnail %}
+  {% endwith %}
 
-        <div class="text-image-content">
-            {{ object.content|safe }}
-        </div>
-    </div>
-{% endif %}
+  <div class="text-image-content">
+    {{ object.content|safe }}
+  </div>
+</div>

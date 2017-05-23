@@ -10,7 +10,7 @@ from glitter.models import BaseBlock
 
 class BaseTextImageBlock(BaseBlock):
     position = models.CharField(max_length=50)
-    image = AssetForeignKey('glitter_assets.Image', null=True, on_delete=models.PROTECT)
+    image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
     content = models.TextField()
 
     class Meta:
