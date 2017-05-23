@@ -46,7 +46,7 @@ class CarouselImage(BaseCarouselImage):
 
 
 class CarouselBlock(BaseBlock):
-    carousel = models.ForeignKey(Carousel, null=True, on_delete=models.PROTECT)
+    carousel = models.ForeignKey(Carousel, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'carousel'
@@ -77,7 +77,7 @@ class ImageOnlyCarouselImage(BaseImageOnlyCarouselImage):
 
 
 class ImageOnlyCarouselBlock(BaseBlock):
-    carousel = models.ForeignKey(ImageOnlyCarousel, null=True, on_delete=models.PROTECT)
+    carousel = models.ForeignKey(ImageOnlyCarousel, on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'image only carousel'
