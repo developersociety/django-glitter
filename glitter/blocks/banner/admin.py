@@ -16,7 +16,8 @@ class BannerAdmin(admin.ModelAdmin):
 
 class BannerInlineAdmin(blocks.StackedInline):
     model = BannerInline
-    extra = 1
+    min_num = 1
+    extra = 0
 
     def formfield_for_dbfield(self, db_field, **kwargs):
         formfield = super(BannerInlineAdmin, self).formfield_for_dbfield(db_field, **kwargs)
