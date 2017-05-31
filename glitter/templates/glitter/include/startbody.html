@@ -29,7 +29,7 @@
                 class="glitter-edit-toggle glitter-tab" type="submit"
                 data-target="#glitter-edit-menu"
                 data-state-on="#glitter-tab-edit">
-                    Edit mode
+                    Edit
             </button>
         {% endif %}
         {% if glitter.has_change_permission %}
@@ -73,7 +73,7 @@
                     <form method="POST" action="{% url glitter.opts|admin_urlname:'edit' version_id=glitter.version.id %}">
                         {% csrf_token %}
                         <button class="glitter-version-edit-toggle" type="submit">
-                            Edit<span></span>
+                            Edit mode<span></span>
                         </button>
                     </form>
                 {% endif %}
