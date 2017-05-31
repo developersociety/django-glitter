@@ -73,7 +73,7 @@
                     <form method="POST" action="{% url glitter.opts|admin_urlname:'edit' version_id=glitter.version.id %}">
                         {% csrf_token %}
                         <button class="glitter-version-edit-toggle" type="submit">
-                            Edit Mode <span></span>
+                            Edit<span></span>
                         </button>
                     </form>
                 {% endif %}
