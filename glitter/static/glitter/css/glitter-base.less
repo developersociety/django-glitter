@@ -178,6 +178,12 @@ button, input, textarea, select {
     }
 }
 
+#glitter-primary-panes *,
+.glitter-menu button,
+.glitter-menu a, {
+    -webkit-font-smoothing: antialiased;
+}
+
 .glitter-menu, .glitter-edit-menu, .glitter-context-menu {
     z-index: 1000;
 }
@@ -307,8 +313,9 @@ button, input, textarea, select {
 
 .glitter-version-edit-toggle {
     position: relative;
-    width: 7.5em;
+    width: 8.75em;
     text-align: left;
+    box-sizing: content-box;
     .transition(margin-left, 0.3s);
     .transition(color, 0.3s);
     span {
