@@ -34,35 +34,23 @@ class RelatedPageTestCase(TestCase):
             template_name='glitter/sample.html',
             owner=self.editor
         )
-        self.content_block_without_obj = ContentBlock.objects.create(
+
+        self.factory = RequestFactory()
+
+        self.related_page_block = RelatedPagesBlock.objects.create()
+        self.content_block = ContentBlock.objects.create(
             obj_version=page_version,
             column='main_content',
             position=1,
             content_type=ContentType.objects.get_for_model(RelatedPagesBlock),
-        )
-        self.content_block = ContentBlock.objects.create(
-            obj_version=page_version,
-            column='main_content',
-            position=2,
-            content_type=ContentType.objects.get_for_model(RelatedPagesBlock),
+            object_id=self.related_page_block.id,
         )
 
-        self.factory = RequestFactory()
-
-        self.related_page_block = RelatedPagesBlock.objects.create(
-            content_block=self.content_block,
-        )
-
-        self.content_block.content_object = self.related_page_block
-        self.content_block.save()
+        self.related_page_block.content_block = self.content_block
+        self.related_page_block.save()
 
         self.request = self.factory.get('/')
         self.view = get_callable(RelatedPagesBlock.render_function)
-
-    def test_view_without_block(self):
-        self.view(
-            None, self.request, False, self.content_block_without_obj, 'test-class'
-        )
 
     def test_view_with_block(self):
         self.view(
