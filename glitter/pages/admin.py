@@ -88,12 +88,12 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
         if apps.is_installed('glitter.publisher'):
             from glitter.publisher.admin import ActionInline
             if ActionInline not in self.inlines:
-                self.inlines.append(ActionInline)
+                self.inlines = self.inlines + [ActionInline]
 
         if apps.is_installed('glitter.reminders'):
             from glitter.reminders.admin import ReminderInline
             if ReminderInline not in self.inlines:
-                self.inlines.append(ReminderInline)
+                self.inlines = self.inlines + [ReminderInline]
 
         return super(PageAdmin, self).get_inline_instances(request, obj)
 
