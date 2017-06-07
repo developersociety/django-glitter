@@ -27,34 +27,24 @@ class FormTestCase(TestCase):
             template_name='glitter/sample.html',
             owner=self.editor
         )
-        self.content_block_without_obj = ContentBlock.objects.create(
-            obj_version=page_version,
-            column='main_content',
-            position=1,
-            content_type=ContentType.objects.get_for_model(ContactFormBlock),
+
+        self.form_block = ContactFormBlock.objects.create(
+            recipient='test@blanc.ltd.uk',
         )
         self.content_block = ContentBlock.objects.create(
             obj_version=page_version,
             column='side',
             position=1,
             content_type=ContentType.objects.get_for_model(ContactFormBlock),
+            object_id=self.form_block.id,
         )
-        self.factory = RequestFactory()
+        self.form_block.content_block = self.content_block
+        self.form_block.save()
 
-        self.form_block = ContactFormBlock.objects.create(
-            recipient='test@blanc.ltd.uk',
-        )
-        self.content_block.content_object = self.form_block
-        self.content_block.save()
+        self.factory = RequestFactory()
 
         self.request = self.factory.get('/')
         self.view = get_callable(ContactFormBlock.render_function)
-
-    def test_view_without_block(self):
-        self.view(
-            None, self.request, False, self.content_block_without_obj, 'test-class',
-            ContactFormBlock.form_class
-        )
 
     def test_view_with_block(self):
         self.view(

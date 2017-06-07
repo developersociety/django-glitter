@@ -33,18 +33,6 @@ class BannerTestCase(TestCase):
             template_name='glitter/sample.html',
             owner=editor,
         )
-        self.content_block_without_obj = ContentBlock.objects.create(
-            obj_version=page_version,
-            column='main_content',
-            position=1,
-            content_type=ContentType.objects.get_for_model(BannerBlock),
-        )
-        self.content_block = ContentBlock.objects.create(
-            obj_version=page_version,
-            column='main_content',
-            position=2,
-            content_type=ContentType.objects.get_for_model(BannerBlock),
-        )
 
         self.factory = RequestFactory()
 
@@ -52,22 +40,22 @@ class BannerTestCase(TestCase):
             title='Banner',
             link='www.blanc.ltd.uk'
         )
-        self.banner_block = BannerBlock.objects.create(
-            content_block=self.content_block,
+        self.banner_block = BannerBlock.objects.create()
+        self.content_block = ContentBlock.objects.create(
+            obj_version=page_version,
+            column='main_content',
+            position=1,
+            content_type=ContentType.objects.get_for_model(BannerBlock),
+            object_id=self.banner_block.id,
         )
-        self.content_block.content_object = self.banner_block
-        self.content_block.save()
+        self.banner_block.content_block = self.content_block
+        self.banner_block.save()
 
         self.request = self.factory.get('/')
         self.view = get_callable(BannerBlock.render_function)
 
         self.inline = BannerInline.objects.create(
             banner_block=self.banner_block, banner=self.banner)
-
-    def test_view_without_block(self):
-        self.view(
-            None, self.request, False, self.content_block_without_obj, 'test-class'
-        )
 
     def test_view_with_block(self):
         self.view(

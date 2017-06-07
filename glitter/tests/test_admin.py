@@ -246,14 +246,6 @@ class BaseViewsCase(TestAdmin):
         self.html3_block.content_block = self.html3_content_block
         self.html3_block.save()
 
-        # Create content block without object.
-        self.html4_content_block = ContentBlock.objects.create(
-            obj_version=self.page_version,
-            column='main_content',
-            position=5,
-            content_type=ContentType.objects.get_for_model(self.html1_block),
-        )
-
     def change_page_version(self):
         self.page_version.version_number = 1
         self.page_version.save()

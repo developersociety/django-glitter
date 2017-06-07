@@ -341,14 +341,6 @@ class TestEditCopyVersion(BaseEditCase):
         sample_block.content_block = content_block
         sample_block.save()
 
-        # Create empty content block without object.
-        ContentBlock.objects.create(
-            obj_version=page_version,
-            column='content',
-            position=6,
-            content_type=ContentType.objects.get_for_model(html_block),
-        )
-
         page_version.generate_version()
         page_version.save()
 
