@@ -4,6 +4,8 @@ from __future__ import unicode_literals
 from django import forms
 from django.conf import settings
 
+from mptt.forms import MPTTAdminForm
+
 from glitter.integration import glitter_app_pool
 
 from .models import Page
@@ -36,7 +38,7 @@ def get_glitter_app_choices():
     return choices
 
 
-class PageAdminForm(forms.ModelForm):
+class PageAdminForm(MPTTAdminForm):
     class Meta:
         model = Page
         widgets = {
