@@ -1,12 +1,10 @@
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from glitter.assets.fields import AssetForeignKey
 from glitter.fields import LinkField
 from glitter.models import BaseBlock
 
 
-@python_2_unicode_compatible
 class Banner(models.Model):
     title = models.CharField(max_length=100, db_index=True)
     image = AssetForeignKey('glitter_assets.Image', null=True, blank=True)
@@ -29,7 +27,6 @@ class BannerBlock(BaseBlock):
         verbose_name = 'banner'
 
 
-@python_2_unicode_compatible
 class BannerInline(models.Model):
     banner_block = models.ForeignKey(BannerBlock)
     banner = models.ForeignKey(Banner, on_delete=models.PROTECT)

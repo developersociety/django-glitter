@@ -1,6 +1,5 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from mptt.fields import TreeForeignKey
 
 from glitter.fields import LinkField
@@ -17,7 +16,6 @@ class RelatedPagesBlock(BaseBlock):
         verbose_name = 'related pages'
 
 
-@python_2_unicode_compatible
 class RelatedPage(models.Model):
     related_pages_block = models.ForeignKey(RelatedPagesBlock)
     title = models.CharField(

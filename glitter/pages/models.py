@@ -1,6 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from glitter.mixins import GlitterMixin
 from glitter.models import Version
@@ -19,7 +18,6 @@ class PageManager(TreeManager):
         return self.filter(published=True, current_version__isnull=True)
 
 
-@python_2_unicode_compatible
 class Page(MPTTModel, GlitterMixin):
     url = models.CharField('URL', max_length=100, unique=True, validators=[validate_page_url])
     title = models.CharField(max_length=100)

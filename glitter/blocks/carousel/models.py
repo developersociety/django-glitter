@@ -1,12 +1,10 @@
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from glitter.assets.fields import AssetForeignKey
 from glitter.fields import LinkField
 from glitter.models import BaseBlock
 
 
-@python_2_unicode_compatible
 class BaseCarousel(models.Model):
     title = models.CharField(max_length=100, db_index=True)
 
@@ -22,7 +20,6 @@ class Carousel(BaseCarousel):
     pass
 
 
-@python_2_unicode_compatible
 class BaseCarouselImage(models.Model):
     carousel = models.ForeignKey(Carousel, related_name='carousel_images')
     title = models.CharField(max_length=100)
@@ -53,7 +50,6 @@ class ImageOnlyCarousel(BaseCarousel):
     pass
 
 
-@python_2_unicode_compatible
 class BaseImageOnlyCarouselImage(models.Model):
     carousel = models.ForeignKey(ImageOnlyCarousel, related_name='carousel_images')
     image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)

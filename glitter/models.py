@@ -2,10 +2,8 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Version(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -52,7 +50,6 @@ class Version(models.Model):
             return False
 
 
-@python_2_unicode_compatible
 class ContentBlock(models.Model):
     obj_version = models.ForeignKey(Version)
     column = models.CharField(max_length=100, db_index=True)

@@ -3,14 +3,13 @@ from django.contrib.admin.models import CHANGE, LogEntry
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.utils.encoding import force_text, python_2_unicode_compatible
+from django.utils.encoding import force_text
 
 from glitter.models import Version
 
 from .validators import future_date
 
 
-@python_2_unicode_compatible
 class PublishAction(models.Model):
     UNPUBLISH_CHOICE = -1
 
