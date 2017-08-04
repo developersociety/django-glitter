@@ -1,7 +1,4 @@
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from django.template import Context, Template
 from django.test import SimpleTestCase

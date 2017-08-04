@@ -1,9 +1,6 @@
 from datetime import timedelta
 import io
-try:
-    from unittest import mock
-except ImportError:
-    import mock
+from unittest import mock
 
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
