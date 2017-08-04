@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.templatetags.admin_static import static
 from django.contrib.admin.views.main import IS_POPUP_VAR, TO_FIELD_VAR

@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from functools import update_wrapper
 
 from django.conf.urls import url

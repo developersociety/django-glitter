@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from glitter import columns, templates
 from glitter.layouts import PageLayout
 from glitter.pages.models import Page

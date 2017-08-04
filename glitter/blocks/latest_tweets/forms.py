@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django import forms
 from django.db.models.fields import BLANK_CHOICE_DASH
 

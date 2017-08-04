@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import django
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper

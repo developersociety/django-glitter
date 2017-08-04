@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
-
 POSITION_IMAGE_LEFT = 'image-left'
 POSITION_IMAGE_RIGHT = 'image-right'
 

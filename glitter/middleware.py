@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from django.http import HttpResponseRedirect
 
 from .exceptions import GlitterRedirectException, GlitterUnpublishedException

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.db import router
 from django.db.models.deletion import Collector
 from django.db.models.fields.related import ForeignKey

@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-
 import warnings
 
 from glitter.blockadmin.blocks import BlockAdmin, site, StackedInline, TabularInline

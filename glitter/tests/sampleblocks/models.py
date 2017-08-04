@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from glitter.models import BaseBlock
 
 from django.db import models

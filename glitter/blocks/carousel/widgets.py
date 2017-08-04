@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from django.contrib.admin.sites import AdminSite
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.core.urlresolvers import reverse
