@@ -29,8 +29,7 @@ To facilitate testing we use tox_, which you can install with:
 
   pip install tox
 
-Currently we test on Python versions 2.7, 3.3, 3.4 & 3.5 and Django versions
-1.8, 1.9 & 1.10.
+Currently we test on Python version 3.5 and Django versions 1.8, & 1.9.
 
 To use the same test suite, make sure you have the above mentioned Python
 interpreters installed, some platforms, like Ubuntu, won't have all versions
@@ -41,7 +40,7 @@ development headers.
 
 Assuming you have all the supported python versions installed and forked the
 repository to `django-glitter` running the tests is a matter of:
-  
+
 .. code-block:: sh
 
   cd django-glitter
