@@ -7,7 +7,6 @@ from django.core.urlresolvers import get_mod_func
 from django.forms import ModelForm
 from django.forms.fields import FileField
 from django.template.loader import render_to_string
-from django.utils import six
 
 from glitter.exceptions import GlitterRedirectException
 
@@ -23,7 +22,7 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
         form_class = getattr(type(block), 'form_class', None)
 
     # Get the callable version of the form
-    if isinstance(form_class, six.string_types):
+    if isinstance(form_class, str):
         mod_name, class_name = get_mod_func(form_class)
         form_class = getattr(import_module(mod_name), class_name)
 

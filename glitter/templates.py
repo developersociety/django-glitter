@@ -2,7 +2,6 @@ from collections import namedtuple
 
 from django.apps import apps
 from django.db.models.base import ModelBase
-from django.utils import six
 
 from .layouts import PageLayoutBase
 
@@ -26,7 +25,7 @@ def register(class_or_iterable, model_class):
 
 def get_templates(model):
     """ Return a list of templates usable by a model. """
-    for template_name, template in six.iteritems(templates):
+    for template_name, template in templates.items():
         if issubclass(template.model, model):
             yield (template_name, template.layout._meta.verbose_name)
 

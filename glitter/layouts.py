@@ -3,7 +3,6 @@ import inspect
 
 from django.forms.forms import pretty_name
 from django.template.defaultfilters import title
-from django.utils import six
 from django.utils.text import camel_case_to_spaces
 
 from .columns import Column
@@ -65,7 +64,7 @@ class PageLayoutBase(type):
         if issubclass(new_class, PageLayout):
             # Columns
             columns = {}
-            for column, cls in six.iteritems(attrs):
+            for column, cls in attrs.items():
                 if isinstance(cls, Column):
                     columns.setdefault(column, cls)
 
@@ -94,5 +93,5 @@ class PageLayoutBase(type):
         return name
 
 
-class PageLayout(six.with_metaclass(PageLayoutBase)):
+class PageLayout(metaclass=PageLayoutBase):
     pass

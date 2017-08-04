@@ -14,7 +14,6 @@ from django.http import Http404, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.template.response import TemplateResponse
-from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
@@ -83,7 +82,7 @@ class BlockAdminSite(AdminSite):
         ]
 
         # Add in each model's views.
-        for model, model_admin in six.iteritems(self._registry):
+        for model, model_admin in self._registry.items():
             urlpatterns += [
                 url(r'^%s/%s/' % (model._meta.app_label, model._meta.model_name),
                     include(model_admin.urls))

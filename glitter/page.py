@@ -9,7 +9,6 @@ from django.db.models import Q
 from django.forms.widgets import Select
 from django.template.defaultfilters import slugify
 from django.template.loader import render_to_string
-from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.functional import cached_property
 from django.utils.http import urlencode
@@ -316,7 +315,7 @@ class Glitter(object):
 
     def get_column_choices(self):
         choices = []
-        for column, cls in six.iteritems(self.layout._meta.columns):
+        for column, cls in self.layout._meta.columns.items():
             name = self.layout.get_column_name(column)
             choices.append((column, name))
         return choices

@@ -1,4 +1,5 @@
 from datetime import timedelta
+import io
 try:
     from unittest import mock
 except ImportError:
@@ -8,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.core import management
 from django.test import TestCase, override_settings
-from django.utils import six, timezone
+from django.utils import timezone
 
 from glitter.models import Version
 from glitter.pages.models import Page
@@ -25,8 +26,8 @@ class ReminderManagementTestCase(TestCase):
         self.user = User.objects.create_user(
             username='joe', password='qwerty', email='test@gmail.com'
         )
-        self.stdout = six.StringIO()
-        self.stderr = six.StringIO()
+        self.stdout = io.StringIO()
+        self.stderr = io.StringIO()
 
     def tearDown(self):
         self.stdout.close()
@@ -93,7 +94,7 @@ class ReminderManagementTestCase(TestCase):
         self.reminder.sent_at = timezone.now() - timedelta(days=1)
         self.reminder.save()
 
-        self.stdout = six.StringIO()
+        self.stdout = io.StringIO()
 
         management.call_command('send_reminders', stdout=self.stdout, verbosity=3)
 
@@ -118,7 +119,7 @@ class ReminderManagementTestCase(TestCase):
         self.reminder.sent_at = timezone.now() - timedelta(days=100)
         self.reminder.save()
 
-        self.stdout = six.StringIO()
+        self.stdout = io.StringIO()
         management.call_command('send_reminders', stdout=self.stdout, verbosity=3)
         command_output = self.stdout.getvalue().strip()
         self.assertEqual(

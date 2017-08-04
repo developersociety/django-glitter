@@ -1,3 +1,4 @@
+from html.parser import HTMLParser
 import re
 
 from django.conf import settings
@@ -5,7 +6,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest
 from django.template import RequestContext
 from django.template.loader import render_to_string
-from django.utils.six.moves import html_parser
 
 from haystack import indexes
 
@@ -48,7 +48,7 @@ class PageCharField(indexes.CharField):
         }, context_instance=RequestContext(request))
 
         # Need to escape HTML entities
-        htmlparser = html_parser.HTMLParser()
+        htmlparser = HTMLParser()
         unescape = htmlparser.unescape
         content = unescape(content)
 
