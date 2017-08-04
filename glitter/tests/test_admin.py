@@ -374,7 +374,7 @@ class TestPageBlockDeleteView(BaseViewsCase):
 
         response = self.editor_client.post(self.page_block_delete_view_url, {
             'column': 'main_content',
-            'block_type': u'glitter_html_block.HTML',
+            'block_type': 'glitter_html_block.HTML',
         })
         self.assertEqual(response.status_code, 200)
 
