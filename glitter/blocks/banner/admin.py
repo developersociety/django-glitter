@@ -17,7 +17,7 @@ class BannerInlineAdmin(blocks.StackedInline):
     extra = 0
 
     def formfield_for_dbfield(self, db_field, **kwargs):
-        formfield = super(BannerInlineAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'banner':
             formfield.widget = CustomRelatedFieldWidgetWrapper(
                 widget=Select(),

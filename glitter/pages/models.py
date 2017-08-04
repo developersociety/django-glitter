@@ -60,7 +60,7 @@ class Page(MPTTModel, GlitterMixin):
 
         self.unpublished_count = unpublished_pages.count()
 
-        super(Page, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     @property
     def is_visible(self):

@@ -58,7 +58,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
 
     @csrf_protect_m
     def changelist_view(self, request, extra_context=None):
-        template_response = super(PageAdmin, self).changelist_view(request, extra_context)
+        template_response = super().changelist_view(request, extra_context)
         template_response.template_name = 'admin/pages/page/change_list_tree.html'
         return template_response
 
@@ -67,7 +67,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             def wrapper(*args, **kwargs):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
-        urlpatterns = super(PageAdmin, self).get_urls()
+        urlpatterns = super().get_urls()
 
         info = self.model._meta.app_label, self.model._meta.model_name
 
@@ -91,7 +91,7 @@ class PageAdmin(GlitterAdminMixin, DjangoMpttAdmin, MPTTModelAdmin):
             if ReminderInline not in self.inlines:
                 self.inlines = self.inlines + [ReminderInline]
 
-        return super(PageAdmin, self).get_inline_instances(request, obj)
+        return super().get_inline_instances(request, obj)
 
     def view_url(self, obj):
         info = self.model._meta.app_label, self.model._meta.model_name

@@ -10,4 +10,4 @@ class ImageBlockForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.base_fields['image'].widget.attrs['class'] = 'image-related-field'
-        super(ImageBlockForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)

@@ -7,5 +7,5 @@ class GlitterBasicAssetsConfig(AppConfig):
     verbose_name = 'Assets'
 
     def ready(self):
-        super(GlitterBasicAssetsConfig, self).ready()
+        super().ready()
         from . import listeners  # noqa

@@ -80,7 +80,7 @@ class ContentBlock(models.Model):
             else:
                 self.position = last_position + 1
 
-        super(ContentBlock, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class BaseBlock(models.Model):

@@ -33,7 +33,7 @@ class BlockAdminSite(AdminSite):
         # All blocks can be registered to this admin site
         self.block_list = {}
 
-        super(BlockAdminSite, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     # Use the block admin class by default
     def register(self, model_or_iterable, admin_class=None, **options):
@@ -44,7 +44,7 @@ class BlockAdminSite(AdminSite):
         if category:
             self.register_block(model_or_iterable, category)
 
-        super(BlockAdminSite, self).register(model_or_iterable, admin_class, **options)
+        super().register(model_or_iterable, admin_class, **options)
 
     # Blocks from the site or other apps can be registered
     def register_block(self, block_or_iterable, category):
@@ -282,7 +282,7 @@ class BlockAdmin(ModelAdmin):
         if version.version_number or version.owner != request.user:
             raise PermissionDenied
 
-        return super(BlockAdmin, self).change_view(request, object_id, form_url, extra_context)
+        return super().change_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
         """Determine the HttpResponse for the change_view stage."""
@@ -309,7 +309,7 @@ class BlockAdmin(ModelAdmin):
         return self.response_rerender(request, obj, 'admin/glitter/update_column.html')
 
     def save_model(self, request, obj, form, change):
-        super(BlockAdmin, self).save_model(request, obj, form, change)
+        super().save_model(request, obj, form, change)
 
         # Whenever we're adding a new block to a page, we'll need to create a ContentBlock to go
         # along with it

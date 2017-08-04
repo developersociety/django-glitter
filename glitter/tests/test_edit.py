@@ -41,7 +41,7 @@ if not SAMPLE_BLOCK_MISSING:
 class BaseEditCase(TestCase):
     @classmethod
     def setUpClass(cls):
-        super(BaseEditCase, cls).setUpClass()
+        super().setUpClass()
 
         # Permissions
         edit_perm = Permission.objects.get_by_natural_key('edit_page', 'glitter_pages', 'page')
@@ -97,7 +97,7 @@ class BaseEditCase(TestCase):
 
 class TestNoSavedVersions(BaseEditCase):
     def setUp(self):
-        super(TestNoSavedVersions, self).setUp()
+        super().setUp()
 
         # Simple page without any saved versions
         self.page_url = '/no-saved-versions/'
@@ -116,7 +116,7 @@ class TestNoSavedVersions(BaseEditCase):
 
 class TestCreateVersion(BaseEditCase):
     def setUp(self):
-        super(TestCreateVersion, self).setUp()
+        super().setUp()
 
         # Simple page without any saved versions
         page = Page.objects.create(url='/create-version/', title='Test page')
@@ -151,7 +151,7 @@ class TestCreateVersion(BaseEditCase):
 
 class TestViewVersion(BaseEditCase):
     def setUp(self):
-        super(TestViewVersion, self).setUp()
+        super().setUp()
 
         # Page with one unsaved version
         page = Page.objects.create(url='/view-version/', title='Test page')
@@ -188,7 +188,7 @@ class TestViewVersion(BaseEditCase):
 
 class TestRedirectVersion(BaseEditCase):
     def setUp(self):
-        super(TestRedirectVersion, self).setUp()
+        super().setUp()
 
         # Page with two unsaved versions
         self.page_url = '/redirect-version/'
@@ -259,7 +259,7 @@ class TestRedirectVersion(BaseEditCase):
 
 class TestEditVersion(BaseEditCase):
     def setUp(self):
-        super(TestEditVersion, self).setUp()
+        super().setUp()
 
         # Page with one unsaved version
         page = Page.objects.create(url='/edit-version/', title='Test page')
@@ -313,7 +313,7 @@ class TestEditVersion(BaseEditCase):
 @skipIf(SAMPLE_BLOCK_MISSING, 'glitter.tests.sampleblocks is not installed')
 class TestEditCopyVersion(BaseEditCase):
     def setUp(self):
-        super(TestEditCopyVersion, self).setUp()
+        super().setUp()
 
         # Page with one saved version, an HTML block, and sample blocks
         page = Page.objects.create(url='/edit-version/', title='Test page')
@@ -359,7 +359,7 @@ class TestEditCopyVersion(BaseEditCase):
 
 class TestSaveVersion(BaseEditCase):
     def setUp(self):
-        super(TestSaveVersion, self).setUp()
+        super().setUp()
 
         # Page with one unsaved version
         page = Page.objects.create(url='/save-version/', title='Test page')
@@ -419,7 +419,7 @@ class TestSaveVersion(BaseEditCase):
 
 class TestPublishVersion(BaseEditCase):
     def setUp(self):
-        super(TestPublishVersion, self).setUp()
+        super().setUp()
 
         # Page with one unsaved version
         self.page_url = '/publish-version/'
@@ -498,7 +498,7 @@ class TestPublishVersion(BaseEditCase):
 
 class TestUnpublishVersion(BaseEditCase):
     def setUp(self):
-        super(TestUnpublishVersion, self).setUp()
+        super().setUp()
 
         # Page with one published version
         self.page_url = '/edit-version/'
@@ -567,7 +567,7 @@ class TestUnpublishVersion(BaseEditCase):
 
 class TestDiscardVersion(BaseEditCase):
     def setUp(self):
-        super(TestDiscardVersion, self).setUp()
+        super().setUp()
 
         # Page with one saved version, one unsaved version
         self.page_url = '/edit-version/'

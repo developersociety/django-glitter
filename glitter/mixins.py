@@ -43,7 +43,7 @@ class GlitterDetailMixin(object):
         return self.get(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
-        obj = super(GlitterDetailMixin, self).get_object(queryset)
+        obj = super().get_object(queryset)
 
         version = self.kwargs.get('version')
 
@@ -65,7 +65,7 @@ class GlitterDetailMixin(object):
         return [self.glitter.version.template_name]
 
     def get_context_data(self, **kwargs):
-        context = super(GlitterDetailMixin, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         obj = self.get_object()
         edit = self.kwargs.get('edit_mode')

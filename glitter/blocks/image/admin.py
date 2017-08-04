@@ -25,7 +25,7 @@ class ImageBlockAdmin(blocks.BlockAdmin):
 
         If kwargs are given, they're passed to the form Field's constructor.
         """
-        formfield = super(ImageBlockAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'image':
             formfield.widget = ImageRelatedFieldWidgetWrapper(
                 ImageSelect(), db_field.rel, self.admin_site, can_add_related=True,
@@ -34,7 +34,7 @@ class ImageBlockAdmin(blocks.BlockAdmin):
         return formfield
 
     def get_urls(self):
-        urls = super(ImageBlockAdmin, self).get_urls()
+        urls = super().get_urls()
         app_label, model_name = self.model._meta.app_label, self.model._meta.model_name
         image_block_urls = [
             url(r'^get-lazy-images/$', self.get_lazy_images, name='get-lazy-images'),

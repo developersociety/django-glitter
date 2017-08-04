@@ -6,5 +6,5 @@ class GlittersConfig(AppConfig):
     label = 'glitter'
 
     def ready(self):
-        super(GlittersConfig, self).ready()
+        super().ready()
         self.module.autodiscover()

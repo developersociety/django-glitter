@@ -42,7 +42,7 @@ class LinkField(CharField):
     def __init__(self, *args, **kwargs):
         # max_length=254 to be compliant with RFCs 3696 and 5321
         kwargs['max_length'] = kwargs.get('max_length', 254)
-        super(LinkField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
         # As with CharField, this will cause validation to be performed twice.
@@ -50,7 +50,7 @@ class LinkField(CharField):
             'form_class': LinkFormField,
         }
         defaults.update(kwargs)
-        return super(LinkField, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
 
 class LinkFormField(URLField):
@@ -67,6 +67,6 @@ class LinkFormField(URLField):
             return value
 
         # Go through URLField's to_python
-        value = super(LinkFormField, self).to_python(value)
+        value = super().to_python(value)
 
         return value

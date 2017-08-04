@@ -208,7 +208,7 @@ class TestPermissions(TestCase):
 class BaseViewsCase(TestAdmin):
 
     def setUp(self):
-        super(BaseViewsCase, self).setUp()
+        super().setUp()
 
         self.html1_block = HTML.objects.create(content='<p>HTML Block</p>')
         self.html1_content_block = ContentBlock.objects.create(
@@ -250,7 +250,7 @@ class BaseViewsCase(TestAdmin):
 
 class TestPageChangeTemplateView(BaseViewsCase):
     def setUp(self):
-        super(TestPageChangeTemplateView, self).setUp()
+        super().setUp()
         self.change_template_url = reverse(
             'admin:%s_%s_changetemplate' % self.info, args=(self.page_version.id,)
         )
@@ -306,7 +306,7 @@ class TestPageChangeTemplateView(BaseViewsCase):
 
 class TestPageBlockAddView(BaseViewsCase):
     def setUp(self):
-        super(TestPageBlockAddView, self).setUp()
+        super().setUp()
         self.page_block_add_view_url = '{}?column=main_content'.format(reverse(
             'block_admin:%s_%s_add' % (HTML._meta.app_label, HTML._meta.model_name),
             kwargs={
@@ -356,7 +356,7 @@ class TestPageBlockAddView(BaseViewsCase):
 class TestPageBlockDeleteView(BaseViewsCase):
 
     def setUp(self):
-        super(TestPageBlockDeleteView, self).setUp()
+        super().setUp()
         self.page_block_delete_view_url = reverse(
             'admin:%s_%s_block_delete' % self.info, args=(self.html1_content_block.id,)
         )
@@ -388,7 +388,7 @@ class TestPageBlockDeleteView(BaseViewsCase):
 
 class TestPageBlockMoveView(BaseViewsCase):
     def setUp(self):
-        super(TestPageBlockMoveView, self).setUp()
+        super().setUp()
         self.html1_block_move_view_url = reverse(
             'admin:%s_%s_block_move' % self.info, args=(self.html1_content_block.id,)
         )
@@ -468,7 +468,7 @@ class TestPageBlockMoveView(BaseViewsCase):
 class TestPageBlockColumnView(BaseViewsCase):
 
     def setUp(self):
-        super(TestPageBlockColumnView, self).setUp()
+        super().setUp()
         self.html1_block_column_url = reverse(
             'admin:%s_%s_block_column' % self.info, args=(self.html1_content_block.id,)
         )

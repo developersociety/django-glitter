@@ -114,7 +114,7 @@ class GlitterAdminMixin(object):
                 wrap(self.page_block_column_view),
                 name='%s_%s_block_column' % info),
 
-        ] + super(GlitterAdminMixin, self).get_urls()
+        ] + super().get_urls()
         return urlpatterns
 
     def has_edit_permission(self, request, obj=None, version=None):
@@ -154,13 +154,13 @@ class GlitterAdminMixin(object):
         if '_saveandedit' in request.POST:
             return self.page_redirect(request, obj)
         else:
-            return super(GlitterAdminMixin, self).response_add(request, obj, *args, **kwargs)
+            return super().response_add(request, obj, *args, **kwargs)
 
     def response_change(self, request, obj, *args, **kwargs):
         if '_saveandedit' in request.POST:
             return self.page_redirect(request, obj)
         else:
-            return super(GlitterAdminMixin, self).response_change(request, obj, *args, **kwargs)
+            return super().response_change(request, obj, *args, **kwargs)
 
     def duplicate_content(self, current_version, new_version):
         for content_block in current_version.contentblock_set.all():

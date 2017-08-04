@@ -11,20 +11,20 @@ class ActionInline(GenericStackedInline):
     extra = 0
 
     def get_formset(self, request, obj=None, form=None, **kwargs):
-        BaseFormset = super(ActionInline, self).get_formset(request, obj, **kwargs)
+        BaseFormset = super().get_formset(request, obj, **kwargs)
 
         class ActionFormset(BaseFormset):
             """
             Customised formset to save the user who has created/updated the action.
             """
             def save_new(self, form, commit):
-                obj = super(ActionFormset, self).save_new(form, commit=False)
+                obj = super().save_new(form, commit=False)
                 obj.user = request.user
                 obj.save()
                 return obj
 
             def save_existing(self, form, instance, commit):
-                obj = super(ActionFormset, self).save_existing(form, instance, commit=False)
+                obj = super().save_existing(form, instance, commit=False)
                 obj.user = request.user
                 obj.save()
                 return obj

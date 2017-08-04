@@ -40,4 +40,4 @@ class Video(BaseBlock):
                 self.get_embed_url(),
                 self.title
             )
-        return super(Video, self).save(force_insert, force_update, using, update_fields)
+        return super().save(force_insert, force_update, using, update_fields)

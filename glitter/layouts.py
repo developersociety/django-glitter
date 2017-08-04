@@ -36,7 +36,7 @@ class PageLayoutBase(type):
     """
 
     def __new__(cls, name, bases, attrs):
-        super_new = super(PageLayoutBase, cls).__new__
+        super_new = super().__new__
 
         # (excluding PageLayout class itself).
         # Also ensure initialization is only performed for subclasses of PageLayout

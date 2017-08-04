@@ -34,7 +34,7 @@ class PublishAction(models.Model):
             return 'Publish version {} at {}'.format(self.publish_version, self.scheduled_time)
 
     def save(self, *args, **kwargs):
-        super(PublishAction, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # Add a task
         if self.can_schedule_task():

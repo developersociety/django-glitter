@@ -14,7 +14,7 @@ class LatestTweetsBlockForm(forms.ModelForm):
     user = forms.ChoiceField(required=False)
 
     def __init__(self, *args, **kwargs):
-        super(LatestTweetsBlockForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # To get Tweet objects needs django-latest-tweets should be installed.
         self.fields['user'].choices = BLANK_CHOICE_DASH + [

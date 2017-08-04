@@ -7,5 +7,5 @@ class PagesConfig(AppConfig):
     verbose_name = 'Pages'
 
     def ready(self):
-        super(PagesConfig, self).ready()
+        super().ready()
         from . import listeners  # noqa

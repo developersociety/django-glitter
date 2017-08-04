@@ -16,4 +16,4 @@ class FileMixin(models.Model):
         # Avoid doing file size requests constantly
         self.file_size = self.file.size
 
-        super(FileMixin, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)

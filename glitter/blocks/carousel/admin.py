@@ -21,7 +21,7 @@ class CarouselAdmin(admin.ModelAdmin):
 
 class CarouselBlockAdmin(blocks.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
-        formfield = super(CarouselBlockAdmin, self).formfield_for_dbfield(db_field, **kwargs)
+        formfield = super().formfield_for_dbfield(db_field, **kwargs)
         if db_field.name == 'carousel':
             formfield.widget = CustomRelatedFieldWidgetWrapper(
                 widget=Select(),
@@ -44,7 +44,7 @@ class ImageOnlyCarouselAdmin(admin.ModelAdmin):
 
 class ImageOnlyCarouselBlockAdmin(blocks.BlockAdmin):
     def formfield_for_dbfield(self, db_field, **kwargs):
-        formfield = super(ImageOnlyCarouselBlockAdmin, self).formfield_for_dbfield(
+        formfield = super().formfield_for_dbfield(
             db_field, **kwargs)
         if db_field.name == 'carousel':
             formfield.widget = CustomRelatedFieldWidgetWrapper(

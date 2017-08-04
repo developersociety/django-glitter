@@ -80,7 +80,7 @@ class BaseViewCase(TestCase):
 class TestGlitterView(BaseViewCase):
 
     def setUp(self):
-        super(TestGlitterView, self).setUp()
+        super().setUp()
 
     def test_existing_page(self):
         """Test normal page."""
@@ -138,7 +138,7 @@ class TestGlitterView(BaseViewCase):
 class TestRenderPageUnpublished(BaseViewCase):
 
     def setUp(self):
-        super(TestRenderPageUnpublished, self).setUp()
+        super().setUp()
 
     def test_exceptionssasd(self):
         response = self.editor_client.get(self.page_no_version.url)
