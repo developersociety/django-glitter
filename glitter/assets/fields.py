@@ -18,7 +18,7 @@ class GroupedModelChoiceField(ModelChoiceField):
             self.group_label = group_label
 
         # Need correct ordering, and category titles
-        self.queryset = self.queryset.select_related().order_by('category', 'title')
+        self.queryset = self.queryset.select_related('category').order_by('category', 'title')
 
     def _get_choices(self):
         """
