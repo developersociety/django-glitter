@@ -33,7 +33,7 @@ class GlitterMixin(models.Model):
 
         Glitter objects need to be published and have a current version to be visible to end users.
         """
-        return self.published and self.current_version is not None
+        return self.published and self.current_version_id is not None
 
 
 class GlitterDetailMixin(object):
