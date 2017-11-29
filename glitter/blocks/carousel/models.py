@@ -26,9 +26,10 @@ class BaseCarouselImage(models.Model):
     subtitle = models.TextField(blank=True)
     image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
     link = LinkField()
+    position = models.PositiveIntegerField(default=0, db_index=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = ('position', 'id')
         abstract = True
 
     def __str__(self):
@@ -53,9 +54,10 @@ class ImageOnlyCarousel(BaseCarousel):
 class BaseImageOnlyCarouselImage(models.Model):
     carousel = models.ForeignKey(ImageOnlyCarousel, related_name='carousel_images')
     image = AssetForeignKey('glitter_assets.Image', on_delete=models.PROTECT)
+    position = models.PositiveIntegerField(default=0, db_index=True)
 
     class Meta:
-        ordering = ('id',)
+        ordering = ('position', 'id')
         abstract = True
 
     def __str__(self):
