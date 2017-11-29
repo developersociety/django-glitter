@@ -37,10 +37,11 @@ class BannerBlock(BaseBlock):
 class BannerInline(models.Model):
     banner_block = models.ForeignKey(BannerBlock)
     banner = models.ForeignKey(Banner, on_delete=models.PROTECT)
+    position = models.PositiveIntegerField(default=0, db_index=True)
 
     class Meta:
         verbose_name = 'banner'
-        ordering = ('id',)
+        ordering = ('position', 'id')
 
     def __str__(self):
         return '%s' % (self.banner,) or 'Banner'
