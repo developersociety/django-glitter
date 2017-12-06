@@ -12,6 +12,7 @@
                 </li>
                 {% if glitter.has_add_permission %}
                     <form action="{% url glitter.opts|admin_urlname:'add' %}">
+                        <input type="hidden" name="parent" value="{{ glitter.obj.id }}" />
                         <button type="submit" class="glitter-add-new-page">Add</button>
                     </form>
                 {% endif %}
