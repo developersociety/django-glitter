@@ -9,7 +9,9 @@
         previewsContainer: '.dropzonePreview',
         previewTemplate: '<div class="img-preview"></div>',
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
-        thumbnailHeight: 300,
+        thumbnailWidth: 300,
+        thumbnailHeight: null,
+        thumbnailMethod: 'contain',
         // This removes any wrong mime type file and displays the error.
         error: function(file, message) {
             this.removeFile(file);
