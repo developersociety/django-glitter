@@ -41,6 +41,7 @@ class GlitterUrlConf(object):
         importlib.reload(root_urlconf)
         importlib.reload(glitter_urls)
         self.urlpatterns = root_urlconf.urlpatterns
+        self.handler500 = root_urlconf.handler500
 
 
 class GlitterUrlConfMiddleware(object):
