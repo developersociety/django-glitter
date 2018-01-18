@@ -76,10 +76,16 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
                 'obj': obj,
                 'page_url': page_url,
             })
-            email = EmailMessage(
-                subject=email_subject,
-                body=email_body,
-                to=[block.recipient])
+            reply_to_email = block.get_email_field(form)
+            email_data = {
+                'subject': email_subject,
+                'body': email_body,
+                'to': [block.recipient],
+            }
+            if reply_to_email:
+                email_data.update({'reply_to': [reply_to_email]})
+
+            email = EmailMessage(**email_data)
 
             # Add any attachments
             if form.is_multipart():
