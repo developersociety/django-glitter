@@ -15,11 +15,12 @@ class BaseFormBlock(BaseBlock):
     class Meta:
         abstract = True
 
-    def get_email_field(self, form):
+    def get_replyto_address(self, form):
         email = None
         for name, field in form.base_fields.items():
             if type(field) == EmailField:
                 email = form.cleaned_data[name]
+                break
         return email
 
 

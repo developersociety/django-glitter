@@ -76,7 +76,7 @@ def form_view(block, request, rerender, content_block, block_classes, form_class
                 'obj': obj,
                 'page_url': page_url,
             })
-            reply_to_email = block.get_email_field(form)
+            reply_to_email = block.get_replyto_address(form)
             email_data = {
                 'subject': email_subject,
                 'body': email_body,
