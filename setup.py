@@ -17,7 +17,7 @@ setup(
     version='0.2',
     description='Glitter for Django',
     long_description=open('README.rst').read(),
-    url='https://github.com/blancltd/django-glitter',
+    url='https://github.com/developersociety/django-glitter',
     maintainer='Blanc Ltd',
     maintainer_email='studio@blanc.ltd.uk',
     platforms=['any'],
