@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-
 import importlib
+from threading import Lock
+import sys
 
-from django.conf import settings
 from django.http import Http404, HttpResponseRedirect
 
-from glitter import urls as glitter_urls
 from glitter.exceptions import GlitterRedirectException, GlitterUnpublishedException
+from glitter.pages.models import Page
 
 
 class PageFallbackMiddleware(object):
@@ -31,25 +30,26 @@ class PageFallbackMiddleware(object):
         return None
 
 
-class GlitterUrlConf(object):
-    def __init__(self):
-        """
-        URLs for Glitter App Pages can change based upon user's actions. So need to rebuild on each
-        request.
-
-        Have tried to reload the minimum amount of urlconfs to keep performance up.
-        """
-        root_urlconf = importlib.import_module(settings.ROOT_URLCONF)
-        importlib.reload(root_urlconf)
-        importlib.reload(glitter_urls)
-        self.urlpatterns = root_urlconf.urlpatterns
+_urlconf_pages = []
+_urlconf_lock = Lock()
 
 
 class GlitterUrlConfMiddleware(object):
     def process_request(self, request):
         """
-        Avoids having to restart the server to recreate the url_conf being used by Django.
+        Reloads glitter URL patterns if page URLs change.
 
-        Doing it this way allows the url_conf to be set at runtime.
+        Avoids having to restart the server to recreate the glitter URLs being used by Django.
         """
-        request.urlconf = GlitterUrlConf()
+        global _urlconf_pages
+
+        page_list = list(
+            Page.objects.exclude(glitter_app_name='').values_list('id', 'url').order_by('id')
+        )
+
+        with _urlconf_lock:
+            if page_list != _urlconf_pages:
+                glitter_urls = 'glitter.urls'
+                if glitter_urls in sys.modules:
+                    importlib.reload(sys.modules[glitter_urls])
+                _urlconf_pages = page_list
