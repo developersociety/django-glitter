@@ -73,6 +73,18 @@
     </script>
 {% endif %}
 
+{% if adminform %}
+    <script type="text/javascript">
+        (function($) {
+            $(document).ready(function() {
+                $('form#{{ opts.model_name }}_form').on('submit', function() {
+                    $(this).find('.submit-row input').prop('disabled', true);
+                });
+            });
+        })(django.jQuery);
+    </script>
+{% endif %}
+
 {# JavaScript for prepopulated fields #}
 {% prepopulated_fields_js %}
 
