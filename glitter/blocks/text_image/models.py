@@ -16,6 +16,10 @@ class BaseTextImageBlock(BaseBlock):
     class Meta:
         abstract = True
 
+    def __str__(self):
+        if self.content_block:
+            return str(self.content_block)
+
 
 class TextImageBlock(BaseTextImageBlock):
     class Meta:
