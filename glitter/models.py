@@ -89,6 +89,7 @@ class ContentBlock(models.Model):
         super(ContentBlock, self).save(*args, **kwargs)
 
 
+@python_2_unicode_compatible
 class BaseBlock(models.Model):
     content_block = models.ForeignKey(ContentBlock, null=True, editable=False)
 
@@ -97,3 +98,16 @@ class BaseBlock(models.Model):
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        title = '{object_name}'.format(object_name=self._meta.object_name)
+        if (
+                getattr(self.content_block, 'obj_version', None) and
+                getattr(self.content_block, 'content_object', None)
+        ):
+            page = self.content_block.obj_version.content_object
+            title += ' - {page}'.format(
+                object_name=self._meta.object_name,
+                page=page.get_absolute_url(),
+            )
+        return title
